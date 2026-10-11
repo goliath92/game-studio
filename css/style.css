@@ -1,0 +1,584 @@
+/* ============================================================
+   Game Studio — Dashboard Stylesheet
+   Dark theme with gaming aesthetic (Steam / Epic Games style)
+   ============================================================ */
+
+/* ----- Design Tokens ----- */
+:root {
+  /* Palette */
+  --color-base:        #1a1a2e;
+  --color-surface:     #16213e;
+  --color-accent:      #0f3460;
+  --color-highlight:   #e94560;
+  --color-highlight-hover: #ff6b81;
+  --color-text:        #e0e0e0;
+  --color-text-muted:  #8892a4;
+  --color-text-bright: #ffffff;
+  --color-border:      rgba(255, 255, 255, 0.06);
+  --color-card-bg:     rgba(15, 52, 96, 0.35);
+  --color-card-hover:  rgba(15, 52, 96, 0.65);
+  --color-overlay:     rgba(0, 0, 0, 0.5);
+
+  /* Layout */
+  --header-h:   56px;
+  --sidebar-w:  260px;
+
+  /* Typography */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                 Roboto, Oxygen, Ubuntu, sans-serif;
+
+  /* Transitions */
+  --transition-fast:   0.15s ease;
+  --transition-medium: 0.25s ease;
+  --transition-slow:   0.4s  cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Misc */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* ----- Reset / Base ----- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--color-base);
+  color: var(--color-text);
+  min-height: 100vh;
+  overflow: hidden;               /* prevent body scroll; content scrolls internally */
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+ul { list-style: none; }
+
+a { color: inherit; text-decoration: none; }
+
+/* ============================================================
+   Header
+   ============================================================ */
+.header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 100;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 0 20px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.header__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+}
+
+.header__logo {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.header__title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--color-text-bright);
+  text-transform: uppercase;
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header__home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.header__home-btn:hover,
+.header__home-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--color-text-bright);
+}
+
+/* ============================================================
+   Dashboard Layout
+   ============================================================ */
+.dashboard {
+  display: flex;
+  position: fixed;
+  inset: var(--header-h) 0 0 0;
+}
+
+/* ============================================================
+   Sidebar
+   ============================================================ */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  transition: transform var(--transition-slow);
+  z-index: 50;
+}
+
+.sidebar__header {
+  padding: 18px 18px 10px;
+}
+
+.sidebar__title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+}
+
+.sidebar__list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 10px;
+}
+
+.sidebar__item + .sidebar__item {
+  margin-top: 2px;
+}
+
+.sidebar__footer {
+  padding: 12px 18px;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* ----- Game Card (sidebar button) ----- */
+.game-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast),
+              box-shadow var(--transition-fast),
+              transform var(--transition-fast);
+}
+
+.game-card:hover {
+  background: var(--color-card-hover);
+  transform: translateX(2px);
+}
+.game-card:focus-visible {
+  outline: 2px solid var(--color-highlight);
+  outline-offset: -2px;
+}
+
+.game-card--active {
+  background: var(--color-card-hover);
+  box-shadow: inset 3px 0 0 var(--color-highlight);
+}
+
+.game-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: rgba(233, 69, 96, 0.12);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.game-card:hover .game-card__icon,
+.game-card--active .game-card__icon {
+  background: rgba(233, 69, 96, 0.25);
+  transform: scale(1.08);
+}
+
+.game-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  text-align: left;
+}
+
+.game-card__name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text-bright);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-card__genre {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.game-card__arrow {
+  margin-left: auto;
+  font-size: 1.3rem;
+  color: var(--color-text-muted);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.game-card:hover .game-card__arrow,
+.game-card--active .game-card__arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ============================================================
+   Content Area
+   ============================================================ */
+.content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--color-base);
+}
+
+/* ============================================================
+   Welcome Screen
+   ============================================================ */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  height: 100%;
+  padding: 40px 32px;
+  overflow-y: auto;
+  animation: fadeIn 0.5s ease;
+}
+
+.welcome__hero {
+  text-align: center;
+  max-width: 540px;
+}
+
+.welcome__heading {
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--color-text);
+  line-height: 1.3;
+}
+.welcome__heading strong {
+  color: var(--color-text-bright);
+  font-weight: 800;
+}
+
+.welcome__sub {
+  margin-top: 12px;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* ----- Welcome Card Grid ----- */
+.welcome__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 920px;
+}
+
+.welcome__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 30px 20px 24px;
+  text-align: center;
+  border-radius: var(--radius-lg);
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  transition: background var(--transition-medium),
+              border-color var(--transition-medium),
+              transform var(--transition-medium),
+              box-shadow var(--transition-medium);
+}
+
+.welcome__card:hover {
+  background: var(--color-card-hover);
+  border-color: rgba(233, 69, 96, 0.3);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card);
+}
+.welcome__card:focus-visible {
+  outline: 2px solid var(--color-highlight);
+  outline-offset: 2px;
+}
+
+.welcome__card-icon {
+  font-size: 2.4rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-md);
+  background: rgba(233, 69, 96, 0.12);
+  transition: background var(--transition-medium), transform var(--transition-medium);
+}
+
+.welcome__card:hover .welcome__card-icon {
+  background: rgba(233, 69, 96, 0.28);
+  transform: scale(1.1);
+}
+
+.welcome__card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-bright);
+}
+
+.welcome__card-desc {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+}
+
+.welcome__card-cta {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 6px 18px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-sm);
+  background: var(--color-highlight);
+  color: var(--color-text-bright);
+  transition: background var(--transition-fast);
+}
+.welcome__card:hover .welcome__card-cta {
+  background: var(--color-highlight-hover);
+}
+
+/* ============================================================
+   Game Frame
+   ============================================================ */
+.game-frame {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-base);
+}
+
+.game-frame[hidden] {
+  display: none;
+}
+
+.game-frame__iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  opacity: 0;
+  transition: opacity var(--transition-medium);
+}
+
+.game-frame__iframe--loaded {
+  opacity: 1;
+}
+
+/* ----- Loader ----- */
+.game-frame__loader {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  transition: opacity var(--transition-fast);
+  z-index: 2;
+}
+
+.game-frame__loader[hidden] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(233, 69, 96, 0.2);
+  border-top-color: var(--color-highlight);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+/* ============================================================
+   Mobile Sidebar Toggle
+   ============================================================ */
+.sidebar-toggle {
+  display: none;              /* shown via media query */
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 200;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-highlight);
+  color: var(--color-text-bright);
+  box-shadow: 0 4px 16px rgba(233, 69, 96, 0.45);
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+.sidebar-toggle:hover {
+  background: var(--color-highlight-hover);
+  transform: scale(1.08);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-w: 240px;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .sidebar--open {
+    transform: translateX(0);
+  }
+
+  .sidebar-toggle {
+    display: flex;
+  }
+
+  .content {
+    width: 100%;
+  }
+
+  .welcome__grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+  }
+
+  .welcome__heading {
+    font-size: 1.35rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome__grid {
+    grid-template-columns: 1fr;
+    max-width: 340px;
+  }
+
+  .welcome__card {
+    padding: 22px 16px 18px;
+  }
+
+  .welcome__card-icon {
+    font-size: 1.8rem;
+    width: 52px;
+    height: 52px;
+  }
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Overlay behind sidebar on mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: var(--header-h) 0 0 0;
+  background: var(--color-overlay);
+  z-index: 40;
+  opacity: 0;
+  transition: opacity var(--transition-medium);
+}
+.sidebar-overlay--visible {
+  display: block;
+  opacity: 1;
+}
+
+/* ============================================================
+   Scrollbar (Webkit)
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

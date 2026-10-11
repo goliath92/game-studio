@@ -1,0 +1,481 @@
+/* ============================================================
+   Nonogram / Picross  –  Dark Theme
+   Base: #1a1a2e   Accent: #e94560
+   ============================================================ */
+
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ---------- Game Container ---------- */
+#game-container {
+    width: 100%;
+    max-width: 860px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
+    overflow: hidden;
+}
+
+/* ---------- Header ---------- */
+#game-header {
+    text-align: center;
+    flex-shrink: 0;
+    margin-bottom: 8px;
+}
+
+#game-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #e94560;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+}
+
+/* ---------- Controls ---------- */
+#controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+#controls-row-top,
+#controls-row-bottom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#size-selector {
+    display: flex;
+    gap: 4px;
+}
+
+.size-btn {
+    background: #16213e;
+    color: #a0a0b8;
+    border: 1px solid #2a2a4a;
+    padding: 5px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+.size-btn:hover {
+    background: #1f2f52;
+    color: #d0d0e0;
+}
+
+.size-btn.active {
+    background: #e94560;
+    color: #fff;
+    border-color: #e94560;
+}
+
+#new-game-btn {
+    background: #e94560;
+    color: #fff;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+#new-game-btn:hover {
+    background: #ff6b81;
+    transform: translateY(-1px);
+}
+
+#new-game-btn:active {
+    transform: translateY(0);
+}
+
+/* ---------- Stats Row ---------- */
+#timer-display,
+#mistake-display {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #16213e;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    border: 1px solid #2a2a4a;
+}
+
+#timer-display svg,
+#mistake-display svg {
+    opacity: 0.7;
+}
+
+#mistake-display {
+    color: #e94560;
+}
+
+#undo-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #16213e;
+    color: #a0a0b8;
+    border: 1px solid #2a2a4a;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.15s ease;
+}
+
+#undo-btn:hover {
+    background: #1f2f52;
+    color: #d0d0e0;
+}
+
+#undo-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+/* ---------- Board Wrapper ---------- */
+#board-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    min-height: 0;
+    padding: 4px;
+}
+
+#board-area {
+    display: grid;
+    /* grid-template set dynamically by JS */
+    gap: 0;
+    width: fit-content;
+    height: fit-content;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* ---------- Corner Spacer ---------- */
+#corner-spacer {
+    /* empty top-left corner */
+}
+
+/* ---------- Column Clues ---------- */
+#col-clues {
+    display: grid;
+    /* columns set by JS */
+    gap: 0;
+}
+
+.col-clue {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 2px 0 4px;
+    gap: 1px;
+}
+
+.col-clue .clue-num {
+    font-size: var(--clue-font);
+    font-weight: 600;
+    line-height: 1.25;
+    color: #c0c0d8;
+    transition: color 0.2s, opacity 0.2s;
+}
+
+.col-clue.completed .clue-num {
+    color: #4ecca3;
+}
+
+.col-clue .clue-num.crossed {
+    color: #555570;
+    text-decoration: line-through;
+}
+
+/* ---------- Row Clues ---------- */
+#row-clues {
+    display: grid;
+    /* rows set by JS */
+    gap: 0;
+}
+
+.row-clue {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 6px 0 0;
+    gap: 4px;
+}
+
+.row-clue .clue-num {
+    font-size: var(--clue-font);
+    font-weight: 600;
+    line-height: 1.2;
+    color: #c0c0d8;
+    transition: color 0.2s, opacity 0.2s;
+}
+
+.row-clue.completed .clue-num {
+    color: #4ecca3;
+}
+
+.row-clue .clue-num.crossed {
+    color: #555570;
+    text-decoration: line-through;
+}
+
+/* ---------- Grid ---------- */
+#grid {
+    display: grid;
+    gap: 0;
+    background: #2a2a4a;
+    border: 2px solid #3a3a5a;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    background: #16213e;
+    border: 1px solid #252545;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.08s ease;
+    position: relative;
+}
+
+.cell:hover {
+    background: #1e2d50;
+}
+
+/* Every 5th column heavy border */
+.cell.border-right {
+    border-right: 2px solid #3a3a5a;
+}
+
+/* Every 5th row heavy border */
+.cell.border-bottom {
+    border-bottom: 2px solid #3a3a5a;
+}
+
+/* ---------- Cell States ---------- */
+.cell.filled {
+    background: #e94560;
+}
+
+.cell.filled:hover {
+    background: #ff6b81;
+}
+
+.cell.marked {
+    background: #16213e;
+}
+
+.cell.marked::before,
+.cell.marked::after {
+    content: '';
+    position: absolute;
+    width: 55%;
+    height: 2px;
+    background: #666680;
+    border-radius: 1px;
+}
+
+.cell.marked::before {
+    transform: rotate(45deg);
+}
+
+.cell.marked::after {
+    transform: rotate(-45deg);
+}
+
+/* Drag preview highlight */
+.cell.drag-preview {
+    background: rgba(233, 69, 96, 0.25);
+}
+
+.cell.drag-preview-mark {
+    background: rgba(102, 102, 128, 0.2);
+}
+
+.cell.filled.drag-preview-clear,
+.cell.marked.drag-preview-clear {
+    opacity: 0.45;
+}
+
+/* ---------- Win Overlay ---------- */
+#win-overlay,
+#game-over-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 20, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    animation: fadeIn 0.3s ease;
+}
+
+#win-overlay.hidden,
+#game-over-overlay.hidden {
+    display: none;
+}
+
+#win-modal,
+#game-over-modal {
+    background: #16213e;
+    border: 2px solid #e94560;
+    border-radius: 16px;
+    padding: 36px 48px;
+    text-align: center;
+    animation: scaleIn 0.35s ease;
+}
+
+#win-modal h2,
+#game-over-modal h2 {
+    color: #e94560;
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+}
+
+#win-modal p,
+#game-over-modal p {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #c0c0d8;
+}
+
+#win-new-game,
+#game-over-new-game {
+    margin-top: 18px;
+    background: #e94560;
+    color: #fff;
+    border: none;
+    padding: 10px 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.15s;
+}
+
+#win-new-game:hover,
+#game-over-new-game:hover {
+    background: #ff6b81;
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Pulse on win */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+}
+
+.cell.win-pulse {
+    animation: pulse 0.5s ease;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+    #game-container {
+        padding: 8px;
+    }
+
+    #game-header h1 {
+        font-size: 1.2rem;
+        margin-bottom: 6px;
+    }
+
+    #controls {
+        gap: 6px;
+    }
+
+    .size-btn {
+        padding: 4px 10px;
+        font-size: 0.72rem;
+    }
+
+    #new-game-btn {
+        padding: 4px 14px;
+        font-size: 0.72rem;
+    }
+
+    #timer-display,
+    #mistake-display {
+        padding: 4px 8px;
+        font-size: 0.72rem;
+    }
+
+    #undo-btn {
+        padding: 4px 8px;
+        font-size: 0.72rem;
+    }
+
+    .row-clue {
+        gap: 2px;
+        padding-right: 3px;
+    }
+
+    .col-clue {
+        padding-bottom: 2px;
+    }
+
+    #win-modal,
+    #game-over-modal {
+        padding: 24px 28px;
+    }
+
+    #win-modal h2,
+    #game-over-modal h2 {
+        font-size: 1.4rem;
+    }
+}

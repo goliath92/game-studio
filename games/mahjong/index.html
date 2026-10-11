@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahjong Solitaire</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&text=一二三四五六七八九十萬東南西北中發梅蘭菊竹春夏秋冬麻將龍示洗新&display=swap">
+    <link rel="stylesheet" href="mahjong-table-themes.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="mj-table" data-table-theme="cay-evi" data-tiles="retro">
+    <div id="game-container">
+        <div id="ui-left">
+            <h1 class="mj-title">MAHJONG<br>SOLITAIRE</h1>
+            <div class="mj-panel">
+                <span class="mj-label">MOVES</span>
+                <span id="move-counter" class="mj-value">0</span>
+            </div>
+            <div class="mj-panel">
+                <span class="mj-label">TIMER</span>
+                <span id="timer" class="mj-value">0:00</span>
+            </div>
+            <div class="mj-panel">
+                <span class="mj-label">TILES</span>
+                <span id="tiles-remaining" class="mj-value">144</span>
+            </div>
+            <button id="btn-hint" class="mj-btn mj-btn--hint" title="Find a match"><span class="mj-btn__glyph" aria-hidden="true">示</span>HINT</button>
+            <button id="btn-shuffle" class="mj-btn mj-btn--shuffle" title="Shuffle tiles"><span class="mj-btn__glyph" aria-hidden="true">洗</span>SHUFFLE</button>
+        </div>
+
+        <div id="board-wrapper" class="mj-mat">
+            <div id="board"></div>
+        </div>
+
+        <div id="ui-right">
+            <button id="btn-new-game" class="mj-btn mj-btn--new" title="New game"><span class="mj-btn__glyph" aria-hidden="true">新</span>NEW GAME</button>
+            <div class="mj-panel mj-panel--stack">
+                <span class="mj-label">THEME</span>
+                <div class="mj-swatches">
+                    <button class="mj-swatch mj-swatch--fildisi" data-theme="" title="Fildişi"></button>
+                    <button class="mj-swatch mj-swatch--bambu" data-theme="bambu" title="Bambu"></button>
+                    <button class="mj-swatch mj-swatch--retro" data-theme="retro" title="Retro"></button>
+                    <button class="mj-swatch mj-swatch--bambu-retro" data-theme="bambu-retro" title="Bambu Retro"></button>
+                </div>
+            </div>
+            <div class="mj-panel mj-panel--stack">
+                <span class="mj-label">MASA</span>
+                <div class="mj-swatches">
+                    <button class="table-theme-btn" data-table="cay-evi" title="Çay Evi">☕</button>
+                    <button class="table-theme-btn" data-table="tas-butonlar" title="Taş Butonlar">🀄</button>
+                    <button class="table-theme-btn" data-table="gece-kecesi" title="Gece Keçesi">🌙</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="overlay" class="hidden">
+            <div id="overlay-content">
+                <h2 id="overlay-title"></h2>
+                <p id="overlay-message"></p>
+                <div id="overlay-stats"></div>
+                <button id="overlay-btn" class="mj-btn mj-btn--new">NEW GAME</button>
+            </div>
+        </div>
+
+        <div id="hint-toast" class="hidden">NO MORE MOVES!</div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

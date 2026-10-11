@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Studio</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <div class="header__brand">
+      <span class="header__logo" aria-hidden="true">&#x1F3AE;</span>
+      <h1 class="header__title">Game Studio</h1>
+    </div>
+    <nav class="header__nav">
+      <button class="header__home-btn" id="homeBtn" type="button" title="Home">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span>Home</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- ===== Main Layout ===== -->
+  <div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__header">
+        <h2 class="sidebar__title">Library</h2>
+      </div>
+
+      <ul class="sidebar__list" id="gameList" role="list">
+        <li class="sidebar__item" role="listitem">
+          <button class="game-card" data-game="solitaire" type="button">
+            <span class="game-card__icon" aria-hidden="true">&#9824;</span>
+            <div class="game-card__info">
+              <span class="game-card__name">Solitaire</span>
+              <span class="game-card__genre">Card Game</span>
+            </div>
+            <span class="game-card__arrow" aria-hidden="true">&#x203A;</span>
+          </button>
+        </li>
+        <li class="sidebar__item" role="listitem">
+          <button class="game-card" data-game="mahjong" type="button">
+            <span class="game-card__icon" aria-hidden="true">&#x1F004;</span>
+            <div class="game-card__info">
+              <span class="game-card__name">Mahjong</span>
+              <span class="game-card__genre">Tile Matching</span>
+            </div>
+            <span class="game-card__arrow" aria-hidden="true">&#x203A;</span>
+          </button>
+        </li>
+        <li class="sidebar__item" role="listitem">
+          <button class="game-card" data-game="sudoku" type="button">
+            <span class="game-card__icon" aria-hidden="true">&#x1F522;</span>
+            <div class="game-card__info">
+              <span class="game-card__name">Sudoku</span>
+              <span class="game-card__genre">Number Puzzle</span>
+            </div>
+            <span class="game-card__arrow" aria-hidden="true">&#x203A;</span>
+          </button>
+        </li>
+        <li class="sidebar__item" role="listitem">
+          <button class="game-card" data-game="nonogram" type="button">
+            <span class="game-card__icon" aria-hidden="true">&#x25A6;</span>
+            <div class="game-card__info">
+              <span class="game-card__name">Nonogram</span>
+              <span class="game-card__genre">Logic Puzzle</span>
+            </div>
+            <span class="game-card__arrow" aria-hidden="true">&#x203A;</span>
+          </button>
+        </li>
+      </ul>
+
+      <div class="sidebar__footer">
+        <span class="sidebar__count">4 games</span>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content" id="content">
+
+      <!-- Welcome Screen (shown when no game is selected) -->
+      <section class="welcome" id="welcomeScreen">
+        <div class="welcome__hero">
+          <h2 class="welcome__heading">Welcome to <strong>Game Studio</strong></h2>
+          <p class="welcome__sub">Pick a game from the library or choose one below to start playing.</p>
+        </div>
+
+        <div class="welcome__grid">
+          <button class="welcome__card" data-game="solitaire" type="button">
+            <span class="welcome__card-icon" aria-hidden="true">&#9824;</span>
+            <h3 class="welcome__card-title">Solitaire</h3>
+            <p class="welcome__card-desc">The timeless card game. Stack, sort, and clear the tableau.</p>
+            <span class="welcome__card-cta">Play Now</span>
+          </button>
+
+          <button class="welcome__card" data-game="mahjong" type="button">
+            <span class="welcome__card-icon" aria-hidden="true">&#x1F004;</span>
+            <h3 class="welcome__card-title">Mahjong</h3>
+            <p class="welcome__card-desc">Match tiles and clear the board in this classic puzzle.</p>
+            <span class="welcome__card-cta">Play Now</span>
+          </button>
+
+          <button class="welcome__card" data-game="sudoku" type="button">
+            <span class="welcome__card-icon" aria-hidden="true">&#x1F522;</span>
+            <h3 class="welcome__card-title">Sudoku</h3>
+            <p class="welcome__card-desc">Fill the grid so every row, column, and box has 1-9.</p>
+            <span class="welcome__card-cta">Play Now</span>
+          </button>
+
+          <button class="welcome__card" data-game="nonogram" type="button">
+            <span class="welcome__card-icon" aria-hidden="true">&#x25A6;</span>
+            <h3 class="welcome__card-title">Nonogram</h3>
+            <p class="welcome__card-desc">Reveal hidden pictures using number clues on each axis.</p>
+            <span class="welcome__card-cta">Play Now</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Game Frame (shown when a game is selected) -->
+      <div class="game-frame" id="gameFrame" hidden>
+        <div class="game-frame__loader" id="frameLoader">
+          <div class="spinner"></div>
+          <span>Loading game&hellip;</span>
+        </div>
+        <iframe
+          class="game-frame__iframe"
+          id="gameIframe"
+          title="Game window"
+          sandbox="allow-scripts allow-same-origin allow-popups"
+          loading="lazy"
+        ></iframe>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Mobile sidebar toggle -->
+  <button class="sidebar-toggle" id="sidebarToggle" type="button"
+          aria-label="Toggle game library" aria-expanded="false">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

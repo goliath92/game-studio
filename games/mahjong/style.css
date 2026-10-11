@@ -1,0 +1,428 @@
+/* ============================================
+   Mahjong Solitaire - Layout & Tile Styles
+   Visual theming is in mahjong-table-themes.css
+   ============================================ */
+
+@font-face {
+    font-family: 'Press Start 2P';
+    font-display: swap;
+}
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Tile sizing */
+    --w: 52px;
+    --h: 68px;
+    --d: 6px;
+
+    /* Tile face tokens (default: Fildişi) */
+    --tf:#f4eedb; --tf-lo:#e6dcc0; --tf-hint:#fff3c4; --side:#d8c9a2; --back:#2e7a60; --back-lo:#215a47;
+    --ink:#1d2726; --red:#b4312a; --grn:#1b7349; --blu:#1f5aa3; --plum:#7b3f86; --amber:#b86a12;
+    --blocked:brightness(.78) saturate(.75);
+
+    --gold: #e8b94f;
+
+    /* Fonts */
+    --f-han:"Noto Serif TC","Songti TC","PingFang TC","Microsoft JhengHei",serif;
+    --pixel-font: 'Press Start 2P', monospace;
+
+    --board-scale: 1;
+}
+
+/* ---- Tile Theme Tokens ---- */
+[data-tiles="bambu"] {
+    --tf:#f3dfa8; --tf-lo:#dbbb70; --tf-hint:#fff2c2; --side:#b8954f; --back:#5e3f1a; --back-lo:#462e12;
+    --ink:#2b1e10; --red:#a8291d; --grn:#2d6a28; --blu:#23508c; --plum:#6e3478; --amber:#8f4c0b;
+    --blocked:brightness(.72) saturate(.65);
+}
+[data-tiles="retro"] {
+    --tf:#fffaf0; --tf-lo:#f1e6c8; --tf-hint:#fff1a8; --side:#4cc3cf; --back:#1f8193; --back-lo:#176574;
+    --ink:#2b2f6e; --red:#d8352a; --grn:#259146; --blu:#2b5fc4; --plum:#8a3fa8; --amber:#e07a10;
+    --blocked:brightness(.8) saturate(.8);
+    --olc:#1b1c30;
+}
+[data-tiles="bambu-retro"] {
+    --tf:#fcf3d6; --tf-lo:#f3e3b4; --tf-hint:#fff8dc; --side:#d6ad6c; --back:#8a5b2c; --back-lo:#6e4720;
+    --ink:#3b2410; --red:#bb3220; --grn:#3b7c2b; --blu:#2b5a8c; --plum:#7a3a7e; --amber:#c0640e;
+    --blocked:brightness(.78) saturate(.7); --olc:#2a1a0c;
+}
+
+/* ---- Retro Outline Overrides ---- */
+:is([data-tiles="retro"],[data-tiles="bambu-retro"]) .face {
+    background: linear-gradient(172deg, var(--tf) 0 46%, var(--tf-lo) 46%);
+}
+:is([data-tiles="retro"],[data-tiles="bambu-retro"]) .tile {
+    box-shadow:
+        0 0 0 calc(var(--w)*.035) var(--olc),
+        calc(var(--d)*.55) calc(var(--d)*.55) 0 0 var(--side),
+        var(--d) var(--d) 0 0 var(--back),
+        calc(var(--d)*.55) calc(var(--d)*.55) 0 calc(var(--w)*.035) var(--olc),
+        var(--d) var(--d) 0 calc(var(--w)*.035) var(--olc),
+        calc(var(--d)*1.6) calc(var(--d)*2) calc(var(--d)*2) rgba(0,0,0,.35);
+}
+:is([data-tiles="retro"],[data-tiles="bambu-retro"]) .face>svg,
+:is([data-tiles="retro"],[data-tiles="bambu-retro"]) .face>.glyph,
+:is([data-tiles="retro"],[data-tiles="bambu-retro"]) .face>.cn,
+:is([data-tiles="retro"],[data-tiles="bambu-retro"]) .face>.white {
+    filter: drop-shadow(.9px 0 0 var(--olc)) drop-shadow(-.9px 0 0 var(--olc))
+            drop-shadow(0 .9px 0 var(--olc)) drop-shadow(0 -.9px 0 var(--olc));
+}
+/* Skip expensive drop-shadow on blocked tiles — they are already dimmed */
+:is([data-tiles="retro"],[data-tiles="bambu-retro"]) .tile.blocked .face>svg,
+:is([data-tiles="retro"],[data-tiles="bambu-retro"]) .tile.blocked .face>.glyph,
+:is([data-tiles="retro"],[data-tiles="bambu-retro"]) .tile.blocked .face>.cn,
+:is([data-tiles="retro"],[data-tiles="bambu-retro"]) .tile.blocked .face>.white {
+    filter: none;
+}
+
+/* ---- Page Layout ---- */
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--pixel-font);
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container {
+    width: 1100px;
+    height: 700px;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+/* ---- Side Panels ---- */
+#ui-left, #ui-right {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 12px;
+    gap: 10px;
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+#ui-left {
+    width: 180px;
+    align-items: stretch;
+}
+
+#ui-right {
+    width: 140px;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding-top: 20px;
+}
+
+/* ---- Title (layout only, visuals from table theme) ---- */
+.mj-title {
+    font-family: var(--pixel-font);
+    font-size: 0.72rem;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+/* ---- Panels (layout only) ---- */
+.mj-panel {
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mj-label {
+    font-family: var(--pixel-font);
+    font-size: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.mj-value {
+    font-family: var(--pixel-font);
+    font-size: 1.1rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---- Buttons (layout only, visuals from table theme) ---- */
+.mj-btn {
+    font-family: var(--pixel-font);
+    font-size: 0.6rem;
+    padding: 12px 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: transform 0.1s, box-shadow 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* ---- Table Theme Picker ---- */
+.table-theme-btn {
+    width: 30px; height: 30px; padding: 0;
+    border-radius: 5px;
+    border: 2px solid var(--mj-swatch-border, #3b2210);
+    cursor: pointer;
+    font-size: 16px;
+    background: var(--mj-panel-bg, #f3e6c4);
+    display: grid;
+    place-items: center;
+}
+.table-theme-btn.is-active {
+    box-shadow: 0 0 0 3px var(--mj-swatch-active, #b5301f);
+}
+
+/* ---- Board ---- */
+#board-wrapper {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    padding: var(--mj-mat-pad, 10px);
+}
+
+#board {
+    position: absolute;
+    transform: scale(var(--board-scale));
+    transform-origin: 0 0;
+    transition: transform 0.3s ease;
+}
+
+/* ---- Tiles (Reference Design System) ---- */
+.tile {
+    position: absolute;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    width: calc(var(--w) - 2px);
+    height: calc(var(--h) - 2px);
+    border-radius: calc(var(--w) * .12);
+    font: inherit;
+    box-shadow:
+        calc(var(--d)*.55) calc(var(--d)*.55) 0 var(--side),
+        var(--d) var(--d) 0 var(--back),
+        calc(var(--d)*1.4) calc(var(--d)*1.9) calc(var(--d)*2.2) rgba(0,0,0,.38);
+    transition: transform .12s ease, opacity .2s ease, filter .2s;
+    contain: layout style paint;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.face {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(150deg, var(--tf) 55%, var(--tf-lo));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: background .15s;
+}
+
+.face svg { width: 84%; height: 84%; }
+
+/* ---- Face Element Classes ---- */
+.glyph { font-family: var(--f-han); font-weight: 900; font-size: calc(var(--w)*.58); line-height: 1; }
+.ink { color: var(--ink); }
+.red { color: var(--red); }
+.grn { color: var(--grn); }
+.flw { color: var(--plum); }
+.ssn { color: var(--amber); }
+.cn { display: flex; flex-direction: column; align-items: center; font-family: var(--f-han); font-weight: 900; line-height: 1; }
+.cn .num { font-size: calc(var(--w)*.4); color: var(--ink); }
+.cn .wan { font-size: calc(var(--w)*.44); color: var(--red); margin-top: calc(var(--w)*.04); }
+.idx { position: absolute; right: 8%; top: 5%; font-size: calc(var(--w)*.2); font-weight: 800; color: var(--ink); opacity: .55; }
+.white { width: 58%; height: 66%; border: calc(var(--w)*.06) solid var(--blu); border-radius: calc(var(--w)*.06); box-sizing: border-box; outline: calc(var(--w)*.025) solid var(--blu); outline-offset: calc(var(--w)*.05); }
+
+/* ---- Tile States ---- */
+.tile.blocked { cursor: default; }
+.tile.blocked .face { filter: var(--blocked); }
+
+.tile:not(.blocked):not(.selected):hover {
+    filter: brightness(1.08);
+    transform: translate(var(--tx), var(--ty)) translate(-1px, -1px);
+}
+
+.tile.selected .face {
+    box-shadow: inset 0 0 0 3px var(--gold);
+    background: var(--tf-hint);
+}
+
+.tile.hint .face {
+    animation: hintPulse .5s ease-in-out 3 alternate;
+}
+
+@keyframes hintPulse {
+    to { box-shadow: inset 0 0 0 3px var(--gold); background: var(--tf-hint); }
+}
+
+/* ---- Tile Animations ---- */
+.tile.removing {
+    animation: tileRemove 0.45s ease-in forwards;
+    pointer-events: none;
+    will-change: transform, opacity;
+}
+
+.tile.dealing,
+.tile.shuffling {
+    will-change: transform, opacity;
+}
+
+@keyframes tileRemove {
+    0% {
+        transform: translate(var(--tx), var(--ty)) scale(1);
+        opacity: 1;
+    }
+    40% {
+        transform: translate(var(--tx), var(--ty)) scale(1.15);
+        opacity: 0.9;
+    }
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(0) rotate(15deg);
+        opacity: 0;
+    }
+}
+
+.tile.dealing {
+    animation: tileDeal 0.35s ease-out backwards;
+}
+
+@keyframes tileDeal {
+    0% {
+        transform: translate(var(--tx), var(--ty)) scale(0) translateY(-30px);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(1);
+        opacity: 1;
+    }
+}
+
+.tile.shuffling {
+    animation: tileShuffle 0.4s ease-in-out;
+}
+
+@keyframes tileShuffle {
+    0% { transform: translate(var(--tx), var(--ty)) scale(1); }
+    25% { transform: translate(var(--tx), var(--ty)) scale(0.85) rotate(-3deg); opacity: 0.6; }
+    75% { transform: translate(var(--tx), var(--ty)) scale(0.85) rotate(3deg); opacity: 0.6; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(1); }
+}
+
+/* ---- Overlay ---- */
+#overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 30, 20, 0.88);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    transition: opacity 0.4s;
+}
+
+#overlay.hidden {
+    display: none;
+}
+
+#overlay-content {
+    background: var(--mj-panel-bg, #1a1a2e);
+    border: 3px solid var(--mj-label, #d9b45a);
+    border-radius: 8px;
+    padding: 36px 44px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    max-width: 420px;
+    width: 90%;
+    animation: overlayIn 0.4s ease-out;
+}
+
+@keyframes overlayIn {
+    0% { transform: scale(0.85); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+#overlay-title {
+    font-family: var(--pixel-font);
+    font-size: 1rem;
+    margin-bottom: 14px;
+    color: var(--mj-title, #ffd98a);
+}
+
+#overlay-message {
+    font-family: var(--pixel-font);
+    font-size: 0.5rem;
+    color: var(--mj-text, #7aa888);
+    margin-bottom: 20px;
+    line-height: 2;
+}
+
+#overlay-stats {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+#overlay-stats .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+#overlay-stats .mj-label {
+    font-size: 0.45rem;
+}
+
+#overlay-stats .mj-value {
+    font-size: 0.9rem;
+}
+
+#overlay-btn {
+    padding: 14px 28px;
+    font-size: 0.6rem;
+    margin-top: 8px;
+}
+
+/* ---- Toast ---- */
+#hint-toast {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--mj-panel-bg, #1a1a2e);
+    border: 2px solid var(--mj-label, #d9b45a);
+    color: var(--mj-label, #d9b45a);
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-family: var(--pixel-font);
+    font-size: 0.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    z-index: 50;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+#hint-toast.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+    pointer-events: none;
+}
+
