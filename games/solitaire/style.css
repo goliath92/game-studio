@@ -174,14 +174,15 @@ html, body {
 #game-board {
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, var(--card-width));
     grid-template-rows: auto 1fr;
     padding: 14px;
+    column-gap: 10px;
     row-gap: 16px;
     overflow: hidden;
     min-height: 0;
     align-items: start;
-    justify-items: center;
+    justify-content: center;
 }
 
 #stock-waste-area { display: contents; }
