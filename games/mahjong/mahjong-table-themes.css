@@ -1,0 +1,228 @@
+/* ==========================================================================
+   Mahjong Solitaire — masa ve buton temaları
+   Temalar: cay-evi | tas-butonlar | gece-kecesi
+   Kullanım: <body data-table-theme="cay-evi"> (veya oyunun kök elemanı)
+
+   Fontlar (HTML <head> içine):
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Serif+TC:wght@900&text=%E4%B8%AD%E7%99%BC%E6%9D%B1%E5%8D%97%E8%A5%BF%E5%8C%97%E4%B8%80%E4%BA%8C%E4%B8%89%E5%9B%9B%E4%BA%94%E5%85%AD%E4%B8%83%E5%85%AB%E4%B9%9D%E8%90%AC%E7%A4%BA%E6%B4%97%E6%96%B0&display=swap">
+   ========================================================================== */
+
+/* ---------- 1. Tema değişkenleri ---------- */
+
+[data-table-theme="cay-evi"] {
+  /* masa: ceviz ahşap */
+  --mj-bg-color: #6b3f1f;
+  --mj-bg-image:
+    repeating-linear-gradient(90deg, rgba(0,0,0,.10) 0 2px, transparent 2px 11px),
+    repeating-linear-gradient(90deg, rgba(255,214,160,.07) 0 1px, transparent 1px 27px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0 3px, transparent 3px 190px);
+  /* ortadaki yeşil halı (.mj-mat) */
+  --mj-mat-border: 12px solid #3b2210;
+  --mj-mat-bg: #1f5a4a repeating-linear-gradient(45deg, rgba(255,255,255,.025) 0 2px, transparent 2px 6px);
+  --mj-mat-shadow: inset 0 0 0 3px #c99a3c, inset 0 10px 30px rgba(0,0,0,.45), 0 14px 30px rgba(0,0,0,.45);
+  --mj-mat-pad: 28px;
+  --mj-frame-display: none;
+  --mj-frame-color: transparent;
+  /* yazı */
+  --mj-text: #3b2210;
+  --mj-title: #ffd98a;
+  --mj-title-bg: #3b2210;
+  --mj-title-shadow: none;
+  --mj-label: #8a3b1c;
+  /* paneller: parşömen */
+  --mj-panel-bg: #f3e6c4;
+  --mj-panel-border: 3px solid #3b2210;
+  --mj-panel-radius: 10px;
+  --mj-panel-shadow: 0 5px 0 #3b2210;
+  --mj-swatch-border: #3b2210;
+  --mj-swatch-active: #b5301f;
+}
+
+[data-table-theme="tas-butonlar"] {
+  /* masa: yeşil keçe + çift altın çerçeve */
+  --mj-bg-color: #134a3a;
+  --mj-bg-image:
+    radial-gradient(ellipse 70% 65% at 52% 50%, #1d6652, rgba(13,53,41,0) 100%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.025) 0 1px, transparent 1px 5px);
+  --mj-frame-display: block;
+  --mj-frame-color: 217,180,90;          /* altın, rgb */
+  --mj-text: #f5ecd2;
+  --mj-title: #d9b45a;
+  --mj-title-bg: transparent;
+  --mj-title-shadow: 2px 2px 0 #0a2a20;
+  --mj-label: #d9b45a;
+  --mj-panel-bg: #0c2e25;
+  --mj-panel-border: 2px solid #d9b45a;
+  --mj-panel-radius: 8px;
+  --mj-panel-shadow: inset 0 0 0 3px #0c2e25, inset 0 0 0 4px rgba(217,180,90,.35);
+  --mj-swatch-border: #2a1d12;
+  --mj-swatch-active: #d9b45a;
+  /* taş butonun yan yüzleri */
+  --mj-tilebtn-side: #d3a868;
+  --mj-tilebtn-back: #7a4f24;
+  --mj-tilebtn-edge: #2a1d12;
+}
+
+[data-table-theme="gece-kecesi"] {
+  /* masa: gece mavisi keçe + gümüş çerçeve */
+  --mj-bg-color: #122f3e;
+  --mj-bg-image:
+    radial-gradient(ellipse 70% 65% at 52% 50%, #1c4a5e, rgba(18,47,62,0) 100%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.025) 0 1px, transparent 1px 5px);
+  --mj-frame-display: block;
+  --mj-frame-color: 184,196,204;         /* gümüş, rgb */
+  --mj-text: #e6edf0;
+  --mj-title: #b8c4cc;
+  --mj-title-bg: transparent;
+  --mj-title-shadow: 2px 2px 0 #081a23;
+  --mj-label: #8fc9d6;
+  --mj-panel-bg: #0c2330;
+  --mj-panel-border: 2px solid #b8c4cc;
+  --mj-panel-radius: 8px;
+  --mj-panel-shadow: inset 0 0 0 3px #0c2330, inset 0 0 0 4px rgba(184,196,204,.3);
+  --mj-swatch-border: #081a23;
+  --mj-swatch-active: #b8c4cc;
+  --mj-tilebtn-side: #9fb3bd;
+  --mj-tilebtn-back: #3e5a68;
+  --mj-tilebtn-edge: #081a23;
+}
+
+/* ---------- 2. Masa (arka plan) ---------- */
+
+.mj-table {
+  position: relative;
+  min-height: 100vh;
+  background-color: var(--mj-bg-color);
+  background-image: var(--mj-bg-image);
+  color: var(--mj-text);
+  font-family: 'Press Start 2P', monospace;
+  overflow: hidden;
+}
+
+/* Çift çerçeve (Taş Butonlar, Gece Keçesi) */
+.mj-table::before,
+.mj-table::after {
+  content: "";
+  display: var(--mj-frame-display, none);
+  position: absolute;
+  pointer-events: none;
+}
+.mj-table::before { inset: 14px; border: 2px solid rgba(var(--mj-frame-color), .55); border-radius: 18px; }
+.mj-table::after  { inset: 20px; border: 1px solid rgba(var(--mj-frame-color), .30); border-radius: 14px; }
+
+/* Taş diziliminin sarmalayıcısı. Çay Evi'nde çerçeveli yeşil halı olur,
+   diğer temalarda görünmez (taşlar yine içinde durur). */
+.mj-mat {
+  box-sizing: border-box;
+  border-radius: 22px;
+  border: var(--mj-mat-border, 0 solid transparent);
+  background: var(--mj-mat-bg, none);
+  box-shadow: var(--mj-mat-shadow, none);
+  padding: var(--mj-mat-pad, 0);
+}
+
+/* ---------- 3. Başlık ve sayaç panelleri ---------- */
+
+.mj-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--mj-title);
+  text-shadow: var(--mj-title-shadow);
+}
+[data-table-theme="cay-evi"] .mj-title {
+  background: var(--mj-title-bg);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 15px;
+  text-align: center;
+  box-shadow: 0 6px 0 #24140a;
+}
+
+.mj-panel {
+  background: var(--mj-panel-bg);
+  border: var(--mj-panel-border);
+  border-radius: var(--mj-panel-radius);
+  box-shadow: var(--mj-panel-shadow);
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.mj-panel--stack { flex-direction: column; align-items: stretch; }
+.mj-label { font-size: 10px; color: var(--mj-label); letter-spacing: .5px; }
+.mj-value { font-size: 20px; font-variant-numeric: tabular-nums; }
+
+/* ---------- 4. Butonlar ---------- */
+/* Ortak */
+.mj-btn {
+  font-family: 'Press Start 2P', monospace;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: transform .08s ease, box-shadow .08s ease;
+}
+.mj-btn:focus-visible { outline: 3px solid #ffd98a; outline-offset: 4px; }
+.mj-btn:disabled { opacity: .5; cursor: default; }
+.mj-btn__glyph {
+  font-family: 'Noto Serif TC', serif;
+  font-weight: 900;
+  font-size: 30px;
+  line-height: 1;
+}
+
+/* 4a. Çay Evi: yuvarlak lake butonlar (glyph gizli) */
+[data-table-theme="cay-evi"] .mj-btn {
+  height: 58px;
+  padding: 0 22px;
+  border-radius: 29px;
+  border: 3px solid #3b2210;
+  font-size: 14px;
+}
+[data-table-theme="cay-evi"] .mj-btn__glyph { display: none; }
+[data-table-theme="cay-evi"] .mj-btn--hint    { background: #b5301f; color: #ffd98a; box-shadow: inset 0 -6px 0 #7e1d12, inset 0 3px 0 #d9533f, 0 5px 0 #3b2210; }
+[data-table-theme="cay-evi"] .mj-btn--shuffle { background: #2f7d5b; color: #f3e6c4; box-shadow: inset 0 -6px 0 #1d5a40, inset 0 3px 0 #4fa07c, 0 5px 0 #3b2210; }
+[data-table-theme="cay-evi"] .mj-btn--new     { background: #e0a93a; color: #3b2210; box-shadow: inset 0 -6px 0 #b07f1e, inset 0 3px 0 #f5cf74, 0 5px 0 #3b2210; font-size: 13px; }
+[data-table-theme="cay-evi"] .mj-btn:active   { transform: translateY(3px); box-shadow: inset 0 -3px 0 rgba(0,0,0,.25), 0 2px 0 #3b2210; }
+
+/* 4b. Taş Butonlar + Gece Keçesi: yan yatmış mahjong taşı */
+:is([data-table-theme="tas-butonlar"], [data-table-theme="gece-kecesi"]) .mj-btn {
+  height: 62px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 14px;
+  background: #fbf3dc;
+  color: #2a1d12;
+  border: 2px solid #2a1d12;
+  border-radius: 10px;
+  font-size: 13px;
+  box-shadow:
+    4px 4px 0 var(--mj-tilebtn-side),
+    7px 7px 0 var(--mj-tilebtn-back),
+    7px 7px 0 2px var(--mj-tilebtn-edge);
+}
+:is([data-table-theme="tas-butonlar"], [data-table-theme="gece-kecesi"]) .mj-btn--new { font-size: 12px; }
+:is([data-table-theme="tas-butonlar"], [data-table-theme="gece-kecesi"]) .mj-btn--hint    .mj-btn__glyph { color: #c8302a; }
+:is([data-table-theme="tas-butonlar"], [data-table-theme="gece-kecesi"]) .mj-btn--shuffle .mj-btn__glyph { color: #2b7a3d; }
+:is([data-table-theme="tas-butonlar"], [data-table-theme="gece-kecesi"]) .mj-btn--new     .mj-btn__glyph { color: #22264a; }
+:is([data-table-theme="tas-butonlar"], [data-table-theme="gece-kecesi"]) .mj-btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: 1px 1px 0 var(--mj-tilebtn-side), 3px 3px 0 var(--mj-tilebtn-back), 3px 3px 0 2px var(--mj-tilebtn-edge);
+}
+
+/* ---------- 5. Tema seçici (taş renkleri) ---------- */
+.mj-swatches { display: flex; gap: 10px; }
+.mj-swatch {
+  width: 30px; height: 40px; padding: 0;
+  border-radius: 5px;
+  border: 2px solid var(--mj-swatch-border);
+  cursor: pointer;
+}
+.mj-swatch.is-active, .mj-swatch[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--mj-swatch-active); }
+.mj-swatch--fildisi     { background: #fbf3dc; }
+.mj-swatch--bambu       { background: #e6c47c; }
+.mj-swatch--retro       { background: #4cc3cf; }
+.mj-swatch--bambu-retro { background: #fcf3d6; }
+
+@media (prefers-reduced-motion: reduce) { .mj-btn { transition: none; } }

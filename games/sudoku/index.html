@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="gazete">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Sudoku</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@500;700&family=Orbitron:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="game-container">
+
+    <!-- Header -->
+    <div class="header">
+      <h1>Sudoku</h1>
+      <div class="timer" id="timer">0:00</div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <select id="select-diff" aria-label="Difficulty">
+        <option value="easy" selected>Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+      <button id="btn-new">New Game</button>
+      <div class="themes" id="themes"></div>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid-wrapper">
+      <div class="grid" id="grid" role="grid" aria-label="Sudoku board"></div>
+    </div>
+
+    <!-- Number Pad -->
+    <div class="numpad" id="numpad" aria-label="Number pad"></div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button id="btn-undo" title="Undo (Ctrl+Z)">
+        <svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05 1.04-6.83 2.73L2.5 7.5v9h9l-3.19-3.19C9.74 12.15 11.04 11.5 12.5 11.5c2.85 0 5.24 1.95 5.91 4.6l2.48-.79C19.88 11.45 16.47 8 12.5 8z"/></svg>
+        Undo
+      </button>
+      <button id="btn-erase" title="Erase cell (Delete)">
+        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        Erase
+      </button>
+      <button id="btn-notes" title="Toggle notes mode (N)">
+        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.001 1.001 0 000-1.41l-2.34-2.34a1.001 1.001 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        Notes
+      </button>
+      <button id="btn-check" title="Check for errors">
+        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+        Check
+      </button>
+      <button id="btn-autocheck" title="Auto-validate toggle">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        Auto
+      </button>
+    </div>
+
+    <!-- Status -->
+    <div class="status-bar">
+      <span>Arrow keys to navigate &middot; 1-9 to fill &middot; N for notes</span>
+    </div>
+
+  </div>
+
+  <!-- Win Overlay -->
+  <div class="overlay" id="overlay">
+    <div class="overlay-content">
+      <h2>Congratulations!</h2>
+      <p>You solved the puzzle!</p>
+      <p id="overlay-msg">Difficulty: Easy  |  Time: 0:00</p>
+      <button id="btn-play-again">Play Again</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

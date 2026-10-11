@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klondike Solitaire</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <header id="game-header">
+            <h1>Klondike Solitaire</h1>
+            <div id="stats-bar">
+                <span id="move-counter">Moves: 0</span>
+                <span id="timer">Time: 0:00</span>
+            </div>
+            <div id="controls">
+                <button id="undo-btn" title="Undo last move">&#8630; Undo</button>
+                <button id="new-game-btn">New Game</button>
+                <div class="skins" role="group" aria-label="Tema">
+                    <span class="lbl">Tema</span>
+                    <button class="sw" data-skin="cuha" title="Klasik çuha" aria-label="Klasik çuha" aria-pressed="true"></button>
+                    <button class="sw" data-skin="gece" title="Gece mavisi" aria-label="Gece mavisi" aria-pressed="false"></button>
+                    <button class="sw" data-skin="iznik" title="İznik çini" aria-label="İznik çini" aria-pressed="false"></button>
+                    <button class="sw" data-skin="ahsap" title="Ahşap kahvehane" aria-label="Ahşap kahvehane" aria-pressed="false"></button>
+                </div>
+            </div>
+        </header>
+
+        <main id="game-board">
+            <!-- Stock and Waste -->
+            <div id="stock-waste-area">
+                <div id="stock" class="card-slot stock-slot" title="Click to draw">
+                    <div class="slot-label">Stock</div>
+                </div>
+                <div id="waste" class="card-slot waste-slot">
+                    <div class="slot-label">Waste</div>
+                </div>
+            </div>
+
+            <!-- Spacer -->
+            <div id="board-spacer"></div>
+
+            <!-- Foundation Piles -->
+            <div id="foundation-area">
+                <div class="card-slot foundation-slot" data-foundation="0">
+                    <div class="suit-hint">&spades;</div>
+                </div>
+                <div class="card-slot foundation-slot" data-foundation="1">
+                    <div class="suit-hint">&hearts;</div>
+                </div>
+                <div class="card-slot foundation-slot" data-foundation="2">
+                    <div class="suit-hint">&diams;</div>
+                </div>
+                <div class="card-slot foundation-slot" data-foundation="3">
+                    <div class="suit-hint">&clubs;</div>
+                </div>
+            </div>
+
+            <!-- Tableau -->
+            <div id="tableau-area">
+                <div class="tableau-column" data-column="0"></div>
+                <div class="tableau-column" data-column="1"></div>
+                <div class="tableau-column" data-column="2"></div>
+                <div class="tableau-column" data-column="3"></div>
+                <div class="tableau-column" data-column="4"></div>
+                <div class="tableau-column" data-column="5"></div>
+                <div class="tableau-column" data-column="6"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Win overlay -->
+    <div id="win-overlay" class="hidden">
+        <div id="win-dialog">
+            <h2>You Win!</h2>
+            <p id="win-stats"></p>
+            <button id="win-new-game-btn">Play Again</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
