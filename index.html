@@ -161,7 +161,7 @@ footer nav{display:flex;gap:16px}
 </div>
 
 <div class="player" id="player" hidden role="dialog" aria-modal="true" aria-labelledby="pTitle">
-  <div class="pbar"><strong id="pTitle"></strong><div class="b"><button class="ib" id="fsBtn">Tam ekran</button><button class="ib" id="closeBtn">Kapat &#10005;</button></div></div>
+  <div class="pbar"><strong id="pTitle"></strong><div class="b"><button class="ib" id="closeBtn">Kapat &#10005;</button></div></div>
   <div class="stage" id="stage"></div>
 </div>
 
@@ -177,7 +177,7 @@ const GAMES=[
    obj:'<div class="sheet" style="transform:rotate(9deg)"><div class="sgrid n">'+"0101011111111110111000100".split("").map(v=>`<span class="${v==='1'?'on':''}"></span>`).join("")+'</div></div>'},
 ];
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-document.getElementById("felt").insertAdjacentHTML("beforeend",GAMES.map(g=>`<button class="spot ${g.pos}" data-play="${g.id}" aria-label="${g.title} oyna"><div class="obj">${g.obj}</div><span class="plaque">${g.title}<small>~${g.time}</small></span></button>`).join(""));
+document.getElementById("felt").insertAdjacentHTML("beforeend",GAMES.map(g=>`<button class="spot ${g.pos}" data-play="${g.id}" aria-label="${g.title} oyna"><div class="obj">${g.obj}</div><span class="plaque">${g.title}</span></button>`).join(""));
 
 const player=document.getElementById("player"),stage=document.getElementById("stage");
 function play(id){const g=GAMES.find(x=>x.id===id);if(!g)return;
@@ -188,7 +188,6 @@ function play(id){const g=GAMES.find(x=>x.id===id);if(!g)return;
 function closeP(){player.hidden=true;stage.innerHTML="";document.body.style.overflow=""}
 document.addEventListener("click",e=>{const p=e.target.closest("[data-play]");if(p)play(p.dataset.play)});
 document.getElementById("closeBtn").onclick=closeP;
-document.getElementById("fsBtn").onclick=()=>{const t=stage.querySelector("iframe")||stage;t.requestFullscreen&&t.requestFullscreen().catch(()=>{})};
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!player.hidden)closeP()});
 </script>
 </body>

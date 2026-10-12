@@ -1,76 +1,326 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nonogram - Picross Puzzle</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nonogram</title>
+<style>
+  :root{
+    --bg:#f6f4ef; --panel:#ffffff; --ink:#22201c; --muted:#8a857b;
+    --line:#dcd7cc; --thick:#5a554c; --fill:#2b2a33; --accent:#e2673a;
+    --done:#c4beb2; --hi:#fff1cc;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#18171b; --panel:#222127; --ink:#ece9e2; --muted:#8d8899;
+      --line:#3a3842; --thick:#9a95a6; --fill:#ece9e2; --accent:#f08a5d;
+      --done:#55525c; --hi:#3a3325;
+    }
+  }
+  /* ---------- TEMALAR ---------- */
+  html[data-theme="wood"]{
+    --bg:repeating-linear-gradient(90deg,#3b2a1e 0 22px,#43301f 22px 40px,#38281c 40px 64px);
+    --panel:#ecd6b0; --ink:#3a2414; --muted:#8a6a4a;
+    --line:#cfae80; --thick:#6b4423; --fill:linear-gradient(145deg,#7a4e2a,#55331a);
+    --accent:#b5562a; --done:#b89a74; --hi:#f6e3be; --xc:#9b6b43;
+    --font:Georgia,"Times New Roman",serif;
+    --glow:inset 0 0 0 1px rgba(0,0,0,.25),inset 0 -3px 4px rgba(0,0,0,.3); --radius:14px;
+    --title:#f3e2c2; --subc:#d7bf98;
+  }
+  html[data-theme="neon"]{
+    --bg:radial-gradient(circle at 30% 0%,#2a1460 0%,#0b0820 60%);
+    --panel:#140f33; --ink:#e6e1ff; --muted:#7d74b8;
+    --line:#2a2357; --thick:#7a5cff; --fill:linear-gradient(135deg,#ff3df0,#7a5cff);
+    --accent:#3df5ff; --done:#3b3470; --hi:#261d5c; --xc:#ff3df0;
+    --font:"Trebuchet MS",system-ui,sans-serif;
+    --glow:0 0 8px rgba(255,61,240,.6); --radius:16px;
+  }
+  html[data-theme="paper"]{
+    --bg:#e9e4d6; --panel:#fdfcf6; --ink:#2b3a67; --muted:#8c93ad;
+    --line:#c9d3ea; --thick:#2b3a67; --fill:#2b3a67;
+    --accent:#c0392b; --done:#b8bfd6; --hi:#eef2ff; --xc:#c0392b;
+    --font:"Segoe Print","Bradley Hand","Comic Sans MS",cursive;
+    --glow:none; --radius:2px;
+  }
+  /* -------------------------------- */
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--font, system-ui,-apple-system,"Segoe UI",Roboto,sans-serif);
+    display:flex;justify-content:center;height:100vh;overflow:hidden}
+  .app{width:100%;max-width:640px;padding:12px 16px 8px;display:flex;flex-direction:column;height:100%}
+  h1{font-size:22px;margin:0 0 2px;letter-spacing:.3px;color:var(--title,var(--ink))}
+  .sub{display:none}
+  .bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
+  select,button{font:inherit;font-size:14px;padding:8px 12px;border-radius:8px;
+    border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+  button:hover,select:hover{border-color:var(--thick)}
+  .mode{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .mode button{border:0;border-radius:0}
+  .mode button.on{background:var(--fill);color:var(--panel)}
+  .timer{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--subc,var(--muted));font-size:15px}
+
+  .stage{position:relative;display:flex;justify-content:center;flex:1;min-height:0;align-items:center}
+  .board{display:grid;grid-template-columns:auto auto;background:var(--panel);
+    padding:10px;border-radius:var(--radius,12px);box-shadow:0 1px 4px rgba(0,0,0,.08);
+    user-select:none;-webkit-user-select:none}
+  .cols{display:grid;padding:0 2px;align-items:end}
+  .rows{display:grid;padding:2px 0}
+  .clue{font-size:calc(var(--c) * .42);font-weight:650;font-variant-numeric:tabular-nums;
+    display:flex;transition:color .15s}
+  .clue.col{flex-direction:column;align-items:center;justify-content:flex-end;
+    line-height:1.2;padding-bottom:5px;height:100%}
+  .clue.row{align-items:center;justify-content:flex-end;gap:.5em;padding-right:7px}
+  .clue.done{color:var(--done)}
+  .clue.hi{background:var(--hi);border-radius:4px}
+
+  .cells{display:grid;border:2px solid var(--thick);touch-action:none}
+  .cell{width:var(--c);height:var(--c);border-right:1px solid var(--line);
+    border-bottom:1px solid var(--line);position:relative;cursor:pointer;background:var(--panel)}
+  .cell.br{border-right:2px solid var(--thick)}
+  .cell.bb{border-bottom:2px solid var(--thick)}
+  .cell.lastc{border-right:0}
+  .cell.lastr{border-bottom:0}
+  .cell.f{background:var(--fill);box-shadow:var(--glow,none);z-index:1}
+  .cell.x::after{content:"\00d7";position:absolute;inset:0;display:flex;align-items:center;
+    justify-content:center;color:var(--xc,var(--muted));font-size:calc(var(--c) * .7);line-height:1}
+
+  .win{position:absolute;inset:0;display:none;align-items:center;justify-content:center}
+  .win.show{display:flex}
+  .win .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:22px 26px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+  .win h2{margin:0 0 6px;font-size:22px;color:var(--accent)}
+  .win p{margin:0 0 14px;color:var(--muted)}
+  .help{display:none}
+</style>
 </head>
 <body>
-    <div id="game-container">
-        <header id="game-header">
-            <h1>Nonogram</h1>
-            <div id="controls">
-                <div id="controls-row-top">
-                    <div id="size-selector">
-                        <button class="size-btn active" data-size="5">5&times;5</button>
-                        <button class="size-btn" data-size="10">10&times;10</button>
-                        <button class="size-btn" data-size="15">15&times;15</button>
-                    </div>
-                    <button id="new-game-btn">New Game</button>
-                    <div id="lang-toggle" style="display:flex;gap:4px;align-items:center;margin-left:8px">
-                        <button class="lang-btn" data-lang="tr" style="padding:2px 7px;font:bold 11px/1.4 sans-serif;border:1px solid rgba(0,0,0,.2);border-radius:4px;cursor:pointer;background:rgba(0,0,0,.08);color:inherit;opacity:.6">TR</button>
-                        <button class="lang-btn" data-lang="en" style="padding:2px 7px;font:bold 11px/1.4 sans-serif;border:1px solid rgba(0,0,0,.2);border-radius:4px;cursor:pointer;background:rgba(0,0,0,.08);color:inherit;opacity:.6">EN</button>
-                    </div>
-                </div>
-                <div id="controls-row-bottom">
-                    <div id="timer-display">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        <span id="timer">00:00</span>
-                    </div>
-                    <div id="mistake-display">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                        <span id="mistakes">0 / 5</span>
-                    </div>
-                    <button id="undo-btn" title="Undo (Ctrl+Z)">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                        Undo
-                    </button>
-                </div>
-            </div>
-        </header>
+<div class="app">
+  <h1>Nonogram</h1>
+  <p class="sub">Kenardaki sayılar o satır/sütundaki dolu karelerin gruplarını gösterir. Tüm ipuçlarını sağlayınca bulmaca çözülür.</p>
 
-        <div id="board-wrapper">
-            <div id="board-area">
-                <!-- Corner spacer -->
-                <div id="corner-spacer"></div>
-                <!-- Column clues -->
-                <div id="col-clues"></div>
-                <!-- Row clues -->
-                <div id="row-clues"></div>
-                <!-- The grid -->
-                <div id="grid"></div>
-            </div>
-        </div>
-
-        <div id="win-overlay" class="hidden">
-            <div id="win-modal">
-                <h2>Puzzle Complete!</h2>
-                <p id="win-time"></p>
-                <p id="win-mistakes"></p>
-                <button id="win-new-game">Play Again</button>
-            </div>
-        </div>
-
-        <div id="game-over-overlay" class="hidden">
-            <div id="game-over-modal">
-                <h2>Game Over</h2>
-                <p>You made too many mistakes!</p>
-                <button id="game-over-new-game">Try Again</button>
-            </div>
-        </div>
+  <div class="bar">
+    <select id="size" aria-label="Boyut">
+      <option value="5">5 × 5</option>
+      <option value="10" selected>10 × 10</option>
+      <option value="15">15 × 15</option>
+    </select>
+    <div class="mode" role="group" aria-label="Mod">
+      <button id="mFill" class="on">■ Doldur</button>
+      <button id="mCross">× İşaretle</button>
     </div>
+    <select id="theme" aria-label="Tema">
+      <option value="classic">🎨 Klasik</option>
+      <option value="wood">🪵 Ahşap</option>
+      <option value="neon">✨ Neon</option>
+      <option value="paper">✏️ Kağıt</option>
+    </select>
+    <button id="newBtn">Yeni</button>
+    <button id="resetBtn">Sıfırla</button>
+    <span class="timer" id="timer">00:00</span>
+  </div>
 
-    <script src="game.js"></script>
+  <div class="stage">
+    <div class="board" id="board">
+      <div></div>
+      <div class="cols" id="cols"></div>
+      <div class="rows" id="rows"></div>
+      <div class="cells" id="cells"></div>
+    </div>
+    <div class="win" id="win">
+      <div class="card">
+        <h2>Tebrikler!</h2>
+        <p id="winText"></p>
+        <button id="winNew">Yeni bulmaca</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="help">Masaüstü: sol tık doldurur, sağ tık × koyar. Mobil: üstteki moddan seç. Basılı tutup sürükleyerek birden çok kareyi boyayabilirsin.</p>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const boardEl = $('board'), colsEl = $('cols'), rowsEl = $('rows'), cellsEl = $('cells');
+  const timerEl = $('timer'), winEl = $('win');
+
+  let n = 10, sol = [], grid = [], rowClues = [], colClues = [];
+  let cellEls = [], rowClueEls = [], colClueEls = [];
+  let mode = 1;            // 1 = doldur, 2 = çarpı
+  let drag = null, won = false;
+  let t0 = 0, timerId = null, hiR = -1, hiC = -1;
+
+  // Bir satırdaki dolu grupların uzunlukları
+  const runs = arr => {
+    const r = []; let c = 0;
+    for (const v of arr) { if (v === 1) c++; else if (c) { r.push(c); c = 0; } }
+    if (c) r.push(c);
+    return r.length ? r : [0];
+  };
+  const same = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
+  const col = (g, c) => g.map(row => row[c]);
+
+  function generate() {
+    const density = n === 5 ? 0.6 : 0.58;
+    sol = Array.from({length: n}, () => Array.from({length: n}, () => Math.random() < density ? 1 : 0));
+    rowClues = sol.map(runs);
+    colClues = sol[0].map((_, c) => runs(col(sol, c)));
+  }
+
+  function cellSize() {
+    const maxRow = Math.max(...rowClues.map(r => r.length));
+    const maxCol = Math.max(...colClues.map(r => r.length));
+    const availW = Math.min(window.innerWidth - 32, 608) - 24;
+    const cW = Math.floor(availW / (n + maxRow * 0.6 + 0.4));
+    const availH = window.innerHeight - 100;
+    const cH = Math.floor(availH / (n + maxCol * 1.2 + 0.4));
+    return Math.max(16, Math.min(44, cW, cH));
+  }
+
+  function build() {
+    grid = Array.from({length: n}, () => Array(n).fill(0));
+    won = false; winEl.classList.remove('show');
+    stopTimer(); t0 = 0; timerEl.textContent = '00:00';
+
+    boardEl.style.setProperty('--c', cellSize() + 'px');
+    colsEl.style.gridTemplateColumns = `repeat(${n}, var(--c))`;
+    rowsEl.style.gridTemplateRows = `repeat(${n}, var(--c))`;
+    cellsEl.style.gridTemplateColumns = `repeat(${n}, var(--c))`;
+
+    colsEl.innerHTML = rowsEl.innerHTML = cellsEl.innerHTML = '';
+    colClueEls = colClues.map(cl => {
+      const d = document.createElement('div');
+      d.className = 'clue col';
+      d.innerHTML = cl.map(v => `<span>${v}</span>`).join('');
+      colsEl.appendChild(d); return d;
+    });
+    rowClueEls = rowClues.map(cl => {
+      const d = document.createElement('div');
+      d.className = 'clue row';
+      d.innerHTML = cl.map(v => `<span>${v}</span>`).join('');
+      rowsEl.appendChild(d); return d;
+    });
+
+    cellEls = [];
+    for (let r = 0; r < n; r++) {
+      cellEls.push([]);
+      for (let c = 0; c < n; c++) {
+        const d = document.createElement('div');
+        d.className = 'cell';
+        if (c % 5 === 4 && c !== n - 1) d.classList.add('br');
+        if (r % 5 === 4 && r !== n - 1) d.classList.add('bb');
+        if (c === n - 1) d.classList.add('lastc');
+        if (r === n - 1) d.classList.add('lastr');
+        d.dataset.r = r; d.dataset.c = c;
+        cellsEl.appendChild(d);
+        cellEls[r].push(d);
+      }
+    }
+    for (let i = 0; i < n; i++) { updateRow(i); updateCol(i); }
+  }
+
+  function updateRow(r) { rowClueEls[r].classList.toggle('done', same(runs(grid[r]), rowClues[r])); }
+  function updateCol(c) { colClueEls[c].classList.toggle('done', same(runs(col(grid, c)), colClues[c])); }
+
+  function setCell(r, c, v) {
+    if (grid[r][c] === v) return;
+    grid[r][c] = v;
+    const el = cellEls[r][c];
+    el.classList.toggle('f', v === 1);
+    el.classList.toggle('x', v === 2);
+    updateRow(r); updateCol(c);
+  }
+
+  function checkWin() {
+    if (won) return;
+    const ok = grid.every((row, r) => same(runs(row), rowClues[r])) &&
+               grid[0].every((_, c) => same(runs(col(grid, c)), colClues[c]));
+    if (!ok) return;
+    won = true; stopTimer();
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (grid[r][c] === 2) setCell(r, c, 0);
+    $('winText').textContent = `${n}×${n} bulmacayı ${fmt(elapsed())} sürede çözdün.`;
+    setTimeout(() => winEl.classList.add('show'), 250);
+  }
+
+  // Zamanlayıcı
+  const elapsed = () => t0 ? Math.floor((Date.now() - t0) / 1000) : 0;
+  const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+  function startTimer() {
+    if (t0) return;
+    t0 = Date.now();
+    timerId = setInterval(() => timerEl.textContent = fmt(elapsed()), 500);
+  }
+  function stopTimer() { clearInterval(timerId); timerId = null; }
+
+  // Vurgulama
+  function highlight(r, c) {
+    if (hiR >= 0) rowClueEls[hiR]?.classList.remove('hi');
+    if (hiC >= 0) colClueEls[hiC]?.classList.remove('hi');
+    hiR = r; hiC = c;
+    if (r >= 0) rowClueEls[r].classList.add('hi');
+    if (c >= 0) colClueEls[c].classList.add('hi');
+  }
+
+  const cellAt = (x, y) => {
+    const el = document.elementFromPoint(x, y);
+    return el && el.classList.contains('cell') && cellsEl.contains(el) ? el : null;
+  };
+
+  // Etkileşim
+  cellsEl.addEventListener('pointerdown', e => {
+    if (won) return;
+    const el = e.target.closest('.cell'); if (!el) return;
+    e.preventDefault();
+    const r = +el.dataset.r, c = +el.dataset.c;
+    const m = e.button === 2 ? 2 : mode;
+    drag = { target: grid[r][c] === m ? 0 : m };
+    startTimer();
+    setCell(r, c, drag.target);
+    highlight(r, c);
+  });
+  window.addEventListener('pointermove', e => {
+    const el = cellAt(e.clientX, e.clientY);
+    if (!el) { if (!drag) highlight(-1, -1); return; }
+    const r = +el.dataset.r, c = +el.dataset.c;
+    if (r !== hiR || c !== hiC) highlight(r, c);
+    if (drag && !won) setCell(r, c, drag.target);
+  });
+  const endDrag = () => { if (drag) { drag = null; checkWin(); } };
+  window.addEventListener('pointerup', endDrag);
+  window.addEventListener('pointercancel', endDrag);
+  cellsEl.addEventListener('contextmenu', e => e.preventDefault());
+
+  // Kontroller
+  const setMode = m => {
+    mode = m;
+    $('mFill').classList.toggle('on', m === 1);
+    $('mCross').classList.toggle('on', m === 2);
+  };
+  $('mFill').onclick = () => setMode(1);
+  $('mCross').onclick = () => setMode(2);
+  const newGame = () => { n = +$('size').value; generate(); build(); };
+  $('newBtn').onclick = newGame;
+  $('winNew').onclick = newGame;
+  $('size').onchange = newGame;
+  $('resetBtn').onclick = build;
+  // Tema
+  const applyTheme = t => {
+    if (t === 'classic') delete document.documentElement.dataset.theme;
+    else document.documentElement.dataset.theme = t;
+    $('theme').value = t;
+    try { localStorage.setItem('nonogram-theme', t); } catch (e) {}
+  };
+  $('theme').onchange = e => applyTheme(e.target.value);
+  let saved = 'classic';
+  try { saved = localStorage.getItem('nonogram-theme') || 'classic';
+    if (!$('theme').querySelector(`option[value="${saved}"]`)) saved = 'classic'; } catch (e) {}
+  applyTheme(saved);
+
+  window.addEventListener('resize', () => boardEl.style.setProperty('--c', cellSize() + 'px'));
+
+  newGame();
+})();
+</script>
 </body>
 </html>
