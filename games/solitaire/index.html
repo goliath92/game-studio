@@ -8,6 +8,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .lang-toggle { display: inline-flex; gap: 2px; margin-left: 6px; vertical-align: middle; }
+        .lang-btn {
+            background: transparent; border: 1px solid rgba(255,255,255,.25);
+            color: rgba(255,255,255,.55); font-size: 11px; font-weight: 600;
+            padding: 2px 7px; border-radius: 4px; cursor: pointer;
+            font-family: inherit; line-height: 1.4; transition: all .15s;
+        }
+        .lang-btn:hover { border-color: rgba(255,255,255,.5); color: rgba(255,255,255,.85); }
+        .lang-btn--active {
+            background: rgba(255,255,255,.15); color: #fff;
+            border-color: rgba(255,255,255,.4);
+        }
+    </style>
 </head>
 <body>
     <div id="game-container">
@@ -20,6 +34,10 @@
             <div id="controls">
                 <button id="undo-btn" title="Undo last move">&#8630; Undo</button>
                 <button id="new-game-btn">New Game</button>
+                <div class="lang-toggle" role="group" aria-label="Language">
+                    <button class="lang-btn" data-lang="tr" type="button">TR</button>
+                    <button class="lang-btn" data-lang="en" type="button">EN</button>
+                </div>
                 <div class="skins" role="group" aria-label="Tema">
                     <span class="lbl">Tema</span>
                     <button class="sw" data-skin="cuha" title="Klasik çuha" aria-label="Klasik çuha" aria-pressed="true"></button>

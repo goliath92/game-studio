@@ -5,6 +5,75 @@
 (function () {
     'use strict';
 
+    // ── Language Support ──────────────────────────────────
+    var LANG = {
+        en: {
+            newGame: 'New Game', undo: 'Undo',
+            puzzleComplete: 'Puzzle Complete!', gameOver: 'Game Over',
+            tooManyMistakes: 'You made too many mistakes!',
+            playAgain: 'Play Again', tryAgain: 'Try Again',
+            time: 'Time', mistakes: 'Mistakes'
+        },
+        tr: {
+            newGame: 'Yeni Oyun', undo: 'Geri Al',
+            puzzleComplete: 'Bulmaca Tamamlandı!', gameOver: 'Oyun Bitti',
+            tooManyMistakes: 'Çok fazla hata yaptınız!',
+            playAgain: 'Tekrar Oyna', tryAgain: 'Tekrar Dene',
+            time: 'Süre', mistakes: 'Hatalar'
+        }
+    };
+
+    function getLang() {
+        try { return localStorage.getItem('lang') || 'tr'; } catch (_) { return 'tr'; }
+    }
+
+    function t(key) { return (LANG[getLang()] || LANG.tr)[key] || key; }
+
+    function setLang(lang) {
+        try { localStorage.setItem('lang', lang); } catch (_) {}
+        applyLang();
+    }
+
+    function applyLang() {
+        var lang = getLang();
+
+        // New Game button
+        var btn = document.getElementById('new-game-btn');
+        if (btn) btn.textContent = t('newGame');
+
+        // Undo button — preserve SVG, replace text node
+        var undoEl = document.getElementById('undo-btn');
+        if (undoEl) {
+            var nodes = undoEl.childNodes;
+            for (var i = nodes.length - 1; i >= 0; i--) {
+                if (nodes[i].nodeType === 3 && nodes[i].textContent.trim()) {
+                    nodes[i].textContent = '\n                        ' + t('undo') + '\n                    ';
+                    break;
+                }
+            }
+        }
+
+        // Win overlay
+        var winTitle = document.querySelector('#win-modal h2');
+        if (winTitle) winTitle.textContent = t('puzzleComplete');
+        var winBtn = document.getElementById('win-new-game');
+        if (winBtn) winBtn.textContent = t('playAgain');
+
+        // Game over overlay
+        var goTitle = document.querySelector('#game-over-modal h2');
+        if (goTitle) goTitle.textContent = t('gameOver');
+        var goMsg = document.querySelector('#game-over-modal p');
+        if (goMsg) goMsg.textContent = t('tooManyMistakes');
+        var goBtn = document.getElementById('game-over-new-game');
+        if (goBtn) goBtn.textContent = t('tryAgain');
+
+        // Lang toggle active state
+        document.querySelectorAll('.lang-btn').forEach(function (b) {
+            b.style.opacity = b.dataset.lang === lang ? '1' : '.6';
+            b.style.fontWeight = b.dataset.lang === lang ? 'bold' : 'normal';
+        });
+    }
+
     // ── State ──────────────────────────────────────────────
     let size = 5;                // current grid dimension
     let solution = [];           // 2-D boolean (true = filled)
@@ -667,8 +736,8 @@
             }
 
         setTimeout(() => {
-            winTime.textContent = `Time: ${formatTime(timerSeconds)}`;
-            winMistakes.textContent = `Mistakes: ${mistakes} / ${MAX_MISTAKES}`;
+            winTime.textContent = `${t('time')}: ${formatTime(timerSeconds)}`;
+            winMistakes.textContent = `${t('mistakes')}: ${mistakes} / ${MAX_MISTAKES}`;
             winOverlay.classList.remove('hidden');
         }, 600);
     }
@@ -895,7 +964,21 @@
         }, 150);
     });
 
+    // ── Language Toggle ─────────────────────────────────────
+    document.querySelectorAll('.lang-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            setLang(btn.dataset.lang);
+        });
+    });
+
+    window.addEventListener('message', function (e) {
+        if (e.data && e.data.type === 'lang') {
+            setLang(e.data.lang);
+        }
+    });
+
     // ── Init ───────────────────────────────────────────────
+    applyLang();
     newGame();
 
 })();

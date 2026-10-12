@@ -4,6 +4,105 @@
 (() => {
   "use strict";
 
+  /* ---------- language support ---------- */
+  const LANG = {
+    en: {
+      easy: 'Easy', medium: 'Medium', hard: 'Hard',
+      newGame: 'New Game',
+      undo: 'Undo', erase: 'Erase', notes: 'Notes', check: 'Check', auto: 'Auto',
+      statusHint: 'Arrow keys to navigate · 1-9 to fill · N for notes',
+      congrats: 'Congratulations!', solved: 'You solved the puzzle!',
+      difficulty: 'Difficulty', playAgain: 'Play Again',
+      themeGazete: 'Newspaper', themeKlasik: 'Classic', themeNeon: 'Neon', themePastel: 'Pastel'
+    },
+    tr: {
+      easy: 'Kolay', medium: 'Orta', hard: 'Zor',
+      newGame: 'Yeni Oyun',
+      undo: 'Geri Al', erase: 'Sil', notes: 'Notlar', check: 'Kontrol', auto: 'Otomatik',
+      statusHint: 'Ok tuşlarıyla gezin · 1-9 ile doldurun · N ile not alın',
+      congrats: 'Tebrikler!', solved: 'Bulmacayı çözdünüz!',
+      difficulty: 'Zorluk', playAgain: 'Tekrar Oyna',
+      themeGazete: 'Gazete', themeKlasik: 'Klasik', themeNeon: 'Neon', themePastel: 'Pastel'
+    }
+  };
+
+  function getLang() {
+    try { return localStorage.getItem('lang') || 'tr'; } catch (_) { return 'tr'; }
+  }
+
+  function t(key) { return (LANG[getLang()] || LANG.tr)[key] || key; }
+
+  function setLang(lang) {
+    try { localStorage.setItem('lang', lang); } catch (_) {}
+    applyLang();
+  }
+
+  function setBtnTextAfterSVG(btn, text) {
+    // Preserves SVG children, replaces the trailing text node
+    var nodes = btn.childNodes;
+    for (var i = nodes.length - 1; i >= 0; i--) {
+      if (nodes[i].nodeType === 3 && nodes[i].textContent.trim()) {
+        nodes[i].textContent = '\n        ' + text + '\n      ';
+        return;
+      }
+    }
+    btn.appendChild(document.createTextNode(' ' + text));
+  }
+
+  function applyLang() {
+    var lang = getLang();
+
+    // Select options
+    var sel = document.getElementById('select-diff');
+    if (sel) {
+      sel.options[0].textContent = t('easy');
+      sel.options[1].textContent = t('medium');
+      sel.options[2].textContent = t('hard');
+    }
+
+    // New Game button
+    var btnNew = document.getElementById('btn-new');
+    if (btnNew) btnNew.textContent = t('newGame');
+
+    // Action buttons (have SVGs)
+    setBtnTextAfterSVG(document.getElementById('btn-undo'), t('undo'));
+    setBtnTextAfterSVG(document.getElementById('btn-erase'), t('erase'));
+    setBtnTextAfterSVG(document.getElementById('btn-notes'), t('notes'));
+    setBtnTextAfterSVG(document.getElementById('btn-check'), t('check'));
+    setBtnTextAfterSVG(document.getElementById('btn-autocheck'), t('auto'));
+
+    // Status bar
+    var statusBar = document.querySelector('.status-bar span');
+    if (statusBar) statusBar.textContent = t('statusHint');
+
+    // Overlay
+    var overlayTitle = document.querySelector('.overlay-content h2');
+    if (overlayTitle) overlayTitle.textContent = t('congrats');
+    var overlaySubtitle = document.querySelector('.overlay-content p:first-of-type');
+    if (overlaySubtitle && overlaySubtitle.id !== 'overlay-msg') overlaySubtitle.textContent = t('solved');
+
+    // Play again button
+    var btnPlayAgain = document.getElementById('btn-play-again');
+    if (btnPlayAgain) btnPlayAgain.textContent = t('playAgain');
+
+    // Theme button names
+    var themeNameMap = { gazete: 'themeGazete', klasik: 'themeKlasik', neon: 'themeNeon', pastel: 'themePastel' };
+    document.querySelectorAll('#themes button[data-t]').forEach(function (b) {
+      var key = themeNameMap[b.dataset.t];
+      if (key) {
+        var sw = b.querySelector('.sw');
+        var swHTML = sw ? sw.outerHTML : '';
+        b.innerHTML = swHTML + t(key);
+      }
+    });
+
+    // Lang toggle active state
+    document.querySelectorAll('.lang-btn').forEach(function (b) {
+      b.style.opacity = b.dataset.lang === lang ? '1' : '.6';
+      b.style.fontWeight = b.dataset.lang === lang ? 'bold' : 'normal';
+    });
+  }
+
   /* ---------- constants ---------- */
   const BOARD = 9;
   const BOX   = 3;
@@ -499,8 +598,15 @@
   }
 
   function showOverlay() {
-    const diffLabel = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
-    overlayMsg.textContent = `Difficulty: ${diffLabel}  |  Time: ${timerEl.textContent}`;
+    const diffLabel = t(difficulty);
+    overlayMsg.textContent = `${t('difficulty')}: ${diffLabel}  |  Time: ${timerEl.textContent}`;
+    // Also update overlay title/subtitle in case lang changed
+    var overlayTitle = document.querySelector('.overlay-content h2');
+    if (overlayTitle) overlayTitle.textContent = t('congrats');
+    var overlaySubtitle = document.querySelector('.overlay-content p:first-of-type');
+    if (overlaySubtitle && overlaySubtitle.id !== 'overlay-msg') overlaySubtitle.textContent = t('solved');
+    var btnPlayAgain = document.getElementById('btn-play-again');
+    if (btnPlayAgain) btnPlayAgain.textContent = t('playAgain');
     overlayEl.classList.add("visible");
   }
 
@@ -640,6 +746,21 @@
       }
     }
     window.addEventListener('resize', sizeGrid);
+
+    // Language toggle
+    document.querySelectorAll('.lang-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        setLang(btn.dataset.lang);
+      });
+    });
+
+    window.addEventListener('message', function (e) {
+      if (e.data && e.data.type === 'lang') {
+        setLang(e.data.lang);
+      }
+    });
+
+    applyLang();
 
     // Start — sizeGrid must run AFTER numpad/actions are in the DOM
     startNewGame("easy");
