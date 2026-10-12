@@ -26,6 +26,88 @@
   let overlay    = null;   // mobile overlay element (created lazily)
 
   /* -------------------------------------------------------
+     Internationalization (i18n)
+     ------------------------------------------------------- */
+  var i18n = {
+    en: {
+      home: 'Home',
+      library: 'Library',
+      cardGame: 'Card Game',
+      tileMatching: 'Tile Matching',
+      numberPuzzle: 'Number Puzzle',
+      logicPuzzle: 'Logic Puzzle',
+      gameCount: '4 games',
+      welcomeTitle: 'Welcome to <strong>Game Studio</strong>',
+      welcomeSub: 'Pick a game from the library or choose one below to start playing.',
+      solitaireDesc: 'The timeless card game. Stack, sort, and clear the tableau.',
+      mahjongDesc: 'Match tiles and clear the board in this classic puzzle.',
+      sudokuDesc: 'Fill the grid so every row, column, and box has 1-9.',
+      nonogramDesc: 'Reveal hidden pictures using number clues on each axis.',
+      playNow: 'Play Now',
+      loading: 'Loading game…'
+    },
+    tr: {
+      home: 'Ana Sayfa',
+      library: 'Kütüphane',
+      cardGame: 'Kart Oyunu',
+      tileMatching: 'Taş Eşleştirme',
+      numberPuzzle: 'Sayı Bulmacası',
+      logicPuzzle: 'Mantık Bulmacası',
+      gameCount: '4 oyun',
+      welcomeTitle: '<strong>Game Studio</strong>\'ya Hoş Geldiniz',
+      welcomeSub: 'Kütüphaneden bir oyun seçin veya aşağıdan birini seçerek oynamaya başlayın.',
+      solitaireDesc: 'Zamansız kart oyunu. İstifle, sırala ve masayı temizle.',
+      mahjongDesc: 'Taşları eşleştir ve tahtayı temizle.',
+      sudokuDesc: 'Her satır, sütun ve kutu 1-9 içerecek şekilde ızgarayı doldur.',
+      nonogramDesc: 'Sayı ipuçlarını kullanarak gizli resimleri ortaya çıkar.',
+      playNow: 'Oyna',
+      loading: 'Oyun yükleniyor…'
+    }
+  };
+
+  function currentLang() {
+    try { return localStorage.getItem('lang') || 'tr'; } catch (e) { return 'tr'; }
+  }
+
+  function applyLang(lang) {
+    if (!lang) lang = currentLang();
+    var t = i18n[lang] || i18n.tr;
+
+    // Update all elements with data-i18n (textContent)
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      if (t[key] !== undefined) el.textContent = t[key];
+    });
+
+    // Update all elements with data-i18n-html (innerHTML — for tags like <strong>)
+    document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-html');
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+
+    // Update lang toggle button styles
+    document.querySelectorAll('.lang-btn').forEach(function (btn) {
+      btn.classList.toggle('lang-btn--active', btn.dataset.lang === lang);
+    });
+
+    // Notify iframe game of language change
+    if (gameIframe && gameIframe.contentWindow && activeGame) {
+      try {
+        gameIframe.contentWindow.postMessage({ type: 'lang', lang: lang }, '*');
+      } catch (e) {}
+    }
+  }
+
+  // Language toggle click handler
+  document.querySelectorAll('.lang-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var lang = btn.dataset.lang;
+      try { localStorage.setItem('lang', lang); } catch (e) {}
+      applyLang(lang);
+    });
+  });
+
+  /* -------------------------------------------------------
      Game registry — easy to extend later
      ------------------------------------------------------- */
   const GAMES = {
@@ -111,6 +193,11 @@
     if (!gameIframe.src || gameIframe.src === 'about:blank') return;
     frameLoader.hidden = true;
     gameIframe.classList.add('game-frame__iframe--loaded');
+
+    // Send current language to the loaded game
+    try {
+      gameIframe.contentWindow.postMessage({ type: 'lang', lang: currentLang() }, '*');
+    } catch (e) {}
   });
 
   /* -------------------------------------------------------
@@ -209,6 +296,8 @@
      Init: check URL params on first load
      ------------------------------------------------------- */
   function init() {
+    applyLang();
+
     var params = new URLSearchParams(window.location.search);
     var gameSlug = params.get('game');
 

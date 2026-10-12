@@ -42,6 +42,107 @@
     const winNewGameBtn = document.getElementById('win-new-game-btn');
 
     // ================================================
+    //  Internationalization (i18n)
+    // ================================================
+
+    var i18n = {
+        en: {
+            moves: 'Moves',
+            time: 'Time',
+            undo: '↶ Undo',
+            newGame: 'New Game',
+            theme: 'Theme',
+            stock: 'Stock',
+            waste: 'Waste',
+            youWin: 'You Win!',
+            playAgain: 'Play Again',
+            completed: 'Completed in <strong>{moves}</strong> moves<br>Time: <strong>{time}</strong>'
+        },
+        tr: {
+            moves: 'Hamle',
+            time: 'Süre',
+            undo: '↶ Geri Al',
+            newGame: 'Yeni Oyun',
+            theme: 'Tema',
+            stock: 'Deste',
+            waste: 'Açık',
+            youWin: 'Kazandınız!',
+            playAgain: 'Tekrar Oyna',
+            completed: '<strong>{moves}</strong> hamlede tamamlandı<br>Süre: <strong>{time}</strong>'
+        }
+    };
+
+    function currentLang() {
+        try { return localStorage.getItem('lang') || 'tr'; } catch (e) { return 'tr'; }
+    }
+
+    function t(key) {
+        var lang = currentLang();
+        var dict = i18n[lang] || i18n.tr;
+        return dict[key] || key;
+    }
+
+    function applyLang(lang) {
+        if (!lang) lang = currentLang();
+        var dict = i18n[lang] || i18n.tr;
+
+        // Update button texts
+        undoBtn.textContent = dict.undo;
+        newGameBtn.textContent = dict.newGame;
+
+        // Update slot labels
+        var stockLabel = stockEl.querySelector('.slot-label');
+        var wasteLabel = wasteEl.querySelector('.slot-label');
+        if (stockLabel) stockLabel.textContent = dict.stock;
+        if (wasteLabel) wasteLabel.textContent = dict.waste;
+
+        // Update theme label
+        var themeLabel = document.querySelector('.skins .lbl');
+        if (themeLabel) themeLabel.textContent = dict.theme;
+
+        // Update stats
+        updateMoveCounter();
+        updateTimer();
+
+        // Update win overlay if visible
+        var winHeading = winOverlay.querySelector('h2');
+        if (winHeading) winHeading.textContent = dict.youWin;
+        winNewGameBtn.textContent = dict.playAgain;
+
+        // If the win overlay is shown, re-render the stats too
+        if (!winOverlay.classList.contains('hidden')) {
+            var mins = Math.floor(timerSeconds / 60);
+            var secs = timerSeconds % 60;
+            var timeStr = mins + ':' + (secs < 10 ? '0' : '') + secs;
+            winStats.innerHTML = dict.completed
+                .replace('{moves}', moveCount)
+                .replace('{time}', timeStr);
+        }
+
+        // Update lang toggle button styles
+        document.querySelectorAll('.lang-btn').forEach(function (btn) {
+            btn.classList.toggle('lang-btn--active', btn.dataset.lang === lang);
+        });
+    }
+
+    // Language toggle click handler
+    document.querySelectorAll('.lang-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var lang = btn.dataset.lang;
+            try { localStorage.setItem('lang', lang); } catch (e) {}
+            applyLang(lang);
+        });
+    });
+
+    // Listen for language change from parent dashboard
+    window.addEventListener('message', function (e) {
+        if (e.data && e.data.type === 'lang') {
+            try { localStorage.setItem('lang', e.data.lang); } catch (ex) {}
+            applyLang(e.data.lang);
+        }
+    });
+
+    // ================================================
     //  Deck Creation & Shuffle (Fisher-Yates)
     // ================================================
 
@@ -336,11 +437,11 @@
     function updateTimer() {
         var mins = Math.floor(timerSeconds / 60);
         var secs = timerSeconds % 60;
-        timerEl.textContent = 'Time: ' + mins + ':' + (secs < 10 ? '0' : '') + secs;
+        timerEl.textContent = t('time') + ': ' + mins + ':' + (secs < 10 ? '0' : '') + secs;
     }
 
     function updateMoveCounter() {
-        moveCounterEl.textContent = 'Moves: ' + moveCount;
+        moveCounterEl.textContent = t('moves') + ': ' + moveCount;
     }
 
     function updateUndoBtn() {
@@ -575,9 +676,13 @@
             clearInterval(timerInterval);
             var mins = Math.floor(timerSeconds / 60);
             var secs = timerSeconds % 60;
-            winStats.innerHTML =
-                'Completed in <strong>' + moveCount + '</strong> moves<br>' +
-                'Time: <strong>' + mins + ':' + (secs < 10 ? '0' : '') + secs + '</strong>';
+            var timeStr = mins + ':' + (secs < 10 ? '0' : '') + secs;
+            var dict = i18n[currentLang()] || i18n.tr;
+            winOverlay.querySelector('h2').textContent = dict.youWin;
+            winNewGameBtn.textContent = dict.playAgain;
+            winStats.innerHTML = dict.completed
+                .replace('{moves}', moveCount)
+                .replace('{time}', timeStr);
             winOverlay.classList.remove('hidden');
             spawnConfetti();
         }
@@ -1010,5 +1115,6 @@
     // ================================================
 
     newGame();
+    applyLang();
 
 })();

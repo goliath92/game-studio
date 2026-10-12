@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Game Studio</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .lang-toggle { display: inline-flex; gap: 2px; margin-left: 8px; }
+    .lang-btn {
+      background: transparent; border: 1px solid rgba(255,255,255,.25);
+      color: rgba(255,255,255,.6); font-size: 11px; font-weight: 600;
+      padding: 2px 7px; border-radius: 4px; cursor: pointer;
+      font-family: inherit; line-height: 1.4; transition: all .15s;
+    }
+    .lang-btn:hover { border-color: rgba(255,255,255,.5); color: rgba(255,255,255,.85); }
+    .lang-btn--active {
+      background: rgba(255,255,255,.15); color: #fff;
+      border-color: rgba(255,255,255,.4);
+    }
+  </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -24,8 +38,12 @@
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
           <polyline points="9 22 9 12 15 12 15 22"/>
         </svg>
-        <span>Home</span>
+        <span data-i18n="home">Home</span>
       </button>
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button class="lang-btn" data-lang="tr" type="button">TR</button>
+        <button class="lang-btn" data-lang="en" type="button">EN</button>
+      </div>
     </nav>
   </header>
 
@@ -35,7 +53,7 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar__header">
-        <h2 class="sidebar__title">Library</h2>
+        <h2 class="sidebar__title" data-i18n="library">Library</h2>
       </div>
 
       <ul class="sidebar__list" id="gameList" role="list">
@@ -44,7 +62,7 @@
             <span class="game-card__icon" aria-hidden="true">&#9824;</span>
             <div class="game-card__info">
               <span class="game-card__name">Solitaire</span>
-              <span class="game-card__genre">Card Game</span>
+              <span class="game-card__genre" data-i18n="cardGame">Card Game</span>
             </div>
             <span class="game-card__arrow" aria-hidden="true">&#x203A;</span>
           </button>
@@ -54,7 +72,7 @@
             <span class="game-card__icon" aria-hidden="true">&#x1F004;</span>
             <div class="game-card__info">
               <span class="game-card__name">Mahjong</span>
-              <span class="game-card__genre">Tile Matching</span>
+              <span class="game-card__genre" data-i18n="tileMatching">Tile Matching</span>
             </div>
             <span class="game-card__arrow" aria-hidden="true">&#x203A;</span>
           </button>
@@ -64,7 +82,7 @@
             <span class="game-card__icon" aria-hidden="true">&#x1F522;</span>
             <div class="game-card__info">
               <span class="game-card__name">Sudoku</span>
-              <span class="game-card__genre">Number Puzzle</span>
+              <span class="game-card__genre" data-i18n="numberPuzzle">Number Puzzle</span>
             </div>
             <span class="game-card__arrow" aria-hidden="true">&#x203A;</span>
           </button>
@@ -74,7 +92,7 @@
             <span class="game-card__icon" aria-hidden="true">&#x25A6;</span>
             <div class="game-card__info">
               <span class="game-card__name">Nonogram</span>
-              <span class="game-card__genre">Logic Puzzle</span>
+              <span class="game-card__genre" data-i18n="logicPuzzle">Logic Puzzle</span>
             </div>
             <span class="game-card__arrow" aria-hidden="true">&#x203A;</span>
           </button>
@@ -82,7 +100,7 @@
       </ul>
 
       <div class="sidebar__footer">
-        <span class="sidebar__count">4 games</span>
+        <span class="sidebar__count" data-i18n="gameCount">4 games</span>
       </div>
     </aside>
 
@@ -92,37 +110,37 @@
       <!-- Welcome Screen (shown when no game is selected) -->
       <section class="welcome" id="welcomeScreen">
         <div class="welcome__hero">
-          <h2 class="welcome__heading">Welcome to <strong>Game Studio</strong></h2>
-          <p class="welcome__sub">Pick a game from the library or choose one below to start playing.</p>
+          <h2 class="welcome__heading" data-i18n-html="welcomeTitle">Welcome to <strong>Game Studio</strong></h2>
+          <p class="welcome__sub" data-i18n="welcomeSub">Pick a game from the library or choose one below to start playing.</p>
         </div>
 
         <div class="welcome__grid">
           <button class="welcome__card" data-game="solitaire" type="button">
             <span class="welcome__card-icon" aria-hidden="true">&#9824;</span>
             <h3 class="welcome__card-title">Solitaire</h3>
-            <p class="welcome__card-desc">The timeless card game. Stack, sort, and clear the tableau.</p>
-            <span class="welcome__card-cta">Play Now</span>
+            <p class="welcome__card-desc" data-i18n="solitaireDesc">The timeless card game. Stack, sort, and clear the tableau.</p>
+            <span class="welcome__card-cta" data-i18n="playNow">Play Now</span>
           </button>
 
           <button class="welcome__card" data-game="mahjong" type="button">
             <span class="welcome__card-icon" aria-hidden="true">&#x1F004;</span>
             <h3 class="welcome__card-title">Mahjong</h3>
-            <p class="welcome__card-desc">Match tiles and clear the board in this classic puzzle.</p>
-            <span class="welcome__card-cta">Play Now</span>
+            <p class="welcome__card-desc" data-i18n="mahjongDesc">Match tiles and clear the board in this classic puzzle.</p>
+            <span class="welcome__card-cta" data-i18n="playNow">Play Now</span>
           </button>
 
           <button class="welcome__card" data-game="sudoku" type="button">
             <span class="welcome__card-icon" aria-hidden="true">&#x1F522;</span>
             <h3 class="welcome__card-title">Sudoku</h3>
-            <p class="welcome__card-desc">Fill the grid so every row, column, and box has 1-9.</p>
-            <span class="welcome__card-cta">Play Now</span>
+            <p class="welcome__card-desc" data-i18n="sudokuDesc">Fill the grid so every row, column, and box has 1-9.</p>
+            <span class="welcome__card-cta" data-i18n="playNow">Play Now</span>
           </button>
 
           <button class="welcome__card" data-game="nonogram" type="button">
             <span class="welcome__card-icon" aria-hidden="true">&#x25A6;</span>
             <h3 class="welcome__card-title">Nonogram</h3>
-            <p class="welcome__card-desc">Reveal hidden pictures using number clues on each axis.</p>
-            <span class="welcome__card-cta">Play Now</span>
+            <p class="welcome__card-desc" data-i18n="nonogramDesc">Reveal hidden pictures using number clues on each axis.</p>
+            <span class="welcome__card-cta" data-i18n="playNow">Play Now</span>
           </button>
         </div>
       </section>
@@ -131,7 +149,7 @@
       <div class="game-frame" id="gameFrame" hidden>
         <div class="game-frame__loader" id="frameLoader">
           <div class="spinner"></div>
-          <span>Loading game&hellip;</span>
+          <span data-i18n="loading">Loading game&hellip;</span>
         </div>
         <iframe
           class="game-frame__iframe"

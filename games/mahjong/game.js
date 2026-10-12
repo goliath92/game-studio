@@ -5,6 +5,90 @@
 (function () {
     'use strict';
 
+    // ── Language Support ──────────────────────────
+    const LANG = {
+        en: {
+            moves: 'MOVES', timer: 'TIMER', tiles: 'TILES',
+            hint: 'HINT', shuffle: 'SHUFFLE', newGame: 'NEW GAME',
+            theme: 'THEME', table: 'TABLE',
+            youWin: 'You Win!', noMoreMoves: 'No More Moves',
+            congrats: 'Congratulations! You cleared all the tiles!',
+            noMatches: 'No valid matches remain. Try a new game!',
+            shuffling: 'No valid moves - shuffling...',
+            noMoves: 'No valid moves available!',
+            movesLabel: 'Moves', timeLabel: 'Time', tilesLeft: 'Tiles Left'
+        },
+        tr: {
+            moves: 'HAMLE', timer: 'SÜRE', tiles: 'TAŞ',
+            hint: 'İPUCU', shuffle: 'KARIŞTIR', newGame: 'YENİ OYUN',
+            theme: 'TEMA', table: 'MASA',
+            youWin: 'Kazandınız!', noMoreMoves: 'Hamle Kalmadı',
+            congrats: 'Tebrikler! Tüm taşları temizlediniz!',
+            noMatches: 'Geçerli eşleşme kalmadı. Yeni oyun deneyin!',
+            shuffling: 'Hamle yok - karıştırılıyor...',
+            noMoves: 'Geçerli hamle yok!',
+            movesLabel: 'Hamle', timeLabel: 'Süre', tilesLeft: 'Kalan Taş'
+        }
+    };
+
+    function getLang() {
+        try { return localStorage.getItem('lang') || 'tr'; } catch (_) { return 'tr'; }
+    }
+
+    function t(key) { return (LANG[getLang()] || LANG.tr)[key] || key; }
+
+    function setLang(lang) {
+        try { localStorage.setItem('lang', lang); } catch (_) {}
+        applyLang();
+    }
+
+    function setBtnTextAfterGlyph(btn, text) {
+        // Preserves the glyph <span> and replaces the text node after it
+        var nodes = btn.childNodes;
+        for (var i = nodes.length - 1; i >= 0; i--) {
+            if (nodes[i].nodeType === 3) { // text node
+                nodes[i].textContent = text;
+                return;
+            }
+        }
+        btn.appendChild(document.createTextNode(text));
+    }
+
+    function applyLang() {
+        var lang = getLang();
+        // Labels
+        var labels = document.querySelectorAll('.mj-label');
+        var labelMap = {
+            'MOVES': t('moves'), 'HAMLE': t('moves'),
+            'TIMER': t('timer'), 'SÜRE': t('timer'),
+            'TILES': t('tiles'), 'TAŞ': t('tiles'),
+            'THEME': t('theme'), 'TEMA': t('theme'),
+            'MASA': t('table'), 'TABLE': t('table'),
+            'Moves': t('movesLabel'), 'Hamle': t('movesLabel'),
+            'Time': t('timeLabel'), 'Süre': t('timeLabel'),
+            'Tiles Left': t('tilesLeft'), 'Kalan Taş': t('tilesLeft')
+        };
+        labels.forEach(function (lbl) {
+            var key = lbl.textContent.trim();
+            if (labelMap[key]) lbl.textContent = labelMap[key];
+        });
+
+        // Buttons with glyphs
+        setBtnTextAfterGlyph(document.getElementById('btn-hint'), t('hint'));
+        setBtnTextAfterGlyph(document.getElementById('btn-shuffle'), t('shuffle'));
+        setBtnTextAfterGlyph(document.getElementById('btn-new-game'), t('newGame'));
+
+        // Overlay button
+        var oBtn = document.getElementById('overlay-btn');
+        oBtn.textContent = t('newGame');
+
+        // Lang toggle active state
+        document.querySelectorAll('.lang-btn').forEach(function (b) {
+            b.style.opacity = b.dataset.lang === lang ? '1' : '.6';
+            b.style.fontWeight = b.dataset.lang === lang ? 'bold' : 'normal';
+        });
+    }
+
     // ── Tile Definitions & Face Rendering ─────────
     const NUM = ['一','二','三','四','五','六','七','八','九'];
     const ROWS = {1:[1],2:[1,1],3:[1,1,1],4:[2,2],5:[2,1,2],6:[2,2,2],7:[3,2,2],8:[3,2,3],9:[3,3,3]};
@@ -424,7 +508,7 @@
         // If no match exists from the start, shuffle once
         setTimeout(() => {
             if (S.active && !findMatch()) {
-                showToast('No valid moves - shuffling...');
+                showToast(t('shuffling'));
                 setTimeout(shuffleTiles, 600);
             }
         }, 400);
@@ -496,7 +580,7 @@
             pair[1].el.classList.add('hint');
             setTimeout(clearHints, 3000);
         } else {
-            showToast('No valid moves available!');
+            showToast(t('noMoves'));
         }
     }
 
@@ -583,15 +667,13 @@
         S.active = false;
         stopTimer();
 
-        dom.oTitle.textContent = won ? 'You Win!' : 'No More Moves';
-        dom.oMsg.textContent   = won
-            ? 'Congratulations! You cleared all the tiles!'
-            : 'No valid matches remain. Try a new game!';
+        dom.oTitle.textContent = won ? t('youWin') : t('noMoreMoves');
+        dom.oMsg.textContent   = won ? t('congrats') : t('noMatches');
 
         dom.oStats.innerHTML =
-            `<div class="stat"><span class="mj-label">Moves</span><span class="mj-value">${S.moves}</span></div>` +
-            `<div class="stat"><span class="mj-label">Time</span><span class="mj-value">${dom.timer.textContent}</span></div>` +
-            `<div class="stat"><span class="mj-label">Tiles Left</span><span class="mj-value">${S.remaining}</span></div>`;
+            `<div class="stat"><span class="mj-label">${t('movesLabel')}</span><span class="mj-value">${S.moves}</span></div>` +
+            `<div class="stat"><span class="mj-label">${t('timeLabel')}</span><span class="mj-value">${dom.timer.textContent}</span></div>` +
+            `<div class="stat"><span class="mj-label">${t('tilesLeft')}</span><span class="mj-value">${S.remaining}</span></div>`;
 
         dom.overlay.classList.remove('hidden');
     }
@@ -667,6 +749,20 @@
         markActive();
     })();
 
+    // ── Language Toggle ─────────────────────────────
+    document.querySelectorAll('.lang-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            setLang(btn.dataset.lang);
+        });
+    });
+
+    window.addEventListener('message', function (e) {
+        if (e.data && e.data.type === 'lang') {
+            setLang(e.data.lang);
+        }
+    });
+
     // ── Start ──────────────────────────────────────
+    applyLang();
     newGame();
 })();
