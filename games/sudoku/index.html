@@ -1,88 +1,1841 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="gazete">
+<html lang="tr" data-theme="kahvehane">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Sudoku</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@500;700&family=Orbitron:wght@500;700&family=Playfair+Display:ital,wght@0,700;1,700&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Sudoku</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Young+Serif&family=Nunito:wght@500;700&family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+<script>(function(){var t=localStorage.getItem('sudoku-theme-v1');if(t==='klasik'){t='kahvehane';localStorage.setItem('sudoku-theme-v1','kahvehane')}if(t){document.documentElement.setAttribute('data-theme',t);if(t==='pastel')document.documentElement.classList.add('tiles')}})()</script>
+<style>
+/* ===================== THEME TOKENS ===================== */
+:root,html[data-theme=kahvehane]{
+  --bg:radial-gradient(ellipse at 50% 30%,#6a2535 0%,#4a1525 45%,#2a0a15 100%);
+  --panel:#4a1a2a;--ink:#f0e0cc;--muted:#b09880;--line:#d4c5a9;--thick:#3a2515;
+  --accent:#c5a35a;--accentInk:#1a0e08;--sel:#e8d5a0;--peer:#ede6d0;--same:#dcc87a;
+  --err:#d93a3a;--errbg:#f5d5d0;--user:#5c3a1e;--given:#2c1810;
+  --onbg:#c0a888;--onbgStrong:#f0e0cc;--cellbg:transparent;--boardbg:#f5f0e1;
+  --font:'Manrope',system-ui,-apple-system,sans-serif;--numfont:'Young Serif',Georgia,serif;
+  --r:8px;--boardr:4px;--cellr:0px;
+}
+
+html[data-theme=gazete]{
+  --bg:#ece5d3;--panel:#f7f2e4;--ink:#161412;--muted:#5d5545;--line:#b8ad95;--thick:#161412;
+  --accent:#161412;--accentInk:#f7f2e4;--sel:#e0d3ad;--peer:#eee6d0;--same:#d6c48f;
+  --err:#9e1b14;--errbg:#f0d6cc;--user:#6b4a12;--given:#161412;
+  --onbg:#5d5545;--onbgStrong:#161412;--cellbg:transparent;--boardbg:#f7f2e4;
+  --font:'Manrope',system-ui,sans-serif;--numfont:'Young Serif',Georgia,serif;
+  --r:2px;--boardr:0px;--cellr:0px;
+}
+
+html[data-theme=neon]{
+  --bg:radial-gradient(ellipse at 50% -10%,#3a1466 0%,#120828 45%,#07040f 100%);
+  --panel:#140b29;--ink:#ece6ff;--muted:#8d84b5;--line:#2c2254;--thick:#ff3cac;
+  --accent:#00e5ff;--accentInk:#07131a;--sel:#3a1d6e;--peer:#1c1238;--same:#4a2380;
+  --err:#ff4d6d;--errbg:#3d0f2c;--user:#00e5ff;--given:#ffffff;
+  --onbg:#8d84b5;--onbgStrong:#ece6ff;--cellbg:transparent;--boardbg:#140b29;
+  --font:'Manrope',system-ui,sans-serif;--numfont:'Young Serif',system-ui,sans-serif;
+  --r:8px;--boardr:4px;--cellr:0px;
+}
+
+html[data-theme=pastel]{
+  --bg:linear-gradient(160deg,#fff1ec 0%,#f1ecff 100%);
+  --panel:#fff;--ink:#3d3551;--muted:#9a90ad;--line:#eadff0;--thick:#c9b8e8;
+  --accent:#ff7fa3;--accentInk:#fff;--sel:#ffd3df;--peer:#f7f0fd;--same:#ffe7a8;
+  --err:#e5486f;--errbg:#ffe1e8;--user:#7a68f0;--given:#3d3551;
+  --onbg:#9a90ad;--onbgStrong:#3d3551;--cellbg:#fff;--boardbg:#efe4fb;
+  --font:'Nunito',system-ui,sans-serif;--numfont:'Fredoka','Nunito',sans-serif;
+  --r:16px;--boardr:20px;--cellr:10px;
+}
+
+/* ===================== BASE ===================== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{background:#111}
+body{
+  background:var(--bg);background-attachment:fixed;
+  color:var(--ink);font-family:var(--font);
+  display:flex;justify-content:center;align-items:flex-start;
+  height:100vh;height:100dvh;overflow:hidden;padding:12px;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none;
+  transition:color .2s;
+}
+.hidden{display:none!important}
+
+/* ===== APP LAYOUT ===== */
+.app{
+  display:flex;flex-direction:column;align-items:center;
+  width:100%;max-width:480px;gap:8px;
+  height:calc(100vh - 24px);height:calc(100dvh - 24px);overflow:hidden;
+}
+
+/* ===== TOP BAR ===== */
+.top-bar{
+  display:flex;align-items:center;width:100%;gap:10px;flex-shrink:0;
+  position:relative;z-index:50;
+}
+.top-bar-right{
+  margin-left:auto;display:flex;align-items:center;gap:6px;
+}
+.settings-wrap{position:relative}
+
+.icon-btn{
+  width:36px;height:36px;border-radius:var(--r);border:1px solid var(--line);
+  background:var(--panel);color:var(--ink);font-size:16px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+  transition:background .15s,border-color .15s;
+}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+.icon-btn:active{transform:scale(.92)}
+
+/* ===== TABS ===== */
+.tabs{display:flex;flex-shrink:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.tab{
+  border:none;background:transparent;color:var(--muted);
+  padding:6px 14px;font:inherit;font-size:.8rem;font-weight:600;
+  cursor:pointer;transition:background .15s,color .15s;
+}
+.tab.active{background:var(--accent);color:var(--accentInk)}
+.tab:active{transform:scale(.96)}
+
+/* ===== SETTINGS POPOVER ===== */
+.settings-popover{
+  display:none;position:absolute;top:calc(100% + 8px);right:0;z-index:60;
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:8px;padding:16px 20px;
+  box-shadow:0 8px 32px rgba(0,0,0,.3);min-width:220px;color:var(--ink);
+}
+.settings-popover.open{display:block}
+.settings-section{display:flex;flex-direction:column;gap:6px}
+.settings-section .s-label{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.theme-options{display:flex;gap:6px;flex-wrap:wrap}
+.theme-btn{
+  display:flex;align-items:center;gap:5px;
+  border:1px solid var(--line);background:transparent;color:var(--ink);
+  border-radius:999px;padding:4px 10px 4px 5px;font:inherit;font-size:12px;cursor:pointer;
+  transition:border-color .15s,box-shadow .15s;
+}
+.theme-btn.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);font-weight:600}
+.sw{width:16px;height:16px;border-radius:50%;border:1px solid rgba(128,128,128,.25);flex-shrink:0}
+
+/* Settings backdrop (mobile) */
+.settings-backdrop{display:none}
+
+/* ===== INFO BLOCK ===== */
+.info-block{
+  display:flex;align-items:center;gap:8px;
+  width:100%;font-size:.8rem;color:var(--onbg);flex-shrink:0;
+}
+.info-random{display:flex;align-items:center;gap:8px}
+.info-daily{display:flex;align-items:center;gap:8px}
+.info-stats{display:flex;align-items:center;gap:12px;margin-left:auto}
+.daily-day{font-weight:700;color:var(--onbgStrong);font-size:.85rem}
+.daily-diff{font-size:.72rem;font-weight:700;color:var(--accent);letter-spacing:.3px}
+.errors{color:var(--muted);font-weight:600;transition:color .2s}
+.errors.has-errors{color:var(--err)}
+.streak{color:var(--accent);font-weight:600;font-size:.75rem}
+.timer{
+  font-size:.95rem;font-variant-numeric:tabular-nums;color:var(--onbg);
+  font-weight:600;min-width:50px;text-align:right;cursor:pointer;
+}
+.timer:hover{color:var(--accent)}
+
+/* ===== DIFFICULTY DROPDOWN ===== */
+.diff-dd{position:relative}
+.diff-dd-toggle{
+  display:flex;align-items:center;gap:4px;
+  border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  border-radius:var(--r);padding:5px 10px;font:inherit;font-size:.78rem;font-weight:600;
+  cursor:pointer;transition:background .15s;
+}
+.diff-dd-toggle::after{content:'▾';font-size:10px;opacity:.6}
+.diff-dd-menu{
+  display:none;position:absolute;left:0;top:calc(100% + 4px);z-index:50;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:4px;min-width:110px;box-shadow:0 4px 16px rgba(0,0,0,.25);color:var(--ink);
+}
+.diff-dd.open .diff-dd-menu{display:flex;flex-direction:column;gap:2px}
+.diff-dd-menu button{
+  display:flex;align-items:center;width:100%;
+  border:none;background:transparent;color:var(--ink);
+  border-radius:calc(var(--r) - 2px);padding:6px 10px;font:inherit;font-size:.8rem;font-weight:600;cursor:pointer;
+}
+.diff-dd-menu button:hover{background:rgba(128,128,128,.12)}
+.diff-dd-menu button.active{background:rgba(128,128,128,.18);font-weight:700}
+
+/* ===== GAME LAYOUT ===== */
+.game-layout{
+  display:flex;flex-direction:column;align-items:center;
+  gap:8px;flex:1;min-height:0;width:100%;overflow:hidden;
+}
+.right-col{display:contents}
+.info-block{order:-1}
+.board-col{order:0}
+.actions{order:1;align-self:stretch}
+[id="numpad"]{order:2;align-self:stretch}
+.new-btn{order:3}
+
+/* ===== BOARD ===== */
+.board-col{display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.grid-wrap{flex:0 0 auto;position:relative;max-width:100%}
+.grid{
+  --cs:min(calc((100vw - 44px)/9),calc((100dvh - 220px)/9),56px);
+  display:grid;
+  grid-template-columns:repeat(9,var(--cs));grid-template-rows:repeat(9,var(--cs));
+  border:2px solid var(--thick);border-radius:var(--boardr);
+  overflow:hidden;background:var(--boardbg);gap:0;
+}
+.cell{
+  width:var(--cs);height:var(--cs);
+  display:flex;justify-content:center;align-items:center;
+  font-family:var(--numfont);font-size:calc(var(--cs)*.52);font-weight:700;
+  cursor:pointer;position:relative;background-color:var(--cellbg);
+  border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+  transition:background-color .1s;
+}
+.cell[data-col="2"],.cell[data-col="5"]{border-right:3px solid var(--thick)}
+.cell[data-row="2"],.cell[data-row="5"]{border-bottom:3px solid var(--thick)}
+
+/* Cell states */
+.cell.given{font-weight:650;color:var(--given)}
+.cell.user{color:var(--user)}
+.cell.peer-highlight{background-color:var(--peer)}
+.cell.same-digit{background-color:var(--same)}
+.cell.selected{background-color:var(--sel);box-shadow:inset 0 0 0 2px var(--accent);z-index:2}
+.cell.wrong{color:var(--err)!important;background-color:var(--errbg);animation:shake .35s ease}
+
+/* Notes */
+.cell.notes-cell{
+  display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
+  font-family:var(--font);font-weight:600;font-size:clamp(8px,2.3vw,11px);
+  color:var(--muted);padding:1px;line-height:1;
+}
+.cell.notes-cell span{display:flex;justify-content:center;align-items:center}
+
+/* Pause overlay */
+.pause-overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.85);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;font-weight:600;color:var(--ink);
+  border-radius:var(--boardr);z-index:10;cursor:pointer;
+}
+
+/* ===== ACTIONS (tools) ===== */
+.actions{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
+  width:100%;flex-shrink:0;
+}
+.act-btn{
+  border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  border-radius:var(--r);padding:8px 4px;font:inherit;font-size:.75rem;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;
+  min-height:44px;
+  transition:background .15s,border-color .15s,transform .15s;
+}
+.act-btn:active{transform:scale(.96)}
+.act-btn.active{border-color:var(--accent);color:var(--accent)}
+.act-btn:disabled{opacity:.35;cursor:not-allowed}
+.act-btn .badge{
+  background:var(--accent);color:var(--accentInk);border-radius:50%;
+  width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;
+}
+.act-btn.active .badge{background:var(--accentInk);color:var(--accent)}
+
+/* ===== NUMPAD ===== */
+.numpad{
+  display:grid;grid-template-columns:repeat(9,1fr);gap:3px;
+  width:100%;flex-shrink:0;
+}
+.num-btn{
+  border:1px solid var(--line);background:var(--panel);color:var(--accent);
+  font-family:var(--numfont);font-size:clamp(16px,4vw,22px);font-weight:700;
+  border-radius:calc(var(--r) - 2px);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  padding:4px 0;line-height:1;aspect-ratio:1;font-variant-numeric:lining-nums tabular-nums;
+  min-height:44px;position:relative;
+  transition:background .15s,border-color .15s,transform .15s;
+}
+.num-btn:active{transform:scale(.92)}
+.num-btn.completed{opacity:.25;pointer-events:none}
+.num-count{
+  position:absolute;top:1px;right:3px;
+  font-family:var(--font);font-size:9px;font-weight:600;
+  color:var(--muted);line-height:1;pointer-events:none;
+}
+.num-btn.completed .num-count{display:none}
+
+/* ===== NEW GAME BUTTON ===== */
+.new-btn{
+  display:none;
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+  border-radius:var(--r);padding:8px 18px;font:inherit;font-size:.8rem;font-weight:600;
+  cursor:pointer;flex-shrink:0;transition:color .15s,border-color .15s;
+}
+.new-btn:hover{border-color:var(--accent);color:var(--accent)}
+.new-btn:active{transform:scale(.96)}
+
+/* ===== WIN OVERLAY ===== */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);
+  display:flex;justify-content:center;align-items:center;z-index:100;padding:16px;
+}
+.win-card{
+  background:var(--panel);border-radius:calc(var(--r) + 4px);
+  padding:40px 48px;text-align:center;max-width:90vw;animation:pop .3s ease;
+  color:var(--ink);
+}
+.win-card h2{font-size:1.8rem;font-family:var(--numfont);color:var(--accent);margin-bottom:8px}
+.win-card .stats{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;font-size:1rem;color:var(--muted)}
+.win-card .stats span{display:flex;justify-content:space-between}
+.win-card .stats .label{color:var(--muted)}
+.win-card .stats .value{color:var(--accent);font-weight:600}
+.win-card .best-time{color:var(--accent);font-weight:600;margin-bottom:12px;font-size:.85rem}
+.win-card button{
+  background:var(--accent);color:var(--accentInk);border:none;border-radius:var(--r);
+  padding:12px 32px;font:inherit;font-weight:700;font-size:1rem;cursor:pointer;
+}
+.win-card button:active{transform:scale(.96)}
+
+/* ===== CONFIRM DIALOG ===== */
+.confirm-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.4);
+  display:flex;justify-content:center;align-items:center;z-index:110;padding:16px;
+}
+.confirm-card{
+  background:var(--panel);border-radius:calc(var(--r) + 4px);
+  padding:24px 32px;text-align:center;max-width:300px;animation:pop .2s ease;
+  color:var(--ink);
+}
+.confirm-card p{font-size:.95rem;margin-bottom:16px;color:var(--ink)}
+.confirm-card .confirm-btns{display:flex;gap:8px;justify-content:center}
+.confirm-card button{
+  border-radius:var(--r);padding:8px 20px;font:inherit;font-weight:600;font-size:.85rem;cursor:pointer;
+}
+.confirm-card .btn-yes{background:var(--accent);color:var(--accentInk);border:none}
+.confirm-card .btn-no{background:transparent;color:var(--muted);border:1px solid var(--line)}
+
+/* ===================== TILE LAYOUT (pastel) ===================== */
+.tiles .grid{border:0;padding:5px}
+.tiles .cell,
+.tiles .cell[data-col="2"],
+.tiles .cell[data-col="5"],
+.tiles .cell[data-row="2"],
+.tiles .cell[data-row="5"]{
+  border:2px solid transparent;background-clip:padding-box;border-radius:var(--cellr);
+}
+.tiles .cell[data-col="2"],.tiles .cell[data-col="5"]{border-right-width:7px}
+.tiles .cell[data-row="2"],.tiles .cell[data-row="5"]{border-bottom-width:7px}
+
+/* ===================== THEME DETAILS ===================== */
+/* Kahvehane */
+[data-theme=kahvehane] .icon-btn,
+[data-theme=kahvehane] .act-btn,
+[data-theme=kahvehane] .num-btn,
+[data-theme=kahvehane] .diff-dd-toggle,
+[data-theme=kahvehane] .new-btn{
+  background:rgba(245,240,225,.06);border-color:rgba(197,163,90,.25);
+}
+[data-theme=kahvehane] .tabs{border-color:rgba(197,163,90,.25)}
+[data-theme=kahvehane] .settings-popover{background:#4a1a2a;border-color:rgba(197,163,90,.3)}
+[data-theme=kahvehane] .diff-dd-menu{background:#4a1a2a;border-color:rgba(197,163,90,.3)}
+[data-theme=kahvehane] .diff-dd-menu button:hover{background:rgba(255,255,255,.08)}
+[data-theme=kahvehane] .diff-dd-menu button.active{background:rgba(255,255,255,.12)}
+[data-theme=kahvehane] .cell.notes-cell{color:#7a6a55}
+[data-theme=kahvehane] .icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Gazete */
+[data-theme=gazete] .top-bar{border-bottom:3px double var(--ink);padding-bottom:8px}
+[data-theme=gazete] .cell.user{font-style:italic}
+[data-theme=gazete] .grid{border-width:3px}
+[data-theme=gazete] .cell[data-col="2"],[data-theme=gazete] .cell[data-col="5"]{border-right-width:3px}
+[data-theme=gazete] .cell[data-row="2"],[data-theme=gazete] .cell[data-row="5"]{border-bottom-width:3px}
+[data-theme=gazete] .new-btn{text-transform:uppercase;letter-spacing:2px;font-size:12px}
+
+/* Neon */
+[data-theme=neon] .grid{box-shadow:0 0 0 1px #ff3cac,0 0 30px rgba(255,60,172,.45)}
+[data-theme=neon] .cell{font-size:clamp(15px,4.6vw,23px)}
+[data-theme=neon] .cell.user{text-shadow:0 0 8px rgba(0,229,255,.85)}
+[data-theme=neon] .cell.wrong{text-shadow:0 0 8px rgba(255,77,109,.85)}
+[data-theme=neon] .num-btn{font-size:clamp(15px,4.3vw,20px);text-shadow:0 0 8px rgba(0,229,255,.6)}
+[data-theme=neon] .new-btn:hover{box-shadow:0 0 12px rgba(0,229,255,.4);border-color:#00e5ff}
+[data-theme=neon] .pause-overlay{background:rgba(7,4,15,.92)}
+
+/* Pastel */
+[data-theme=pastel] .grid{box-shadow:0 12px 32px rgba(150,120,200,.25)}
+[data-theme=pastel] .act-btn,[data-theme=pastel] .num-btn,[data-theme=pastel] .diff-dd-toggle,[data-theme=pastel] .tab,[data-theme=pastel] .icon-btn,[data-theme=pastel] .theme-btn{border-color:transparent;box-shadow:0 3px 10px rgba(150,120,200,.18)}
+[data-theme=pastel] .theme-btn.on{box-shadow:0 0 0 2px var(--accent)}
+[data-theme=pastel] .diff-dd-menu{box-shadow:0 4px 16px rgba(150,120,200,.3)}
+[data-theme=pastel] .settings-popover{box-shadow:0 4px 16px rgba(150,120,200,.2)}
+[data-theme=pastel] .cell.given{font-weight:600}
+[data-theme=pastel] .new-btn{box-shadow:0 3px 10px rgba(150,120,200,.18)}
+
+/* ===== ANIMATIONS ===== */
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-3px)}
+  40%{transform:translateX(3px)}
+  60%{transform:translateX(-2px)}
+  80%{transform:translateX(2px)}
+}
+@keyframes pop{
+  0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}
+}
+.cell.pop{animation:pop .2s ease}
+@keyframes winPulse{
+  0%,100%{box-shadow:inset 0 0 0 2px var(--accent)}
+  50%{box-shadow:inset 0 0 12px 2px rgba(46,213,115,.35)}
+}
+.cell.win{animation:winPulse 1s ease infinite}
+button:active{transform:scale(.96)}
+
+/* ===== RESPONSIVE — small phones ===== */
+@media(max-width:420px){
+  body{padding:8px}
+  .app{gap:6px;height:calc(100vh - 16px);height:calc(100dvh - 16px)}
+  .tab{padding:5px 10px;font-size:.72rem}
+  .icon-btn{width:32px;height:32px;font-size:14px}
+  .numpad{gap:2px}
+  .act-btn{padding:6px 3px;font-size:.7rem}
+  .grid{--cs:min(calc((100vw - 36px)/9),calc((100dvh - 200px)/9),56px)}
+}
+@media(max-height:700px){
+  .app{gap:5px}
+  .act-btn{padding:5px 3px;font-size:.72rem}
+  .num-btn{font-size:clamp(14px,4vw,20px)}
+}
+
+/* ===== MOBILE bottom sheet ===== */
+@media(max-width:767px){
+  .settings-popover{
+    display:block;position:fixed;top:auto;bottom:0;left:0;right:0;
+    border-radius:16px 16px 0 0;
+    padding:20px 20px calc(env(safe-area-inset-bottom,8px) + 16px);
+    transform:translateY(100%);opacity:0;pointer-events:none;
+    transition:transform .3s ease,opacity .2s ease;
+    z-index:200;min-width:auto;
+    box-shadow:0 -4px 32px rgba(0,0,0,.35);
+  }
+  .settings-popover.open{transform:translateY(0);opacity:1;pointer-events:auto}
+  .settings-backdrop{
+    display:block;position:fixed;inset:0;
+    background:rgba(0,0,0,.45);z-index:199;
+    opacity:0;pointer-events:none;transition:opacity .2s;
+  }
+  .settings-backdrop.active{opacity:1;pointer-events:auto}
+}
+
+/* ===== DESKTOP — two-column layout ===== */
+@media(min-width:1024px){
+  body{align-items:center;padding:32px}
+  .app{
+    max-width:none;width:auto;
+    height:auto;overflow:visible;
+    align-items:stretch;gap:12px;
+  }
+  .game-layout{
+    display:flex;flex-direction:row;
+    align-items:stretch;gap:0;overflow:visible;
+  }
+  .board-col{
+    align-items:flex-start;flex-shrink:0;
+    padding-right:24px;order:unset;
+  }
+  .grid{
+    --cs:clamp(40px,min(calc((100dvh - 150px)/9),calc((100vw - 360px)/9)),80px);
+  }
+  .right-col{
+    display:flex;flex-direction:column;gap:12px;
+    width:200px;flex-shrink:0;order:unset;
+  }
+  .info-block{
+    order:unset;flex-direction:column;gap:10px;padding:0;
+  }
+  .info-stats{margin-left:0;justify-content:space-between;width:100%}
+  .info-daily{flex-direction:column;align-items:flex-start;gap:4px}
+  .actions{order:unset;align-self:auto;grid-template-columns:repeat(2,1fr);gap:6px;width:auto}
+  [id="numpad"]{order:unset;align-self:auto}
+  .numpad{grid-template-columns:repeat(3,1fr);gap:6px;width:auto}
+  .num-btn{
+    font-size:clamp(18px,2vw,24px);
+    aspect-ratio:auto;padding:12px 4px;
+  }
+  .num-count{top:3px;right:5px;font-size:10px}
+  .new-btn{
+    display:block;order:unset;align-self:center;margin-top:auto;
+  }
+  .settings-popover{max-width:280px}
+}
+@media(min-width:1024px) and (max-height:750px){
+  .grid{--cs:clamp(36px,min(calc((100dvh - 130px)/9),calc((100vw - 360px)/9)),60px)}
+  .num-btn{padding:8px 4px}
+}
+</style>
 </head>
 <body>
-
-  <div class="game-container">
-
-    <!-- Header -->
-    <div class="header">
-      <h1>Sudoku</h1>
-      <div class="timer" id="timer">0:00</div>
+<div class="app" id="app">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="tabs">
+      <button class="tab active" data-tab="random" id="tab-random">Rastgele</button>
+      <button class="tab" data-tab="daily" id="tab-daily">Günlük</button>
     </div>
+    <div class="top-bar-right">
+      <div class="settings-wrap">
+        <button class="icon-btn" id="btn-settings" title="Ayarlar">&#9881;</button>
+        <div class="settings-popover" id="settings-panel">
+          <div class="settings-section">
+            <span class="s-label">Tema</span>
+            <div class="theme-options" id="theme-picker">
+              <button class="theme-btn" data-pick="kahvehane"><span class="sw" style="background:#4a1525"></span>Kahvehane</button>
+              <button class="theme-btn" data-pick="gazete"><span class="sw" style="background:#ece5d3"></span>Gazete</button>
+              <button class="theme-btn" data-pick="neon"><span class="sw" style="background:#120828"></span>Neon</button>
+              <button class="theme-btn" data-pick="pastel"><span class="sw" style="background:#fff1ec"></span>Pastel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="icon-btn" id="btn-new" title="Yeni Oyun">&#8635;</button>
+    </div>
+  </div>
 
-    <!-- Toolbar -->
-    <div class="toolbar">
-      <select id="select-diff" aria-label="Difficulty">
-        <option value="easy" selected>Easy</option>
-        <option value="medium">Medium</option>
-        <option value="hard">Hard</option>
-      </select>
-      <button id="btn-new">New Game</button>
-      <div class="themes" id="themes"></div>
-      <div id="lang-toggle" style="display:flex;gap:4px;align-items:center;margin-left:auto">
-        <button class="lang-btn" data-lang="tr" style="padding:2px 7px;font:bold 11px/1.4 sans-serif;border:1px solid rgba(0,0,0,.2);border-radius:4px;cursor:pointer;background:rgba(0,0,0,.08);color:inherit;opacity:.6">TR</button>
-        <button class="lang-btn" data-lang="en" style="padding:2px 7px;font:bold 11px/1.4 sans-serif;border:1px solid rgba(0,0,0,.2);border-radius:4px;cursor:pointer;background:rgba(0,0,0,.08);color:inherit;opacity:.6">EN</button>
+  <!-- Settings backdrop (mobile bottom sheet) -->
+  <div class="settings-backdrop" id="settings-backdrop"></div>
+
+  <!-- Game Layout -->
+  <div class="game-layout">
+    <div class="board-col">
+      <div class="grid-wrap">
+        <div class="grid" id="grid"></div>
+        <div class="pause-overlay hidden" id="pause-overlay">&#9208; Duraklatıldı</div>
       </div>
     </div>
-
-    <!-- Grid -->
-    <div class="grid-wrapper">
-      <div class="grid" id="grid" role="grid" aria-label="Sudoku board"></div>
-    </div>
-
-    <!-- Number Pad -->
-    <div class="numpad" id="numpad" aria-label="Number pad"></div>
-
-    <!-- Actions -->
-    <div class="actions">
-      <button id="btn-undo" title="Undo (Ctrl+Z)">
-        <svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05 1.04-6.83 2.73L2.5 7.5v9h9l-3.19-3.19C9.74 12.15 11.04 11.5 12.5 11.5c2.85 0 5.24 1.95 5.91 4.6l2.48-.79C19.88 11.45 16.47 8 12.5 8z"/></svg>
-        Undo
-      </button>
-      <button id="btn-erase" title="Erase cell (Delete)">
-        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-        Erase
-      </button>
-      <button id="btn-notes" title="Toggle notes mode (N)">
-        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.001 1.001 0 000-1.41l-2.34-2.34a1.001 1.001 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-        Notes
-      </button>
-      <button id="btn-check" title="Check for errors">
-        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-        Check
-      </button>
-      <button id="btn-autocheck" title="Auto-validate toggle">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-        Auto
-      </button>
-    </div>
-
-    <!-- Status -->
-    <div class="status-bar">
-      <span>Arrow keys to navigate &middot; 1-9 to fill &middot; N for notes</span>
-    </div>
-
-  </div>
-
-  <!-- Win Overlay -->
-  <div class="overlay" id="overlay">
-    <div class="overlay-content">
-      <h2>Congratulations!</h2>
-      <p>You solved the puzzle!</p>
-      <p id="overlay-msg">Difficulty: Easy  |  Time: 0:00</p>
-      <button id="btn-play-again">Play Again</button>
+    <div class="right-col">
+      <div class="info-block" id="info-block">
+        <div class="info-random" id="info-random">
+          <div class="diff-dd" id="diff-dd">
+            <button class="diff-dd-toggle" id="diff-toggle"><span id="diff-label">Kolay</span></button>
+            <div class="diff-dd-menu" id="diff-btns">
+              <button class="active" data-diff="easy">Kolay</button>
+              <button data-diff="medium">Orta</button>
+              <button data-diff="hard">Zor</button>
+              <button data-diff="expert">Uzman</button>
+            </div>
+          </div>
+        </div>
+        <div class="info-daily hidden" id="info-daily">
+          <span class="daily-day" id="daily-day"></span>
+          <span class="daily-diff" id="daily-diff-display"></span>
+          <span class="streak hidden" id="streak-display"></span>
+        </div>
+        <div class="info-stats">
+          <span class="errors" id="error-display">Hata: 0</span>
+          <span class="timer" id="timer" title="Duraklatmak için tıkla">0:00</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="act-btn" id="btn-undo">&#8617; Geri Al</button>
+        <button class="act-btn" id="btn-erase">&#9003; Sil</button>
+        <button class="act-btn" id="btn-notes">&#9998; Not</button>
+        <button class="act-btn" id="btn-hint">&#128161; İpucu <span class="badge">3</span></button>
+      </div>
+      <div class="numpad" id="numpad"></div>
+      <button class="new-btn" id="btn-new-bottom">Yeni Oyun</button>
     </div>
   </div>
+</div>
 
-  <script src="game.js"></script>
+<!-- Confirm Dialog -->
+<div class="confirm-overlay hidden" id="confirm-overlay">
+  <div class="confirm-card">
+    <p id="confirm-msg">Oyunu sıfırlamak istediğinden emin misin?</p>
+    <div class="confirm-btns">
+      <button class="btn-yes" id="confirm-yes">Evet</button>
+      <button class="btn-no" id="confirm-no">Hayır</button>
+    </div>
+  </div>
+</div>
+
+<!-- Win Overlay -->
+<div class="overlay hidden" id="win-overlay">
+  <div class="win-card">
+    <h2>&#127881; Tebrikler!</h2>
+    <div class="stats" id="win-stats"></div>
+    <div class="best-time hidden" id="best-time-msg"></div>
+    <button id="btn-play-again">Tekrar Oyna</button>
+  </div>
+</div>
+
+<script>
+/* ---- ENGINE START ---- */
+
+/* --- Seeded RNG (mulberry32) --- */
+function mulberry32(seed) {
+  let s = seed | 0;
+  return function() {
+    s = (s + 0x6D2B79F5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/* --- Board utilities --- */
+function emptyGrid() {
+  return Array.from({length:9}, () => Array(9).fill(0));
+}
+
+function getBox(r,c) { return Math.floor(r/3)*3 + Math.floor(c/3); }
+
+function getCandidates(board, r, c) {
+  if (board[r][c] !== 0) return [];
+  const used = new Set();
+  for (let i = 0; i < 9; i++) {
+    if (board[r][i]) used.add(board[r][i]);
+    if (board[i][c]) used.add(board[i][c]);
+  }
+  const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+  for (let dr = 0; dr < 3; dr++)
+    for (let dc = 0; dc < 3; dc++)
+      if (board[br+dr][bc+dc]) used.add(board[br+dr][bc+dc]);
+  const cands = [];
+  for (let d = 1; d <= 9; d++) if (!used.has(d)) cands.push(d);
+  return cands;
+}
+
+/* --- Full board generator --- */
+function generateFullBoard(rng) {
+  const board = emptyGrid();
+  const rand = rng || Math.random;
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  function fill(pos) {
+    if (pos === 81) return true;
+    const r = Math.floor(pos / 9), c = pos % 9;
+    const cands = shuffle(getCandidates(board, r, c));
+    for (const d of cands) {
+      board[r][c] = d;
+      if (fill(pos + 1)) return true;
+      board[r][c] = 0;
+    }
+    return false;
+  }
+  fill(0);
+  return board;
+}
+
+/* --- Count solutions (up to limit) --- */
+function countSolutions(board, limit) {
+  let count = 0;
+  function solve() {
+    if (count >= limit) return;
+    // find empty cell with fewest candidates (MRV)
+    let minLen = 10, bestR = -1, bestC = -1;
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (board[r][c] === 0) {
+          const n = getCandidates(board, r, c).length;
+          if (n === 0) return; // dead end
+          if (n < minLen) { minLen = n; bestR = r; bestC = c; }
+        }
+      }
+    }
+    if (bestR === -1) { count++; return; } // all filled
+    const cands = getCandidates(board, bestR, bestC);
+    for (const d of cands) {
+      board[bestR][bestC] = d;
+      solve();
+      if (count >= limit) { board[bestR][bestC] = 0; return; }
+      board[bestR][bestC] = 0;
+    }
+  }
+  solve();
+  return count;
+}
+
+/* --- Technique-based solver for grading --- */
+function grade(puzzle) {
+  // Work on candidate sets
+  const board = puzzle.map(r => r.slice());
+  const cands = Array.from({length:9}, (_, r) =>
+    Array.from({length:9}, (_, c) => {
+      if (board[r][c] !== 0) return new Set();
+      return new Set(getCandidates(board, r, c));
+    })
+  );
+
+  let maxTechnique = 'easy'; // naked single only
+  const techOrder = ['easy', 'medium', 'hard', 'expert'];
+  function elevate(level) {
+    if (techOrder.indexOf(level) > techOrder.indexOf(maxTechnique)) {
+      maxTechnique = level;
+    }
+  }
+
+  function removeCandidate(r, c, d) {
+    return cands[r][c].delete(d);
+  }
+
+  function isSolved() {
+    for (let r = 0; r < 9; r++)
+      for (let c = 0; c < 9; c++)
+        if (board[r][c] === 0) return false;
+    return true;
+  }
+
+  function placeDigit(r, c, d) {
+    board[r][c] = d;
+    cands[r][c].clear();
+    // Remove d from peers
+    for (let i = 0; i < 9; i++) {
+      removeCandidate(r, i, d);
+      removeCandidate(i, c, d);
+    }
+    const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+    for (let dr = 0; dr < 3; dr++)
+      for (let dc = 0; dc < 3; dc++)
+        removeCandidate(br+dr, bc+dc, d);
+  }
+
+  /* Naked singles: cell with only one candidate */
+  function nakedSingles() {
+    let progress = false;
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (board[r][c] === 0 && cands[r][c].size === 1) {
+          const d = [...cands[r][c]][0];
+          placeDigit(r, c, d);
+          progress = true;
+        }
+      }
+    }
+    return progress;
+  }
+
+  /* Hidden singles: only one place for a digit in a unit */
+  function hiddenSingles() {
+    let progress = false;
+    // Rows
+    for (let r = 0; r < 9; r++) {
+      for (let d = 1; d <= 9; d++) {
+        const places = [];
+        for (let c = 0; c < 9; c++) {
+          if (board[r][c] === d) { places.length = 0; break; }
+          if (cands[r][c].has(d)) places.push(c);
+        }
+        if (places.length === 1) {
+          elevate('medium');
+          placeDigit(r, places[0], d);
+          progress = true;
+        }
+      }
+    }
+    // Columns
+    for (let c = 0; c < 9; c++) {
+      for (let d = 1; d <= 9; d++) {
+        const places = [];
+        for (let r = 0; r < 9; r++) {
+          if (board[r][c] === d) { places.length = 0; break; }
+          if (cands[r][c].has(d)) places.push(r);
+        }
+        if (places.length === 1) {
+          elevate('medium');
+          placeDigit(places[0], c, d);
+          progress = true;
+        }
+      }
+    }
+    // Boxes
+    for (let br = 0; br < 9; br += 3) {
+      for (let bc = 0; bc < 9; bc += 3) {
+        for (let d = 1; d <= 9; d++) {
+          const places = [];
+          let found = false;
+          for (let dr = 0; dr < 3; dr++) {
+            for (let dc = 0; dc < 3; dc++) {
+              if (board[br+dr][bc+dc] === d) { found = true; break; }
+              if (cands[br+dr][bc+dc].has(d)) places.push([br+dr, bc+dc]);
+            }
+            if (found) break;
+          }
+          if (!found && places.length === 1) {
+            elevate('medium');
+            placeDigit(places[0][0], places[0][1], d);
+            progress = true;
+          }
+        }
+      }
+    }
+    return progress;
+  }
+
+  /* Pointing/Claiming: candidates in a box confined to one row/col */
+  function pointingClaiming() {
+    let progress = false;
+    // Pointing: in a box, if a digit only appears in one row/col, eliminate from rest of that row/col
+    for (let br = 0; br < 9; br += 3) {
+      for (let bc = 0; bc < 9; bc += 3) {
+        for (let d = 1; d <= 9; d++) {
+          const rows = new Set(), cols = new Set();
+          for (let dr = 0; dr < 3; dr++) {
+            for (let dc = 0; dc < 3; dc++) {
+              if (cands[br+dr][bc+dc].has(d)) {
+                rows.add(br+dr);
+                cols.add(bc+dc);
+              }
+            }
+          }
+          if (rows.size === 1) {
+            const row = [...rows][0];
+            for (let c = 0; c < 9; c++) {
+              if (c >= bc && c < bc+3) continue;
+              if (removeCandidate(row, c, d)) {
+                elevate('hard');
+                progress = true;
+              }
+            }
+          }
+          if (cols.size === 1) {
+            const col = [...cols][0];
+            for (let r = 0; r < 9; r++) {
+              if (r >= br && r < br+3) continue;
+              if (removeCandidate(r, col, d)) {
+                elevate('hard');
+                progress = true;
+              }
+            }
+          }
+        }
+      }
+    }
+    // Claiming: in a row/col, if a digit only appears in one box, eliminate from rest of that box
+    for (let r = 0; r < 9; r++) {
+      for (let d = 1; d <= 9; d++) {
+        const boxes = new Set();
+        for (let c = 0; c < 9; c++) {
+          if (cands[r][c].has(d)) boxes.add(Math.floor(c/3));
+        }
+        if (boxes.size === 1) {
+          const boxCol = [...boxes][0] * 3;
+          const br = Math.floor(r/3)*3;
+          for (let dr = 0; dr < 3; dr++) {
+            if (br+dr === r) continue;
+            for (let dc = 0; dc < 3; dc++) {
+              if (removeCandidate(br+dr, boxCol+dc, d)) {
+                elevate('hard');
+                progress = true;
+              }
+            }
+          }
+        }
+      }
+    }
+    for (let c = 0; c < 9; c++) {
+      for (let d = 1; d <= 9; d++) {
+        const boxes = new Set();
+        for (let r = 0; r < 9; r++) {
+          if (cands[r][c].has(d)) boxes.add(Math.floor(r/3));
+        }
+        if (boxes.size === 1) {
+          const boxRow = [...boxes][0] * 3;
+          const bc = Math.floor(c/3)*3;
+          for (let dr = 0; dr < 3; dr++) {
+            for (let dc = 0; dc < 3; dc++) {
+              if (bc+dc === c) continue;
+              if (removeCandidate(boxRow+dr, bc+dc, d)) {
+                elevate('hard');
+                progress = true;
+              }
+            }
+          }
+        }
+      }
+    }
+    return progress;
+  }
+
+  /* Naked pairs: two cells in a unit with same two candidates */
+  function nakedPairs() {
+    let progress = false;
+    function checkUnit(cells) {
+      const pairs = cells.filter(([r,c]) => cands[r][c].size === 2);
+      for (let i = 0; i < pairs.length; i++) {
+        for (let j = i+1; j < pairs.length; j++) {
+          const [r1,c1] = pairs[i], [r2,c2] = pairs[j];
+          const s1 = [...cands[r1][c1]], s2 = [...cands[r2][c2]];
+          if (s1.length === 2 && s1[0] === s2[0] && s1[1] === s2[1]) {
+            // Remove these candidates from other cells in unit
+            for (const [r,c] of cells) {
+              if ((r === r1 && c === c1) || (r === r2 && c === c2)) continue;
+              for (const d of s1) {
+                if (removeCandidate(r, c, d)) {
+                  elevate('hard');
+                  progress = true;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    // Rows
+    for (let r = 0; r < 9; r++) {
+      const cells = [];
+      for (let c = 0; c < 9; c++) if (board[r][c] === 0) cells.push([r,c]);
+      checkUnit(cells);
+    }
+    // Columns
+    for (let c = 0; c < 9; c++) {
+      const cells = [];
+      for (let r = 0; r < 9; r++) if (board[r][c] === 0) cells.push([r,c]);
+      checkUnit(cells);
+    }
+    // Boxes
+    for (let br = 0; br < 9; br += 3) {
+      for (let bc = 0; bc < 9; bc += 3) {
+        const cells = [];
+        for (let dr = 0; dr < 3; dr++)
+          for (let dc = 0; dc < 3; dc++)
+            if (board[br+dr][bc+dc] === 0) cells.push([br+dr, bc+dc]);
+        checkUnit(cells);
+      }
+    }
+    return progress;
+  }
+
+  // Solve loop
+  let stuck = false;
+  let iterations = 0;
+  while (!isSolved() && !stuck && iterations < 200) {
+    iterations++;
+    if (nakedSingles()) continue;
+    if (hiddenSingles()) continue;
+    if (pointingClaiming()) continue;
+    if (nakedPairs()) continue;
+    stuck = true;
+  }
+
+  if (!isSolved()) {
+    elevate('expert');
+  }
+
+  return maxTechnique;
+}
+
+/* --- Puzzle generator --- */
+function generatePuzzle(difficulty, seed) {
+  const rng = seed !== undefined ? mulberry32(seed) : null;
+  const rand = rng || Math.random;
+
+  const targetClues = {easy: 36, medium: 30, hard: 26, expert: 23};
+  const target = targetClues[difficulty] || 30;
+
+  for (let attempt = 0; attempt < 60; attempt++) {
+    const solution = generateFullBoard(rng ? function(){ return rand(); } : null);
+    const puzzle = solution.map(r => r.slice());
+
+    // Build list of symmetric pairs to remove
+    const pairs = [];
+    const visited = new Set();
+    // Shuffle cell order
+    const order = [];
+    for (let r = 0; r < 9; r++)
+      for (let c = 0; c < 9; c++) order.push([r,c]);
+    // Fisher-Yates shuffle
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i+1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    for (const [r,c] of order) {
+      const key = r*9+c;
+      const symR = 8-r, symC = 8-c;
+      const symKey = symR*9+symC;
+      if (visited.has(key)) continue;
+      visited.add(key);
+      visited.add(symKey);
+      if (r === symR && c === symC) {
+        pairs.push([[r,c]]);
+      } else {
+        pairs.push([[r,c],[symR,symC]]);
+      }
+    }
+
+    let clues = 81;
+    for (const pair of pairs) {
+      if (clues <= target) break;
+      // Save values
+      const saved = pair.map(([r,c]) => puzzle[r][c]);
+      pair.forEach(([r,c]) => { puzzle[r][c] = 0; });
+      clues -= pair.length;
+
+      // Check unique solution
+      const copy = puzzle.map(r => r.slice());
+      if (countSolutions(copy, 2) !== 1) {
+        // Restore
+        pair.forEach(([r,c], i) => { puzzle[r][c] = saved[i]; });
+        clues += pair.length;
+      }
+    }
+
+    const g = grade(puzzle.map(r => r.slice()));
+    if (g === difficulty) {
+      return { puzzle, solution };
+    }
+
+    // For easy: if we got medium, we removed too many; try adding some back
+    if (difficulty === 'easy' && g === 'medium') {
+      // Try adding back some cells to make it easy
+      const empties = [];
+      for (let r = 0; r < 9; r++)
+        for (let c = 0; c < 9; c++)
+          if (puzzle[r][c] === 0) empties.push([r,c]);
+      // Shuffle empties
+      for (let i = empties.length - 1; i > 0; i--) {
+        const j = Math.floor(rand() * (i+1));
+        [empties[i], empties[j]] = [empties[j], empties[i]];
+      }
+      for (const [r,c] of empties) {
+        const symR = 8-r, symC = 8-c;
+        puzzle[r][c] = solution[r][c];
+        if (puzzle[symR][symC] === 0) puzzle[symR][symC] = solution[symR][symC];
+        const g2 = grade(puzzle.map(row => row.slice()));
+        if (g2 === 'easy') {
+          return { puzzle, solution };
+        }
+      }
+    }
+  }
+
+  // Fallback: return what we have with relaxed grade check
+  const solution = generateFullBoard(rng ? function(){ return rand(); } : null);
+  const puzzle = solution.map(r => r.slice());
+  // Remove cells until near target
+  const order2 = [];
+  for (let r = 0; r < 9; r++)
+    for (let c = 0; c < 9; c++) order2.push([r,c]);
+  for (let i = order2.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i+1));
+    [order2[i], order2[j]] = [order2[j], order2[i]];
+  }
+  const visited2 = new Set();
+  let clues2 = 81;
+  const clueTarget = {easy:38, medium:32, hard:28, expert:24}[difficulty] || 32;
+  for (const [r,c] of order2) {
+    if (clues2 <= clueTarget) break;
+    const key = r*9+c;
+    const symR = 8-r, symC = 8-c;
+    const symKey = symR*9+symC;
+    if (visited2.has(key)) continue;
+    visited2.add(key); visited2.add(symKey);
+    const v1 = puzzle[r][c], v2 = puzzle[symR][symC];
+    puzzle[r][c] = 0;
+    if (!(r===symR && c===symC)) puzzle[symR][symC] = 0;
+    clues2 -= (r===symR && c===symC) ? 1 : 2;
+    const copy = puzzle.map(row => row.slice());
+    if (countSolutions(copy, 2) !== 1) {
+      puzzle[r][c] = v1;
+      if (!(r===symR && c===symC)) puzzle[symR][symC] = v2;
+      clues2 += (r===symR && c===symC) ? 1 : 2;
+    }
+  }
+  return { puzzle, solution };
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { generatePuzzle, countSolutions, grade };
+}
+/* ---- ENGINE END ---- */
+
+/* ============================================================
+   UI & Game Logic
+   ============================================================ */
+(function() {
+  'use strict';
+
+  const STORAGE_KEY = 'as_sudoku_v1';
+  let diffNames = {easy:'Kolay',medium:'Orta',hard:'Zor',expert:'Uzman'};
+  const diffNamesEN = {easy:'Easy',medium:'Medium',hard:'Hard',expert:'Expert'};
+  const dayNamesTR = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+  const dayNamesEN = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+  let lang = 'tr';
+  const TR = {
+    title:'Sudoku', random:'Rastgele', daily:'Günlük',
+    easy:'Kolay', medium:'Orta', hard:'Zor', expert:'Uzman',
+    errors:'Hata', timer:'0:00', undo:'Geri Al', erase:'Sil',
+    notes:'Not', hint:'İpucu', newGame:'Yeni Oyun',
+    congrats:'Tebrikler!', time:'Süre', errorCount:'Hata',
+    hintsUsed:'İpucu', streak:'Seri', bestTime:'En iyi süre!',
+    playAgain:'Tekrar Oyna', paused:'Duraklatıldı',
+    pauseHint:'Duraklatmak için tıkla', dailyDiff:'Günün zorluğu',
+    noHints:'İpucu kalmadı',
+    confirmReset:'Oyunu sıfırlamak istediğinden emin misin?',
+  };
+  const EN = {
+    title:'Sudoku', random:'Random', daily:'Daily',
+    easy:'Easy', medium:'Medium', hard:'Hard', expert:'Expert',
+    errors:'Errors', timer:'0:00', undo:'Undo', erase:'Erase',
+    notes:'Notes', hint:'Hint', newGame:'New Game',
+    congrats:'Congratulations!', time:'Time', errorCount:'Errors',
+    hintsUsed:'Hints', streak:'Streak', bestTime:'Best time!',
+    playAgain:'Play Again', paused:'Paused',
+    pauseHint:'Click to pause', dailyDiff:'Daily difficulty',
+    noHints:'No hints left',
+    confirmReset:'Are you sure you want to reset?',
+  };
+  function t(key) { return (lang === 'tr' ? TR : EN)[key] || key; }
+
+  /* --- State --- */
+  let currentTab = 'random'; // 'random' or 'daily'
+  let currentDifficulty = 'easy';
+  let puzzle = null;       // 9x9 array (0 = empty)
+  let solution = null;     // 9x9 full solution
+  let board = null;        // 9x9 current user state
+  let notes = null;        // 9x9 array of Sets
+  let givenCells = null;   // 9x9 boolean
+  let selectedRow = -1, selectedCol = -1;
+  let noteMode = false;
+  let errorCount = 0;
+  let hintsLeft = 3;
+  let undoStack = [];
+  let timerSeconds = 0;
+  let timerInterval = null;
+  let paused = false;
+  let gameWon = false;
+  let streak = 0;
+  let bestTimes = {};
+
+  /* --- DOM refs --- */
+  const gridEl = document.getElementById('grid');
+  const numpadEl = document.getElementById('numpad');
+  const timerEl = document.getElementById('timer');
+  const errorEl = document.getElementById('error-display');
+  const streakEl = document.getElementById('streak-display');
+  const pauseEl = document.getElementById('pause-overlay');
+  const winOverlay = document.getElementById('win-overlay');
+  const winStats = document.getElementById('win-stats');
+  const bestTimeMsg = document.getElementById('best-time-msg');
+  const btnNew = document.getElementById('btn-new');
+  const btnNewBottom = document.getElementById('btn-new-bottom');
+  const btnUndo = document.getElementById('btn-undo');
+  const btnErase = document.getElementById('btn-erase');
+  const btnNotes = document.getElementById('btn-notes');
+  const btnHint = document.getElementById('btn-hint');
+  const btnPlayAgain = document.getElementById('btn-play-again');
+  const tabRandom = document.getElementById('tab-random');
+  const tabDaily = document.getElementById('tab-daily');
+  const diffBtns = document.getElementById('diff-btns');
+  const settingsPanel = document.getElementById('settings-panel');
+  const btnSettings = document.getElementById('btn-settings');
+  const confirmOverlay = document.getElementById('confirm-overlay');
+  const confirmYes = document.getElementById('confirm-yes');
+  const confirmNo = document.getElementById('confirm-no');
+  const confirmMsg = document.getElementById('confirm-msg');
+  const infoRandom = document.getElementById('info-random');
+  const infoDaily = document.getElementById('info-daily');
+  const dailyDayEl = document.getElementById('daily-day');
+  const dailyDiffEl = document.getElementById('daily-diff-display');
+  const settingsBackdrop = document.getElementById('settings-backdrop');
+
+  /* --- Build grid cells --- */
+  const cells = [];
+  for (let r = 0; r < 9; r++) {
+    cells[r] = [];
+    for (let c = 0; c < 9; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.row = r;
+      cell.dataset.col = c;
+      cell.addEventListener('click', () => selectCell(r, c));
+      gridEl.appendChild(cell);
+      cells[r][c] = cell;
+    }
+  }
+
+  /* --- Build numpad --- */
+  const numBtns = [];
+  for (let d = 1; d <= 9; d++) {
+    const btn = document.createElement('button');
+    btn.className = 'num-btn';
+    btn.innerHTML = '<span class="num-digit">' + d + '</span><span class="num-count"></span>';
+    btn.addEventListener('click', () => inputDigit(d));
+    numpadEl.appendChild(btn);
+    numBtns.push(btn);
+  }
+
+  /* --- Settings panel popover --- */
+  let settingsOpen = false;
+  function openSettings() {
+    settingsOpen = true;
+    settingsPanel.classList.add('open');
+    if (settingsBackdrop) settingsBackdrop.classList.add('active');
+  }
+  function closeSettings() {
+    settingsOpen = false;
+    settingsPanel.classList.remove('open');
+    if (settingsBackdrop) settingsBackdrop.classList.remove('active');
+  }
+  function toggleSettings() {
+    if (settingsOpen) closeSettings(); else openSettings();
+  }
+  btnSettings.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleSettings();
+  });
+  if (settingsBackdrop) {
+    settingsBackdrop.addEventListener('click', closeSettings);
+  }
+  document.addEventListener('click', function(e) {
+    if (settingsOpen && !settingsPanel.contains(e.target) && e.target !== btnSettings && !btnSettings.contains(e.target)) {
+      closeSettings();
+    }
+  });
+
+  /* --- Tab switching --- */
+  tabRandom.addEventListener('click', () => switchTab('random'));
+  tabDaily.addEventListener('click', () => switchTab('daily'));
+
+  function switchTab(tab) {
+    if (tab === currentTab) return;
+    saveState();
+    currentTab = tab;
+    tabRandom.classList.toggle('active', tab === 'random');
+    tabDaily.classList.toggle('active', tab === 'daily');
+    btnNew.classList.toggle('hidden', tab === 'daily');
+    btnNewBottom.classList.toggle('hidden', tab === 'daily');
+    infoRandom.classList.toggle('hidden', tab === 'daily');
+    infoDaily.classList.toggle('hidden', tab === 'random');
+    if (tab === 'daily') {
+      const dayDiff = getDailyDifficulty();
+      currentDifficulty = dayDiff;
+      var dayNames = lang === 'tr' ? dayNamesTR : dayNamesEN;
+      dailyDayEl.textContent = dayNames[new Date().getDay()];
+      dailyDiffEl.textContent = diffNames[dayDiff] || dayDiff;
+    }
+    loadState();
+    updateStreakDisplay();
+  }
+
+  /* --- Difficulty dropdown --- */
+  var diffDD = document.getElementById('diff-dd');
+  var diffToggle = document.getElementById('diff-toggle');
+  var diffLabelEl = document.getElementById('diff-label');
+  function updateDiffLabel(){ diffLabelEl.textContent = diffNames[currentDifficulty] || 'Kolay'; }
+  updateDiffLabel();
+  diffToggle.addEventListener('click', function(e){
+    e.stopPropagation();
+    diffDD.classList.toggle('open');
+  });
+  diffBtns.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-diff]');
+    if (!btn) return;
+    const diff = btn.dataset.diff;
+    diffBtns.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+    diffDD.classList.remove('open');
+    if (diff === currentDifficulty && puzzle) return;
+    currentDifficulty = diff;
+    updateDiffLabel();
+    startNewGame();
+  });
+  document.addEventListener('click', function(){ diffDD.classList.remove('open'); });
+
+  /* --- Confirm dialog --- */
+  let confirmCallback = null;
+  function showConfirm(msg, cb) {
+    confirmMsg.textContent = msg;
+    confirmCallback = cb;
+    confirmOverlay.classList.remove('hidden');
+  }
+  confirmYes.addEventListener('click', () => {
+    confirmOverlay.classList.add('hidden');
+    if (confirmCallback) confirmCallback();
+    confirmCallback = null;
+  });
+  confirmNo.addEventListener('click', () => {
+    confirmOverlay.classList.add('hidden');
+    confirmCallback = null;
+  });
+
+  /* --- Daily helpers --- */
+  function getDailySeed() {
+    const now = new Date();
+    return now.getFullYear() * 10000 + (now.getMonth()+1) * 100 + now.getDate();
+  }
+
+  function getDailyDifficulty() {
+    const day = new Date().getDay(); // 0=Sun
+    if (day === 1) return 'easy';
+    if (day === 2 || day === 3) return 'medium';
+    if (day === 4 || day === 5 || day === 6) return 'hard';
+    return 'expert'; // Sunday
+  }
+
+  function getTodayKey() {
+    const now = new Date();
+    return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  }
+
+  /* --- Timer --- */
+  function startTimer() {
+    stopTimer();
+    timerInterval = setInterval(() => {
+      if (!paused && !gameWon) {
+        timerSeconds++;
+        renderTimer();
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  }
+
+  function renderTimer() {
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    timerEl.textContent = m + ':' + String(s).padStart(2,'0');
+  }
+
+  timerEl.addEventListener('click', () => {
+    if (gameWon) return;
+    paused = !paused;
+    pauseEl.classList.toggle('hidden', !paused);
+    pauseEl.textContent = '⏸ ' + t('paused');
+  });
+  pauseEl.addEventListener('click', () => {
+    paused = false;
+    pauseEl.classList.add('hidden');
+  });
+
+  /* --- Conflict check (duplicate in row/col/box) --- */
+  function hasConflict(r, c) {
+    const d = board[r][c];
+    if (d === 0) return false;
+    for (let i = 0; i < 9; i++) {
+      if (i !== c && board[r][i] === d) return true;
+      if (i !== r && board[i][c] === d) return true;
+    }
+    const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+    for (let dr = 0; dr < 3; dr++)
+      for (let dc = 0; dc < 3; dc++)
+        if ((br+dr !== r || bc+dc !== c) && board[br+dr][bc+dc] === d) return true;
+    return false;
+  }
+
+  /* --- Rendering --- */
+  function render() {
+    if (!board) return;
+    const selDigit = (selectedRow >= 0 && board[selectedRow][selectedCol]) || 0;
+
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        const cell = cells[r][c];
+        const val = board[r][c];
+        const isGiven = givenCells[r][c];
+        const isSelected = r === selectedRow && c === selectedCol;
+        const isPeer = selectedRow >= 0 && (
+          r === selectedRow || c === selectedCol ||
+          (Math.floor(r/3) === Math.floor(selectedRow/3) && Math.floor(c/3) === Math.floor(selectedCol/3))
+        );
+        const isSame = selDigit > 0 && val === selDigit;
+        const isWrong = val > 0 && !isGiven && hasConflict(r, c);
+
+        // Build classes
+        let cls = 'cell';
+        if (isGiven) cls += ' given';
+        else if (val > 0) cls += ' user';
+        if (isWrong) cls += ' wrong';
+        if (isSelected) cls += ' selected';
+        else if (isSame) cls += ' same-digit';
+        else if (isPeer) cls += ' peer-highlight';
+
+        const cellNotes = notes[r][c];
+        if (val === 0 && cellNotes.size > 0) {
+          cls += ' notes-cell';
+          cell.className = cls;
+          let html = '';
+          for (let d = 1; d <= 9; d++) {
+            html += '<span>' + (cellNotes.has(d) ? d : '') + '</span>';
+          }
+          cell.innerHTML = html;
+        } else {
+          cell.className = cls;
+          cell.textContent = val > 0 ? val : '';
+        }
+      }
+    }
+
+    const counts = Array(10).fill(0);
+    for (let r = 0; r < 9; r++)
+      for (let c = 0; c < 9; c++)
+        if (board[r][c] > 0) counts[board[r][c]]++;
+    for (let d = 1; d <= 9; d++) {
+      const remaining = 9 - counts[d];
+      numBtns[d-1].classList.toggle('completed', remaining <= 0);
+      var countEl = numBtns[d-1].querySelector('.num-count');
+      if (countEl) countEl.textContent = remaining > 0 ? remaining : '';
+    }
+
+    // Error display
+    errorEl.textContent = t('errors') + ': ' + errorCount;
+    errorEl.classList.toggle('has-errors', errorCount > 0);
+
+    // Hint badge
+    const hintBadge = btnHint.querySelector('.badge');
+    hintBadge.textContent = hintsLeft;
+    btnHint.disabled = hintsLeft <= 0;
+
+    // Notes button
+    btnNotes.classList.toggle('active', noteMode);
+  }
+
+  /* --- Cell selection --- */
+  function selectCell(r, c) {
+    if (paused || gameWon) return;
+    selectedRow = r;
+    selectedCol = c;
+    render();
+  }
+
+  /* --- Input digit --- */
+  function inputDigit(d) {
+    if (paused || gameWon || selectedRow < 0) return;
+    const r = selectedRow, c = selectedCol;
+    if (givenCells[r][c]) return;
+
+    if (noteMode) {
+      // Toggle note
+      undoStack.push({type:'note', r:r, c:c, notes: new Set(notes[r][c]), val: board[r][c]});
+      if (board[r][c] > 0) {
+        board[r][c] = 0;
+      }
+      if (notes[r][c].has(d)) notes[r][c].delete(d);
+      else notes[r][c].add(d);
+    } else {
+      const oldVal = board[r][c];
+      const oldNotes = new Set(notes[r][c]);
+      undoStack.push({type:'digit', r:r, c:c, oldVal:oldVal, oldNotes:oldNotes});
+      board[r][c] = d;
+      notes[r][c].clear();
+
+      // Remove this digit from notes in peers
+      for (let i = 0; i < 9; i++) {
+        notes[r][i].delete(d);
+        notes[i][c].delete(d);
+      }
+      const br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+      for (let dr = 0; dr < 3; dr++)
+        for (let dc = 0; dc < 3; dc++)
+          notes[br+dr][bc+dc].delete(d);
+
+      // Count error only for rule violations (duplicate in row/col/box)
+      if (hasConflict(r, c)) {
+        errorCount++;
+      }
+
+      // Check win
+      if (checkWin()) {
+        gameWon = true;
+        stopTimer();
+        showWinCard();
+      }
+    }
+    render();
+    saveState();
+  }
+
+  /* --- Erase --- */
+  function eraseCell() {
+    if (paused || gameWon || selectedRow < 0) return;
+    const r = selectedRow, c = selectedCol;
+    if (givenCells[r][c]) return;
+    if (board[r][c] === 0 && notes[r][c].size === 0) return;
+    undoStack.push({type:'erase', r:r, c:c, oldVal: board[r][c], oldNotes: new Set(notes[r][c])});
+    board[r][c] = 0;
+    notes[r][c].clear();
+    render();
+    saveState();
+  }
+
+  /* --- Undo --- */
+  function undo() {
+    if (paused || gameWon || undoStack.length === 0) return;
+    const action = undoStack.pop();
+    const r = action.r, c = action.c;
+    if (action.type === 'digit') {
+      // Check if the digit we're removing had a conflict - if so, decrement error
+      if (board[r][c] > 0 && hasConflict(r, c)) {
+        errorCount = Math.max(0, errorCount - 1);
+      }
+      board[r][c] = action.oldVal;
+      notes[r][c] = action.oldNotes;
+    } else if (action.type === 'note') {
+      board[r][c] = action.val;
+      notes[r][c] = action.notes;
+    } else if (action.type === 'erase') {
+      board[r][c] = action.oldVal;
+      notes[r][c] = action.oldNotes;
+    }
+    render();
+    saveState();
+  }
+
+  /* --- Hint --- */
+  function giveHint() {
+    if (paused || gameWon || hintsLeft <= 0) return;
+    // Find an empty cell (prefer selected)
+    let r = selectedRow, c = selectedCol;
+    if (r < 0 || givenCells[r][c] || board[r][c] === solution[r][c]) {
+      // Find first empty cell
+      let found = false;
+      for (let ri = 0; ri < 9 && !found; ri++)
+        for (let ci = 0; ci < 9 && !found; ci++)
+          if (!givenCells[ri][ci] && board[ri][ci] !== solution[ri][ci]) {
+            r = ri; c = ci; found = true;
+          }
+      if (!found) return;
+    }
+    undoStack.push({type:'digit', r:r, c:c, oldVal: board[r][c], oldNotes: new Set(notes[r][c])});
+    board[r][c] = solution[r][c];
+    notes[r][c].clear();
+    hintsLeft--;
+    selectedRow = r; selectedCol = c;
+
+    if (checkWin()) {
+      gameWon = true;
+      stopTimer();
+      showWinCard();
+    }
+    render();
+    saveState();
+  }
+
+  /* --- Check win --- */
+  function checkWin() {
+    for (let r = 0; r < 9; r++)
+      for (let c = 0; c < 9; c++)
+        if (board[r][c] !== solution[r][c]) return false;
+    return true;
+  }
+
+  /* --- Win card --- */
+  function showWinCard() {
+    const m = Math.floor(timerSeconds / 60);
+    const s = timerSeconds % 60;
+    const timeStr = m + ':' + String(s).padStart(2,'0');
+    const diffLabel = lang === 'tr' ? diffNames[currentDifficulty] : diffNamesEN[currentDifficulty];
+
+    let html =
+      '<span><span class="label">' + diffLabel + '</span></span>' +
+      '<span><span class="label">' + t('time') + '</span><span class="value">' + timeStr + '</span></span>' +
+      '<span><span class="label">' + t('errorCount') + '</span><span class="value">' + errorCount + '</span></span>' +
+      '<span><span class="label">' + t('hintsUsed') + '</span><span class="value">' + (3 - hintsLeft) + '</span></span>';
+
+    if (currentTab === 'daily') {
+      updateStreak();
+      html += '<span><span class="label">' + t('streak') + '</span><span class="value">🔥 ' + streak + '</span></span>';
+    }
+
+    winStats.innerHTML = html;
+
+    // Best time
+    const key = 'best_' + currentDifficulty;
+    const prev = bestTimes[key];
+    if (!prev || timerSeconds < prev) {
+      bestTimes[key] = timerSeconds;
+      bestTimeMsg.textContent = '🏆 ' + t('bestTime');
+      bestTimeMsg.classList.remove('hidden');
+    } else {
+      bestTimeMsg.classList.add('hidden');
+    }
+
+    winOverlay.classList.remove('hidden');
+    savePersistent();
+  }
+
+  /* --- Streak --- */
+  function updateStreak() {
+    const data = loadPersistent();
+    const today = getTodayKey();
+    const yesterday = (function() {
+      const d = new Date();
+      d.setDate(d.getDate() - 1);
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    })();
+
+    if (data.lastDailyWin === today) return; // already counted
+    if (data.lastDailyWin === yesterday) {
+      streak = (data.streak || 0) + 1;
+    } else {
+      streak = 1;
+    }
+    data.streak = streak;
+    data.lastDailyWin = today;
+    savePersistent(data);
+  }
+
+  function updateStreakDisplay() {
+    const data = loadPersistent();
+    streak = data.streak || 0;
+    if (currentTab === 'daily' && streak > 0) {
+      streakEl.textContent = '🔥 ' + t('streak') + ': ' + streak;
+      streakEl.classList.remove('hidden');
+    } else {
+      streakEl.classList.add('hidden');
+    }
+  }
+
+  /* --- Persistence --- */
+  function loadPersistent() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    } catch(e) { return {}; }
+  }
+
+  function savePersistent(data) {
+    const d = data || loadPersistent();
+    d.bestTimes = bestTimes;
+    d.streak = streak;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  }
+
+  function saveState() {
+    if (!puzzle) return;
+    const data = loadPersistent();
+    const stateKey = currentTab === 'daily' ? 'dailyState' : 'randomState';
+    data[stateKey] = {
+      puzzle: puzzle,
+      solution: solution,
+      board: board,
+      notes: notes.map(function(row){ return row.map(function(s){ return Array.from(s); }); }),
+      givenCells: givenCells,
+      difficulty: currentDifficulty,
+      errorCount: errorCount,
+      hintsLeft: hintsLeft,
+      timerSeconds: timerSeconds,
+      gameWon: gameWon,
+      undoStack: undoStack,
+      dailySeed: currentTab === 'daily' ? getDailySeed() : null,
+    };
+    data.bestTimes = bestTimes;
+    data.streak = streak;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function loadState() {
+    const data = loadPersistent();
+    bestTimes = data.bestTimes || {};
+    streak = data.streak || 0;
+
+    const stateKey = currentTab === 'daily' ? 'dailyState' : 'randomState';
+    const state = data[stateKey];
+
+    if (state) {
+      // For daily: check if seed matches today
+      if (currentTab === 'daily' && state.dailySeed !== getDailySeed()) {
+        startNewGame();
+        return;
+      }
+      puzzle = state.puzzle;
+      solution = state.solution;
+      board = state.board;
+      notes = state.notes.map(function(row){ return row.map(function(a){ return new Set(a); }); });
+      givenCells = state.givenCells;
+      currentDifficulty = state.difficulty;
+      errorCount = state.errorCount;
+      hintsLeft = state.hintsLeft;
+      timerSeconds = state.timerSeconds;
+      gameWon = state.gameWon;
+      undoStack = state.undoStack || [];
+
+      // Update difficulty button highlight
+      diffBtns.querySelectorAll('button[data-diff]').forEach(function(b){
+        b.classList.toggle('active', b.dataset.diff === currentDifficulty);
+      });
+
+      updateDiffLabel();
+      renderTimer();
+      render();
+      if (!gameWon) startTimer();
+      return;
+    }
+    startNewGame();
+  }
+
+  /* --- Start new game --- */
+  function startNewGame() {
+    stopTimer();
+    gameWon = false;
+    paused = false;
+    pauseEl.classList.add('hidden');
+    winOverlay.classList.add('hidden');
+    errorCount = 0;
+    hintsLeft = 3;
+    undoStack = [];
+    timerSeconds = 0;
+    noteMode = false;
+    selectedRow = -1; selectedCol = -1;
+
+    const seed = currentTab === 'daily' ? getDailySeed() : undefined;
+    const diff = currentTab === 'daily' ? getDailyDifficulty() : currentDifficulty;
+    if (currentTab === 'daily') currentDifficulty = diff;
+
+    const result = generatePuzzle(diff, seed);
+    puzzle = result.puzzle;
+    solution = result.solution;
+    board = puzzle.map(function(r){ return r.slice(); });
+    notes = Array.from({length:9}, function(){ return Array.from({length:9}, function(){ return new Set(); }); });
+    givenCells = puzzle.map(function(r){ return r.map(function(v){ return v > 0; }); });
+
+    // Update difficulty button highlight
+    diffBtns.querySelectorAll('button[data-diff]').forEach(function(b){
+      b.classList.toggle('active', b.dataset.diff === currentDifficulty);
+    });
+
+    updateDiffLabel();
+    renderTimer();
+    render();
+    startTimer();
+    saveState();
+  }
+
+  /* --- New game with confirmation --- */
+  function requestNewGame() {
+    if (currentTab === 'daily') return;
+    if (!puzzle || gameWon || (timerSeconds < 5 && errorCount === 0)) {
+      startNewGame();
+      return;
+    }
+    showConfirm(t('confirmReset'), startNewGame);
+  }
+
+  /* --- Button handlers --- */
+  btnNew.addEventListener('click', requestNewGame);
+  btnNewBottom.addEventListener('click', requestNewGame);
+  btnUndo.addEventListener('click', undo);
+  btnErase.addEventListener('click', eraseCell);
+  btnNotes.addEventListener('click', function() {
+    noteMode = !noteMode;
+    render();
+  });
+  btnHint.addEventListener('click', giveHint);
+  btnPlayAgain.addEventListener('click', function() {
+    winOverlay.classList.add('hidden');
+    if (currentTab === 'daily') {
+      switchTab('random');
+    }
+    startNewGame();
+  });
+
+  /* --- Keyboard --- */
+  document.addEventListener('keydown', function(e) {
+    // Escape closes settings popover
+    if (e.key === 'Escape') {
+      if (settingsOpen) { closeSettings(); e.preventDefault(); return; }
+      if (!confirmOverlay.classList.contains('hidden')) {
+        confirmOverlay.classList.add('hidden'); confirmCallback = null; return;
+      }
+    }
+
+    if (gameWon) return;
+
+    // Arrow keys
+    if (e.key === 'ArrowUp') { e.preventDefault(); if (selectedRow > 0) selectCell(selectedRow-1, selectedCol); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); if (selectedRow < 8) selectCell(selectedRow+1, selectedCol); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); if (selectedCol > 0) selectCell(selectedRow, selectedCol-1); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); if (selectedCol < 8) selectCell(selectedRow, selectedCol+1); }
+    // Digits
+    else if (e.key >= '1' && e.key <= '9') { inputDigit(parseInt(e.key)); }
+    // Backspace/Delete
+    else if (e.key === 'Backspace' || e.key === 'Delete') { eraseCell(); }
+    // N for notes
+    else if (e.key === 'n' || e.key === 'N') { noteMode = !noteMode; render(); }
+    // Ctrl/Cmd+Z for undo
+    else if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
+    // Space for pause
+    else if (e.key === ' ') {
+      e.preventDefault();
+      paused = !paused;
+      pauseEl.classList.toggle('hidden', !paused);
+      pauseEl.textContent = '⏸ ' + t('paused');
+    }
+  });
+
+  /* --- Language (postMessage from parent) --- */
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'lang') {
+      lang = e.data.lang === 'en' ? 'en' : 'tr';
+      updateUIText();
+    }
+  });
+
+  function updateUIText() {
+    tabRandom.textContent = t('random');
+    tabDaily.textContent = t('daily');
+    btnNew.title = t('newGame');
+    btnNewBottom.textContent = t('newGame');
+    btnUndo.innerHTML = '↩ ' + t('undo');
+    btnErase.innerHTML = '⌫ ' + t('erase');
+    btnNotes.innerHTML = '✎ ' + t('notes');
+    var hBadge = '<span class="badge">' + hintsLeft + '</span>';
+    btnHint.innerHTML = '💡 ' + t('hint') + ' ' + hBadge;
+    btnPlayAgain.textContent = t('playAgain');
+    pauseEl.textContent = '⏸ ' + t('paused');
+    timerEl.title = t('pauseHint');
+
+    var diffs = {easy: t('easy'), medium: t('medium'), hard: t('hard'), expert: t('expert')};
+    diffNames = diffs;
+    diffBtns.querySelectorAll('button[data-diff]').forEach(function(b) {
+      b.textContent = diffs[b.dataset.diff];
+    });
+    updateDiffLabel();
+
+    // Update daily info if in daily tab
+    if (currentTab === 'daily') {
+      var dayNames = lang === 'tr' ? dayNamesTR : dayNamesEN;
+      dailyDayEl.textContent = dayNames[new Date().getDay()];
+      dailyDiffEl.textContent = diffNames[getDailyDifficulty()];
+    }
+
+    render();
+    updateStreakDisplay();
+  }
+
+  /* --- Init --- */
+  loadState();
+  updateStreakDisplay();
+
+})();
+</script>
+<script>
+/* Theme Picker */
+(function(){
+  var THEME_KEY='sudoku-theme-v1';
+  var picker=document.getElementById('theme-picker');
+  if(!picker)return;
+  var current=document.documentElement.getAttribute('data-theme')||'kahvehane';
+  function mark(){
+    picker.querySelectorAll('.theme-btn').forEach(function(b){
+      b.classList.toggle('on',b.dataset.pick===current);
+    });
+  }
+  mark();
+  picker.addEventListener('click',function(e){
+    var btn=e.target.closest('.theme-btn[data-pick]');
+    if(!btn)return;
+    current=btn.dataset.pick;
+    document.documentElement.setAttribute('data-theme',current);
+    document.documentElement.classList.toggle('tiles',current==='pastel');
+    localStorage.setItem(THEME_KEY,current);
+    mark();
+  });
+})();
+</script>
 </body>
 </html>
