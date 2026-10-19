@@ -65,14 +65,14 @@ body{
 
 /* ===== APP LAYOUT ===== */
 .app{
-  display:flex;flex-direction:column;align-items:center;
-  width:100%;max-width:480px;gap:8px;
-  height:calc(100vh - 24px);height:calc(100dvh - 24px);overflow:hidden;
+  display:flex;flex-direction:column;align-items:stretch;
+  width:fit-content;gap:8px;
+  height:calc(100vh - 24px);height:calc(100dvh - 24px);
 }
 
 /* ===== TOP BAR ===== */
 .top-bar{
-  display:flex;align-items:center;width:100%;gap:10px;flex-shrink:0;
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
   position:relative;z-index:50;
 }
 .top-bar-right{
@@ -142,6 +142,9 @@ body{
 .timer:hover{color:var(--accent)}
 
 /* ===== DIFFICULTY DROPDOWN ===== */
+.diff-wrap{
+  display:flex;align-items:center;
+}
 .diff-dd{position:relative}
 .diff-dd-toggle{
   display:flex;align-items:center;gap:4px;
@@ -166,21 +169,18 @@ body{
 
 /* ===== GAME LAYOUT ===== */
 .game-layout{
+  --cs:min(calc((100vw - 90px)/9),calc((100dvh - 160px)/9),56px);
   display:flex;flex-direction:column;align-items:center;
-  gap:8px;flex:1;min-height:0;width:100%;overflow:hidden;
+  gap:8px;flex:1;min-height:0;
 }
-.right-col{display:contents}
-.info-block{order:-1}
-.board-col{order:0}
-.actions{order:1;align-self:stretch}
-[id="numpad"]{order:2;align-self:stretch}
-.new-btn{order:3}
+.board-row{
+  display:flex;align-items:stretch;gap:6px;
+}
 
 /* ===== BOARD ===== */
 .board-col{display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .grid-wrap{flex:0 0 auto;position:relative;max-width:100%}
 .grid{
-  --cs:min(calc((100vw - 44px)/9),calc((100dvh - 220px)/9),56px);
   display:grid;
   grid-template-columns:repeat(9,var(--cs));grid-template-rows:repeat(9,var(--cs));
   border:2px solid var(--thick);border-radius:var(--boardr);
@@ -223,10 +223,10 @@ body{
 
 /* ===== ACTIONS (tools) ===== */
 .actions{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:6px;
-  width:100%;flex-shrink:0;
+  display:flex;gap:6px;flex-shrink:0;align-self:stretch;
 }
 .act-btn{
+  flex:1;
   border:1px solid var(--line);background:var(--panel);color:var(--ink);
   border-radius:var(--r);padding:8px 4px;font:inherit;font-size:.75rem;font-weight:600;
   cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;
@@ -245,16 +245,15 @@ body{
 
 /* ===== NUMPAD ===== */
 .numpad{
-  display:grid;grid-template-columns:repeat(9,1fr);gap:3px;
-  width:100%;flex-shrink:0;
+  display:flex;flex-direction:column;gap:2px;flex-shrink:0;
 }
 .num-btn{
   border:1px solid var(--line);background:var(--panel);color:var(--accent);
-  font-family:var(--numfont);font-size:clamp(16px,4vw,22px);font-weight:700;
+  font-family:var(--numfont);font-size:calc(var(--cs)*.42);font-weight:700;
   border-radius:calc(var(--r) - 2px);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  padding:4px 0;line-height:1;aspect-ratio:1;font-variant-numeric:lining-nums tabular-nums;
-  min-height:44px;position:relative;
+  width:var(--cs);flex:1;line-height:1;font-variant-numeric:lining-nums tabular-nums;
+  position:relative;
   transition:background .15s,border-color .15s,transform .15s;
 }
 .num-btn:active{transform:scale(.92)}
@@ -398,7 +397,7 @@ button:active{transform:scale(.96)}
   .icon-btn{width:32px;height:32px;font-size:14px}
   .numpad{gap:2px}
   .act-btn{padding:6px 3px;font-size:.7rem}
-  .grid{--cs:min(calc((100vw - 36px)/9),calc((100dvh - 200px)/9),56px)}
+  .game-layout{--cs:min(calc((100vw - 80px)/9),calc((100dvh - 150px)/9),56px)}
 }
 @media(max-height:700px){
   .app{gap:5px}
@@ -430,46 +429,18 @@ button:active{transform:scale(.96)}
 @media(min-width:1024px){
   body{align-items:center;padding:32px}
   .app{
-    max-width:none;width:auto;
-    height:auto;overflow:visible;
-    align-items:stretch;gap:12px;
+    height:auto;gap:12px;
   }
   .game-layout{
-    display:flex;flex-direction:row;
-    align-items:stretch;gap:0;overflow:visible;
+    overflow:visible;
   }
-  .board-col{
-    align-items:flex-start;flex-shrink:0;
-    padding-right:24px;order:unset;
-  }
-  .grid{
-    --cs:clamp(40px,min(calc((100dvh - 150px)/9),calc((100vw - 360px)/9)),80px);
-  }
-  .right-col{
-    display:flex;flex-direction:column;gap:12px;
-    width:200px;flex-shrink:0;order:unset;
-  }
-  .info-block{
-    order:unset;flex-direction:column;gap:10px;padding:0;
-  }
-  .info-stats{margin-left:0;justify-content:space-between;width:100%}
-  .info-daily{flex-direction:column;align-items:flex-start;gap:4px}
-  .actions{order:unset;align-self:auto;grid-template-columns:repeat(2,1fr);gap:6px;width:auto}
-  [id="numpad"]{order:unset;align-self:auto}
-  .numpad{grid-template-columns:repeat(3,1fr);gap:6px;width:auto}
-  .num-btn{
-    font-size:clamp(18px,2vw,24px);
-    aspect-ratio:auto;padding:12px 4px;
-  }
-  .num-count{top:3px;right:5px;font-size:10px}
-  .new-btn{
-    display:block;order:unset;align-self:center;margin-top:auto;
+  .game-layout{
+    --cs:clamp(40px,min(calc((100dvh - 150px)/9),calc((100vw - 200px)/9)),80px);
   }
   .settings-popover{max-width:280px}
 }
 @media(min-width:1024px) and (max-height:750px){
-  .grid{--cs:clamp(36px,min(calc((100dvh - 130px)/9),calc((100vw - 360px)/9)),60px)}
-  .num-btn{padding:8px 4px}
+  .game-layout{--cs:clamp(36px,min(calc((100dvh - 130px)/9),calc((100vw - 200px)/9)),60px)}
 }
 </style>
 </head>
@@ -477,11 +448,24 @@ button:active{transform:scale(.96)}
 <div class="app" id="app">
   <!-- Top Bar -->
   <div class="top-bar">
+    <div class="diff-wrap" id="diff-wrap">
+      <div class="diff-dd" id="diff-dd">
+        <button class="diff-dd-toggle" id="diff-toggle"><span id="diff-label">Kolay</span></button>
+        <div class="diff-dd-menu" id="diff-btns">
+          <button class="active" data-diff="easy">Kolay</button>
+          <button data-diff="medium">Orta</button>
+          <button data-diff="hard">Zor</button>
+          <button data-diff="expert">Uzman</button>
+        </div>
+      </div>
+    </div>
     <div class="tabs">
       <button class="tab active" data-tab="random" id="tab-random">Rastgele</button>
       <button class="tab" data-tab="daily" id="tab-daily">Günlük</button>
     </div>
     <div class="top-bar-right">
+      <span class="errors" id="error-display">Hata: 0</span>
+      <span class="timer" id="timer" title="Duraklatmak için tıkla">0:00</span>
       <div class="settings-wrap">
         <button class="icon-btn" id="btn-settings" title="Ayarlar">&#9881;</button>
         <div class="settings-popover" id="settings-panel">
@@ -505,43 +489,28 @@ button:active{transform:scale(.96)}
 
   <!-- Game Layout -->
   <div class="game-layout">
-    <div class="board-col">
-      <div class="grid-wrap">
-        <div class="grid" id="grid"></div>
-        <div class="pause-overlay hidden" id="pause-overlay">&#9208; Duraklatıldı</div>
-      </div>
-    </div>
-    <div class="right-col">
-      <div class="info-block" id="info-block">
-        <div class="info-random" id="info-random">
-          <div class="diff-dd" id="diff-dd">
-            <button class="diff-dd-toggle" id="diff-toggle"><span id="diff-label">Kolay</span></button>
-            <div class="diff-dd-menu" id="diff-btns">
-              <button class="active" data-diff="easy">Kolay</button>
-              <button data-diff="medium">Orta</button>
-              <button data-diff="hard">Zor</button>
-              <button data-diff="expert">Uzman</button>
-            </div>
-          </div>
+    <div class="board-row">
+      <div class="board-col">
+        <div class="grid-wrap">
+          <div class="grid" id="grid"></div>
+          <div class="pause-overlay hidden" id="pause-overlay">&#9208; Duraklatıldı</div>
         </div>
-        <div class="info-daily hidden" id="info-daily">
-          <span class="daily-day" id="daily-day"></span>
-          <span class="daily-diff" id="daily-diff-display"></span>
-          <span class="streak hidden" id="streak-display"></span>
-        </div>
-        <div class="info-stats">
-          <span class="errors" id="error-display">Hata: 0</span>
-          <span class="timer" id="timer" title="Duraklatmak için tıkla">0:00</span>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="act-btn" id="btn-undo">&#8617; Geri Al</button>
-        <button class="act-btn" id="btn-erase">&#9003; Sil</button>
-        <button class="act-btn" id="btn-notes">&#9998; Not</button>
-        <button class="act-btn" id="btn-hint">&#128161; İpucu <span class="badge">3</span></button>
       </div>
       <div class="numpad" id="numpad"></div>
-      <button class="new-btn" id="btn-new-bottom">Yeni Oyun</button>
+    </div>
+    <div class="actions">
+      <button class="act-btn" id="btn-undo">&#8617; Geri Al</button>
+      <button class="act-btn" id="btn-erase">&#9003; Sil</button>
+      <button class="act-btn" id="btn-notes">&#9998; Not</button>
+      <button class="act-btn" id="btn-hint">&#128161; İpucu <span class="badge">3</span></button>
+    </div>
+  </div>
+  <div class="info-block hidden" id="info-block">
+    <div class="info-random" id="info-random"></div>
+    <div class="info-daily hidden" id="info-daily">
+      <span class="daily-day" id="daily-day"></span>
+      <span class="daily-diff" id="daily-diff-display"></span>
+      <span class="streak hidden" id="streak-display"></span>
     </div>
   </div>
 </div>
@@ -1122,7 +1091,6 @@ if (typeof module !== 'undefined' && module.exports) {
   const winStats = document.getElementById('win-stats');
   const bestTimeMsg = document.getElementById('best-time-msg');
   const btnNew = document.getElementById('btn-new');
-  const btnNewBottom = document.getElementById('btn-new-bottom');
   const btnUndo = document.getElementById('btn-undo');
   const btnErase = document.getElementById('btn-erase');
   const btnNotes = document.getElementById('btn-notes');
@@ -1208,8 +1176,8 @@ if (typeof module !== 'undefined' && module.exports) {
     tabRandom.classList.toggle('active', tab === 'random');
     tabDaily.classList.toggle('active', tab === 'daily');
     btnNew.classList.toggle('hidden', tab === 'daily');
-    btnNewBottom.classList.toggle('hidden', tab === 'daily');
     infoRandom.classList.toggle('hidden', tab === 'daily');
+    document.getElementById('diff-wrap').classList.toggle('hidden', tab === 'daily');
     infoDaily.classList.toggle('hidden', tab === 'random');
     if (tab === 'daily') {
       const dayDiff = getDailyDifficulty();
@@ -1717,7 +1685,6 @@ if (typeof module !== 'undefined' && module.exports) {
 
   /* --- Button handlers --- */
   btnNew.addEventListener('click', requestNewGame);
-  btnNewBottom.addEventListener('click', requestNewGame);
   btnUndo.addEventListener('click', undo);
   btnErase.addEventListener('click', eraseCell);
   btnNotes.addEventListener('click', function() {
@@ -1779,7 +1746,6 @@ if (typeof module !== 'undefined' && module.exports) {
     tabRandom.textContent = t('random');
     tabDaily.textContent = t('daily');
     btnNew.title = t('newGame');
-    btnNewBottom.textContent = t('newGame');
     btnUndo.innerHTML = '↩ ' + t('undo');
     btnErase.innerHTML = '⌫ ' + t('erase');
     btnNotes.innerHTML = '✎ ' + t('notes');
