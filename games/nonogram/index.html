@@ -2,104 +2,199 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>Nonogram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#f6f4ef; --panel:#ffffff; --ink:#22201c; --muted:#8a857b;
     --line:#dcd7cc; --thick:#5a554c; --fill:#2b2a33; --accent:#e2673a;
-    --done:#c4beb2; --hi:#fff1cc;
+    --done:#c4beb2; --hi:#fff1cc; --cross:rgba(0,0,0,.09);
   }
   @media (prefers-color-scheme: dark){
-    :root{
+    :root:not([data-theme]){
       --bg:#18171b; --panel:#222127; --ink:#ece9e2; --muted:#8d8899;
       --line:#3a3842; --thick:#9a95a6; --fill:#ece9e2; --accent:#f08a5d;
-      --done:#55525c; --hi:#3a3325;
+      --done:#55525c; --hi:#3a3325; --cross:rgba(255,255,255,.1);
     }
   }
-  /* ---------- TEMALAR ---------- */
-  html[data-theme="wood"]{
-    --bg:repeating-linear-gradient(90deg,#3b2a1e 0 22px,#43301f 22px 40px,#38281c 40px 64px);
-    --panel:#ecd6b0; --ink:#3a2414; --muted:#8a6a4a;
-    --line:#cfae80; --thick:#6b4423; --fill:linear-gradient(145deg,#7a4e2a,#55331a);
-    --accent:#b5562a; --done:#b89a74; --hi:#f6e3be; --xc:#9b6b43;
-    --font:Georgia,"Times New Roman",serif;
-    --glow:inset 0 0 0 1px rgba(0,0,0,.25),inset 0 -3px 4px rgba(0,0,0,.3); --radius:14px;
-    --title:#f3e2c2; --subc:#d7bf98;
-  }
   html[data-theme="neon"]{
-    --bg:radial-gradient(circle at 30% 0%,#2a1460 0%,#0b0820 60%);
-    --panel:#140f33; --ink:#e6e1ff; --muted:#7d74b8;
-    --line:#2a2357; --thick:#7a5cff; --fill:linear-gradient(135deg,#ff3df0,#7a5cff);
-    --accent:#3df5ff; --done:#3b3470; --hi:#261d5c; --xc:#ff3df0;
-    --font:"Trebuchet MS",system-ui,sans-serif;
+    --bg:#0b0820; --panel:#140f33; --ink:#e6e1ff; --muted:#7d74b8;
+    --line:#2a2357; --thick:#7a5cff; --fill:#7a5cff; --fill-grad:linear-gradient(135deg,#ff3df0,#7a5cff);
+    --accent:#3df5ff; --done:#3b3470; --hi:#261d5c; --xc:#ff3df0; --cross:rgba(122,92,255,.15);
     --glow:0 0 8px rgba(255,61,240,.6); --radius:16px;
   }
   html[data-theme="paper"]{
     --bg:#e9e4d6; --panel:#fdfcf6; --ink:#2b3a67; --muted:#8c93ad;
     --line:#c9d3ea; --thick:#2b3a67; --fill:#2b3a67;
-    --accent:#c0392b; --done:#b8bfd6; --hi:#eef2ff; --xc:#c0392b;
-    --font:"Segoe Print","Bradley Hand","Comic Sans MS",cursive;
+    --accent:#c0392b; --done:#b8bfd6; --hi:#eef2ff; --xc:#c0392b; --cross:rgba(43,58,103,.1);
     --glow:none; --radius:2px;
   }
-  /* -------------------------------- */
+  html[data-theme="kahvehane"]{
+    --bg:#1a1410; --panel:#f0e6d2; --ink:#3a2e22; --muted:#8a7a66;
+    --line:rgba(210,167,94,.3); --thick:#D2A75E; --fill:#6b2d3e;
+    --accent:#D2A75E; --done:#b8a88e; --hi:#f5ecd8; --xc:#8a6a4a; --cross:rgba(107,45,62,.12);
+    --glow:none; --radius:4px;
+    --bar-bg:rgba(26,20,16,.6); --bar-border:rgba(210,167,94,.2); --bar-ink:#e8dcc8;
+    --btn-bg:rgba(210,167,94,.12); --btn-border:rgba(210,167,94,.35);
+    --btn-hover-bg:rgba(210,167,94,.22); --btn-active-bg:#6b2d3e; --btn-active-ink:#f0e6d2;
+    --select-arrow:#D2A75E;
+  }
 
-  *{box-sizing:border-box}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:var(--font, system-ui,-apple-system,"Segoe UI",Roboto,sans-serif);
-    display:flex;justify-content:center;height:100vh;overflow:hidden}
-  .app{width:100%;max-width:640px;padding:12px 16px 8px;display:flex;flex-direction:column;height:100%}
-  h1{font-size:22px;margin:0 0 2px;letter-spacing:.3px;color:var(--title,var(--ink))}
-  .sub{display:none}
-  .bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
-  select,button{font:inherit;font-size:14px;padding:8px 12px;border-radius:8px;
-    border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
-  button:hover,select:hover{border-color:var(--thick)}
-  .mode{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-  .mode button{border:0;border-radius:0}
-  .mode button.on{background:var(--fill);color:var(--panel)}
-  .timer{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--subc,var(--muted));font-size:15px}
+    font-family:'Manrope',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    display:flex;justify-content:center;align-items:center;height:100vh;height:100dvh;overflow:hidden}
 
+  .app{
+    display:flex;flex-direction:column;align-items:center;
+    width:fit-content;max-width:100vw;
+    padding:8px 16px;gap:6px;
+    height:100vh;height:100dvh;
+  }
+
+  /* ---- TOOLBAR ---- */
+  .bar{
+    display:flex;flex-wrap:wrap;gap:5px;align-items:center;
+    width:100%;justify-content:center;
+  }
+  select,button,.bar-btn{
+    font-family:inherit;font-size:13px;font-weight:500;
+    padding:6px 10px;border-radius:6px;
+    border:1px solid var(--bar-border,var(--line));
+    background:var(--btn-bg,var(--panel));color:var(--bar-ink,var(--ink));
+    cursor:pointer;line-height:1.3;white-space:nowrap;
+    transition:background .15s,border-color .15s;
+  }
+  select{
+    appearance:none;-webkit-appearance:none;
+    padding-right:26px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a554c'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 8px center;background-size:10px 6px;
+  }
+  html[data-theme="kahvehane"] select{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23D2A75E'/%3E%3C/svg%3E");
+  }
+  html[data-theme="neon"] select{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a5cff'/%3E%3C/svg%3E");
+  }
+  html[data-theme="paper"] select{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%232b3a67'/%3E%3C/svg%3E");
+  }
+  button:hover,select:hover,.bar-btn:hover{
+    background:var(--btn-hover-bg,var(--hi));border-color:var(--thick);
+  }
+  .mode{display:inline-flex;border:1px solid var(--bar-border,var(--line));border-radius:6px;overflow:hidden}
+  .mode button{border:0;border-radius:0;padding:6px 10px}
+  .mode button.on{background:var(--btn-active-bg,var(--fill));color:var(--btn-active-ink,var(--panel))}
+
+  .bar-sep{width:1px;height:20px;background:var(--bar-border,var(--line));flex-shrink:0}
+
+  .timer-wrap{
+    display:flex;align-items:center;gap:8px;
+    font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;
+    color:var(--bar-ink,var(--muted));
+  }
+  .progress{font-weight:500;font-size:12px;color:var(--muted);white-space:nowrap}
+
+  /* ---- SETTINGS GEAR ---- */
+  .gear-wrap{position:relative}
+  .gear-btn{font-size:16px;padding:5px 8px;line-height:1}
+  .gear-menu{
+    display:none;position:absolute;top:100%;right:0;margin-top:4px;
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:6px 4px;z-index:100;min-width:140px;
+    box-shadow:0 4px 16px rgba(0,0,0,.15);
+  }
+  .gear-menu.open{display:block}
+  .gear-menu button{
+    display:block;width:100%;text-align:left;border:0;border-radius:4px;
+    padding:7px 10px;font-size:13px;background:transparent;color:var(--ink);
+  }
+  .gear-menu button:hover{background:var(--hi)}
+  .gear-menu button.active{font-weight:700;color:var(--accent)}
+  .gear-menu .label{font-size:11px;color:var(--muted);padding:4px 10px 2px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+
+  /* ---- BOARD ---- */
   .stage{position:relative;display:flex;justify-content:center;flex:1;min-height:0;align-items:center}
-  .board{display:grid;grid-template-columns:auto auto;background:var(--panel);
-    padding:10px;border-radius:var(--radius,12px);box-shadow:0 1px 4px rgba(0,0,0,.08);
-    user-select:none;-webkit-user-select:none}
+  .board{display:grid;grid-template-columns:auto auto;user-select:none;-webkit-user-select:none}
   .cols{display:grid;padding:0 2px;align-items:end}
   .rows{display:grid;padding:2px 0}
-  .clue{font-size:calc(var(--c) * .42);font-weight:650;font-variant-numeric:tabular-nums;
+  .clue{font-size:calc(var(--c) * .38);font-weight:650;font-variant-numeric:tabular-nums;
     display:flex;transition:color .15s}
   .clue.col{flex-direction:column;align-items:center;justify-content:flex-end;
-    line-height:1.2;padding-bottom:5px;height:100%}
-  .clue.row{align-items:center;justify-content:flex-end;gap:.5em;padding-right:7px}
+    line-height:1.2;padding-bottom:4px;height:100%}
+  .clue.row{align-items:center;justify-content:flex-end;gap:.4em;padding-right:6px}
   .clue.done{color:var(--done)}
-  .clue.hi{background:var(--hi);border-radius:4px}
+  .clue.hi{background:var(--hi);border-radius:3px}
 
   .cells{display:grid;border:2px solid var(--thick);touch-action:none}
   .cell{width:var(--c);height:var(--c);border-right:1px solid var(--line);
-    border-bottom:1px solid var(--line);position:relative;cursor:pointer;background:var(--panel)}
+    border-bottom:1px solid var(--line);position:relative;cursor:pointer;background:var(--panel);
+    transition:background .05s}
   .cell.br{border-right:2px solid var(--thick)}
   .cell.bb{border-bottom:2px solid var(--thick)}
   .cell.lastc{border-right:0}
   .cell.lastr{border-bottom:0}
-  .cell.f{background:var(--fill);box-shadow:var(--glow,none);z-index:1}
+  .cell.f{background:var(--fill-grad,var(--fill));box-shadow:var(--glow,none);z-index:1}
   .cell.x::after{content:"\00d7";position:absolute;inset:0;display:flex;align-items:center;
-    justify-content:center;color:var(--xc,var(--muted));font-size:calc(var(--c) * .7);line-height:1}
+    justify-content:center;color:var(--xc,var(--muted));font-size:calc(var(--c) * .65);line-height:1}
+  .cell.cross-r{background:var(--cross)}
+  .cell.cross-c{background:var(--cross)}
+  .cell.cross-r.cross-c{background:color-mix(in srgb,var(--cross) 100%,var(--cross))}
+  .cell.f.cross-r,.cell.f.cross-c{background:var(--fill-grad,var(--fill))}
 
-  .win{position:absolute;inset:0;display:none;align-items:center;justify-content:center}
+  /* ---- WIN ---- */
+  .win{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:50}
   .win.show{display:flex}
-  .win .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
-    padding:22px 26px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.18)}
-  .win h2{margin:0 0 6px;font-size:22px;color:var(--accent)}
-  .win p{margin:0 0 14px;color:var(--muted)}
-  .help{display:none}
+  .win .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:20px 24px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+  .win h2{margin:0 0 6px;font-size:20px;color:var(--accent);font-weight:700}
+  .win p{margin:0 0 12px;color:var(--muted);font-size:14px}
+
+  /* ---- CONFIRM DIALOG ---- */
+  .confirm-overlay{
+    display:none;position:absolute;inset:0;align-items:center;justify-content:center;
+    z-index:60;background:rgba(0,0,0,.3);
+  }
+  .confirm-overlay.show{display:flex}
+  .confirm-box{
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:16px 20px;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.15);
+    max-width:280px;
+  }
+  .confirm-box p{margin:0 0 12px;font-size:14px;font-weight:500}
+  .confirm-btns{display:flex;gap:8px;justify-content:center}
+  .confirm-btns button{flex:1;padding:7px 12px;font-size:13px}
+  .confirm-btns .yes{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .confirm-btns .no{background:var(--panel)}
+
+  /* ---- HELP MODAL ---- */
+  .help-overlay{
+    display:none;position:absolute;inset:0;align-items:center;justify-content:center;
+    z-index:70;background:rgba(0,0,0,.35);
+  }
+  .help-overlay.show{display:flex}
+  .help-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:18px 20px;max-width:320px;box-shadow:0 6px 20px rgba(0,0,0,.15);
+    font-size:13px;line-height:1.6;color:var(--ink);
+  }
+  .help-card h3{margin:0 0 8px;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:space-between}
+  .help-card h3 button{font-size:18px;background:transparent;border:0;color:var(--muted);cursor:pointer;padding:0 2px}
+  .help-card ul{margin:6px 0;padding-left:18px}
+  .help-card li{margin-bottom:4px}
+  .help-card kbd{
+    display:inline-block;padding:1px 5px;border:1px solid var(--line);border-radius:3px;
+    font-size:11px;font-family:inherit;background:var(--hi);
+  }
 </style>
 </head>
 <body>
 <div class="app">
-  <h1>Nonogram</h1>
-  <p class="sub">Kenardaki sayılar o satır/sütundaki dolu karelerin gruplarını gösterir. Tüm ipuçlarını sağlayınca bulmaca çözülür.</p>
-
-  <div class="bar">
+  <div class="bar" id="bar">
     <select id="size" aria-label="Boyut">
       <option value="5">5 × 5</option>
       <option value="10" selected>10 × 10</option>
@@ -109,18 +204,28 @@
       <button id="mFill" class="on">■ Doldur</button>
       <button id="mCross">× İşaretle</button>
     </div>
-    <select id="theme" aria-label="Tema">
-      <option value="classic">🎨 Klasik</option>
-      <option value="wood">🪵 Ahşap</option>
-      <option value="neon">✨ Neon</option>
-      <option value="paper">✏️ Kağıt</option>
-    </select>
+    <button id="undoBtn" title="Geri Al (Ctrl+Z)">↩</button>
     <button id="newBtn">Yeni</button>
     <button id="resetBtn">Sıfırla</button>
-    <span class="timer" id="timer">00:00</span>
+    <button id="helpBtn" class="bar-btn" title="Yardım">?</button>
+    <div class="gear-wrap">
+      <button id="gearBtn" class="bar-btn gear-btn" title="Tema">🎨</button>
+      <div class="gear-menu" id="gearMenu">
+        <div class="label">Tema</div>
+        <button data-theme="classic">Klasik</button>
+        <button data-theme="neon">Neon</button>
+        <button data-theme="paper">Kağıt</button>
+        <button data-theme="kahvehane">Kahvehane</button>
+      </div>
+    </div>
   </div>
 
-  <div class="stage">
+  <div class="timer-wrap">
+    <span class="progress" id="progress">0/0</span>
+    <span id="timer">00:00</span>
+  </div>
+
+  <div class="stage" id="stage">
     <div class="board" id="board">
       <div></div>
       <div class="cols" id="cols"></div>
@@ -134,24 +239,43 @@
         <button id="winNew">Yeni bulmaca</button>
       </div>
     </div>
+    <div class="confirm-overlay" id="confirmOverlay">
+      <div class="confirm-box">
+        <p id="confirmMsg"></p>
+        <div class="confirm-btns">
+          <button class="no" id="confirmNo">Vazgeç</button>
+          <button class="yes" id="confirmYes">Evet</button>
+        </div>
+      </div>
+    </div>
+    <div class="help-overlay" id="helpOverlay">
+      <div class="help-card">
+        <h3>Nasıl Oynanır <button id="helpClose">✕</button></h3>
+        <p>Kenardaki sayılar, o satır veya sütundaki ardışık dolu kare gruplarının uzunluklarını gösterir. Tüm ipuçlarını doğru şekilde doldurursan bulmaca çözülür.</p>
+        <ul>
+          <li><strong>Masaüstü:</strong> Sol tık doldurur, sağ tık × işareti koyar.</li>
+          <li><strong>Mobil:</strong> Üstteki <em>Doldur / İşaretle</em> modunu seç, sonra dokun.</li>
+          <li>Basılı tutup sürükleyerek birden çok kareyi boyayabilirsin.</li>
+          <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> veya ↩ butonu ile geri al.</li>
+        </ul>
+      </div>
+    </div>
   </div>
-
-  <p class="help">Masaüstü: sol tık doldurur, sağ tık × koyar. Mobil: üstteki moddan seç. Basılı tutup sürükleyerek birden çok kareyi boyayabilirsin.</p>
 </div>
 
 <script>
 (() => {
   const $ = id => document.getElementById(id);
   const boardEl = $('board'), colsEl = $('cols'), rowsEl = $('rows'), cellsEl = $('cells');
-  const timerEl = $('timer'), winEl = $('win');
+  const timerEl = $('timer'), winEl = $('win'), progressEl = $('progress');
 
   let n = 10, sol = [], grid = [], rowClues = [], colClues = [];
   let cellEls = [], rowClueEls = [], colClueEls = [];
-  let mode = 1;            // 1 = doldur, 2 = çarpı
+  let mode = 1;
   let drag = null, won = false;
   let t0 = 0, timerId = null, hiR = -1, hiC = -1;
+  let history = [], dragBatch = [];
 
-  // Bir satırdaki dolu grupların uzunlukları
   const runs = arr => {
     const r = []; let c = 0;
     for (const v of arr) { if (v === 1) c++; else if (c) { r.push(c); c = 0; } }
@@ -171,16 +295,24 @@
   function cellSize() {
     const maxRow = Math.max(...rowClues.map(r => r.length));
     const maxCol = Math.max(...colClues.map(r => r.length));
-    const availW = Math.min(window.innerWidth - 32, 608) - 24;
+    const availW = Math.min(window.innerWidth - 32, 800) - 24;
     const cW = Math.floor(availW / (n + maxRow * 0.6 + 0.4));
-    const availH = window.innerHeight - 100;
+    const availH = (window.innerHeight || document.documentElement.clientHeight) - 90;
     const cH = Math.floor(availH / (n + maxCol * 1.2 + 0.4));
-    return Math.max(16, Math.min(44, cW, cH));
+    return Math.max(16, Math.min(64, cW, cH));
+  }
+
+  function updateProgress() {
+    let done = 0, total = n * 2;
+    for (let r = 0; r < n; r++) if (same(runs(grid[r]), rowClues[r])) done++;
+    for (let c = 0; c < n; c++) if (same(runs(col(grid, c)), colClues[c])) done++;
+    progressEl.textContent = done + '/' + total;
   }
 
   function build() {
     grid = Array.from({length: n}, () => Array(n).fill(0));
     won = false; winEl.classList.remove('show');
+    history = []; dragBatch = [];
     stopTimer(); t0 = 0; timerEl.textContent = '00:00';
 
     boardEl.style.setProperty('--c', cellSize() + 'px');
@@ -218,18 +350,41 @@
       }
     }
     for (let i = 0; i < n; i++) { updateRow(i); updateCol(i); }
+    updateProgress();
+    clearCrosshair();
   }
 
   function updateRow(r) { rowClueEls[r].classList.toggle('done', same(runs(grid[r]), rowClues[r])); }
   function updateCol(c) { colClueEls[c].classList.toggle('done', same(runs(col(grid, c)), colClues[c])); }
 
   function setCell(r, c, v) {
-    if (grid[r][c] === v) return;
+    const prev = grid[r][c];
+    if (prev === v) return;
     grid[r][c] = v;
     const el = cellEls[r][c];
     el.classList.toggle('f', v === 1);
     el.classList.toggle('x', v === 2);
     updateRow(r); updateCol(c);
+    updateProgress();
+    return prev;
+  }
+
+  // Undo
+  function pushUndo(entries) {
+    if (!entries.length) return;
+    history.push(entries);
+  }
+  function undo() {
+    if (!history.length || won) return;
+    const entries = history.pop();
+    for (const [r, c, prev] of entries) {
+      grid[r][c] = prev;
+      const el = cellEls[r][c];
+      el.classList.toggle('f', prev === 1);
+      el.classList.toggle('x', prev === 2);
+      updateRow(r); updateCol(c);
+    }
+    updateProgress();
   }
 
   function checkWin() {
@@ -243,7 +398,6 @@
     setTimeout(() => winEl.classList.add('show'), 250);
   }
 
-  // Zamanlayıcı
   const elapsed = () => t0 ? Math.floor((Date.now() - t0) / 1000) : 0;
   const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
   function startTimer() {
@@ -253,13 +407,28 @@
   }
   function stopTimer() { clearInterval(timerId); timerId = null; }
 
-  // Vurgulama
+  // Crosshair
+  function clearCrosshair() {
+    cellsEl.querySelectorAll('.cross-r,.cross-c').forEach(el => {
+      el.classList.remove('cross-r', 'cross-c');
+    });
+  }
+  function setCrosshair(r, c) {
+    clearCrosshair();
+    if (r < 0 || c < 0) return;
+    for (let i = 0; i < n; i++) {
+      cellEls[r][i].classList.add('cross-r');
+      cellEls[i][c].classList.add('cross-c');
+    }
+  }
+
   function highlight(r, c) {
     if (hiR >= 0) rowClueEls[hiR]?.classList.remove('hi');
     if (hiC >= 0) colClueEls[hiC]?.classList.remove('hi');
     hiR = r; hiC = c;
     if (r >= 0) rowClueEls[r].classList.add('hi');
     if (c >= 0) colClueEls[c].classList.add('hi');
+    setCrosshair(r, c);
   }
 
   const cellAt = (x, y) => {
@@ -267,7 +436,7 @@
     return el && el.classList.contains('cell') && cellsEl.contains(el) ? el : null;
   };
 
-  // Etkileşim
+  // Interaction
   cellsEl.addEventListener('pointerdown', e => {
     if (won) return;
     const el = e.target.closest('.cell'); if (!el) return;
@@ -275,8 +444,10 @@
     const r = +el.dataset.r, c = +el.dataset.c;
     const m = e.button === 2 ? 2 : mode;
     drag = { target: grid[r][c] === m ? 0 : m };
+    dragBatch = [];
     startTimer();
-    setCell(r, c, drag.target);
+    const prev = setCell(r, c, drag.target);
+    if (prev !== undefined) dragBatch.push([r, c, prev]);
     highlight(r, c);
   });
   window.addEventListener('pointermove', e => {
@@ -284,14 +455,29 @@
     if (!el) { if (!drag) highlight(-1, -1); return; }
     const r = +el.dataset.r, c = +el.dataset.c;
     if (r !== hiR || c !== hiC) highlight(r, c);
-    if (drag && !won) setCell(r, c, drag.target);
+    if (drag && !won) {
+      const prev = setCell(r, c, drag.target);
+      if (prev !== undefined) dragBatch.push([r, c, prev]);
+    }
   });
-  const endDrag = () => { if (drag) { drag = null; checkWin(); } };
+  const endDrag = () => {
+    if (drag) {
+      pushUndo(dragBatch);
+      dragBatch = [];
+      drag = null;
+      checkWin();
+    }
+  };
   window.addEventListener('pointerup', endDrag);
   window.addEventListener('pointercancel', endDrag);
   cellsEl.addEventListener('contextmenu', e => e.preventDefault());
 
-  // Kontroller
+  // Ctrl+Z
+  window.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
+  });
+
+  // Controls
   const setMode = m => {
     mode = m;
     $('mFill').classList.toggle('on', m === 1);
@@ -299,27 +485,75 @@
   };
   $('mFill').onclick = () => setMode(1);
   $('mCross').onclick = () => setMode(2);
-  const newGame = () => { n = +$('size').value; generate(); build(); };
-  $('newBtn').onclick = newGame;
-  $('winNew').onclick = newGame;
-  $('size').onchange = newGame;
-  $('resetBtn').onclick = build;
-  // Tema
+  $('undoBtn').onclick = undo;
+
+  // Confirm dialog
+  function showConfirm(msg, onYes) {
+    $('confirmMsg').textContent = msg;
+    const overlay = $('confirmOverlay');
+    overlay.classList.add('show');
+    const cleanup = () => overlay.classList.remove('show');
+    $('confirmNo').onclick = cleanup;
+    $('confirmYes').onclick = () => { cleanup(); onYes(); };
+    overlay.onclick = e => { if (e.target === overlay) cleanup(); };
+  }
+  function hasMarks() {
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (grid[r][c]) return true;
+    return false;
+  }
+
+  const doNew = () => { n = +$('size').value; generate(); build(); };
+  const doReset = () => build();
+
+  $('newBtn').onclick = () => {
+    if (hasMarks() && !won) showConfirm('İlerleme silinecek. Yeni bulmaca?', doNew);
+    else doNew();
+  };
+  $('winNew').onclick = doNew;
+  $('size').onchange = () => {
+    if (hasMarks() && !won) showConfirm('İlerleme silinecek. Boyut değiştirilsin mi?', doNew);
+    else doNew();
+  };
+  $('resetBtn').onclick = () => {
+    if (hasMarks() && !won) showConfirm('Tüm işaretler silinecek. Sıfırlansın mı?', doReset);
+    else doReset();
+  };
+
+  // Help
+  $('helpBtn').onclick = () => $('helpOverlay').classList.add('show');
+  $('helpClose').onclick = () => $('helpOverlay').classList.remove('show');
+  $('helpOverlay').onclick = e => { if (e.target === $('helpOverlay')) $('helpOverlay').classList.remove('show'); };
+
+  // Gear / theme
+  const gearMenu = $('gearMenu');
+  $('gearBtn').onclick = e => { e.stopPropagation(); gearMenu.classList.toggle('open'); };
+  document.addEventListener('click', e => { if (!gearMenu.contains(e.target)) gearMenu.classList.remove('open'); });
+
   const applyTheme = t => {
     if (t === 'classic') delete document.documentElement.dataset.theme;
     else document.documentElement.dataset.theme = t;
-    $('theme').value = t;
+    gearMenu.querySelectorAll('button[data-theme]').forEach(b => {
+      b.classList.toggle('active', b.dataset.theme === t);
+    });
     try { localStorage.setItem('nonogram-theme', t); } catch (e) {}
   };
-  $('theme').onchange = e => applyTheme(e.target.value);
+  gearMenu.querySelectorAll('button[data-theme]').forEach(b => {
+    b.onclick = () => { applyTheme(b.dataset.theme); gearMenu.classList.remove('open'); };
+  });
+
   let saved = 'classic';
-  try { saved = localStorage.getItem('nonogram-theme') || 'classic';
-    if (!$('theme').querySelector(`option[value="${saved}"]`)) saved = 'classic'; } catch (e) {}
+  try {
+    saved = localStorage.getItem('nonogram-theme') || 'classic';
+    const valid = ['classic','neon','paper','kahvehane'];
+    if (!valid.includes(saved)) saved = 'classic';
+  } catch (e) {}
   applyTheme(saved);
 
-  window.addEventListener('resize', () => boardEl.style.setProperty('--c', cellSize() + 'px'));
+  window.addEventListener('resize', () => {
+    if (!won) boardEl.style.setProperty('--c', cellSize() + 'px');
+  });
 
-  newGame();
+  doNew();
 })();
 </script>
 </body>
