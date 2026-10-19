@@ -21,7 +21,7 @@ Game ids: `solitaire`, `mahjong`, `sudoku`, `nonogram`. These folders currently 
 - Each tray: brass ring border (3px `rgba(210,167,94,.7)`), full brass on hover with 4px lift. Upper stage shows the game object, lower info section has title, description, and "Oyna" pill.
 - A "Yakında" placeholder follows the last game tray (dashed border, "+" circle).
 - Intro section: tea glass drawing (left) + heading + description (right), single-row flex.
-- Fonts: Young Serif (headings/game titles), Manrope (body), both from Google Fonts.
+- Fonts: Young Serif (headings/game titles), Manrope (body), self-hosted from `fonts/fonts.css`. Game-specific fonts (Figtree, Nunito, Fredoka, Noto Serif TC) still load from Google Fonts.
 - Tray grid: `repeat(auto-fit, minmax(210px, 1fr))`. At ≤900px: 2 columns. At ≤520px: 2 columns, shorter stages, scaled-down objects, "Yakında" spans full width.
 
 ## Adding a new game
