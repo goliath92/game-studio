@@ -7,7 +7,6 @@
 <title>Arcadesilo</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Manrope:wght@400;500;700&display=swap">
 <style>
-/* Layout: bilerek tek tema. Bordo çuhalı kahvehane masası, nesneler masaya doğal ve dağınık yerleşmiş (yanında çay bardağı). Masanın üstüne pirinç etiketler. Telefonda düzenli ızgaraya döner. */
 :root{
   --bg:#150F0E; --wood:#3A2419; --wood-hi:#5B3A28; --felt:#5A1E26; --felt-hi:#74303A;
   --ink:#F3E8DA; --muted:#BBA894; --line:#3A2A24; --brass:#D2A75E; --paper:#F4EDDE; --paper-ink:#2A211C; --red:#B23B37; --green:#2C6B52;
@@ -17,44 +16,83 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;padding-inline:16px;padding-block:0 48px}
-.wrap{max-width:1140px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+.wrap{max-width:1140px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
 button{font:inherit;cursor:pointer;color:inherit}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--brass);outline-offset:3px;border-radius:6px}
 
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-block:22px 0}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-block:16px 0}
 .logo{font-family:var(--display);font-size:1.5rem;text-decoration:none}
 .logo span{color:var(--brass)}
 header nav{display:flex;gap:22px;color:var(--muted);font-size:.93rem}
 header nav a{text-decoration:none}
 
-.intro{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end}
-.intro h1{font-family:var(--display);font-weight:400;font-size:clamp(2.1rem,5vw,3.6rem);line-height:1.05;margin:0;text-wrap:balance}
-.intro h1 span{color:var(--brass)}
-.intro p{margin:0;color:var(--muted);max-width:30ch}
+/* ---- INTRO ---- */
+.intro{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.intro-tea{flex-shrink:0;transform:scale(1.25);transform-origin:center center}
+.intro-text h1{font-family:var(--display);font-weight:400;font-size:clamp(2rem,4.5vw,3.4rem);line-height:1.08;margin:0;text-wrap:balance}
+.intro-text h1 span{color:var(--brass)}
+.intro-text p{margin:6px 0 0;color:#D9C8B2;font-size:17px;max-width:34ch}
 
-.table{background:linear-gradient(135deg,var(--wood-hi),var(--wood));padding:18px;border-radius:32px;box-shadow:0 30px 70px rgba(0,0,0,.55)}
-.felt{position:relative;aspect-ratio:16/8.4;max-width:100%;background:radial-gradient(ellipse at 45% 35%,var(--felt-hi),var(--felt) 72%);border-radius:20px;box-shadow:inset 0 0 70px rgba(0,0,0,.5);overflow:hidden}
-.felt::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.012) 0 2px,transparent 2px 5px);pointer-events:none}
+/* çay bardağı + tabak */
+.tea{position:relative;width:110px;height:96px}
+.saucer{position:absolute;left:0;right:0;bottom:0;height:34px;border-radius:50%;background:radial-gradient(ellipse at 50% 45%,#FFFFFF 0 46%,#C9302C 47% 53%,#F4F1EA 54%);box-shadow:0 8px 14px rgba(0,0,0,.45)}
+.glass{position:absolute;left:31px;bottom:16px;width:48px;height:74px;clip-path:polygon(4% 0,96% 0,82% 38%,70% 52%,84% 100%,16% 100%,30% 52%,18% 38%);background:linear-gradient(180deg,rgba(255,255,255,.35) 0 14%,#8E2A12 14% 100%)}
+.glass::after{content:"";position:absolute;left:18%;top:18%;width:12%;height:70%;background:rgba(255,255,255,.28);border-radius:4px}
+.spoon{position:absolute;left:70px;bottom:10px;width:46px;height:5px;border-radius:3px;background:#C9C3B6;transform:rotate(-14deg)}
 
-.spot{position:absolute;background:none;border:0;padding:10px;display:flex;flex-direction:column;align-items:center;gap:14px;border-radius:16px}
-.spot .obj{transition:transform .35s cubic-bezier(.2,.8,.2,1)}
-.spot:hover .obj{transform:translateY(-8px) scale(1.03)}
-.plaque{background:linear-gradient(180deg,#E3BE77,var(--brass));color:#2A1B10;font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;padding:4px 12px;border-radius:4px;box-shadow:0 3px 8px rgba(0,0,0,.4);white-space:nowrap}
-.plaque small{font-weight:500;opacity:.7;margin-left:6px}
-.s-sol{left:6%;top:12%}
-.s-mah{left:31%;top:44%}
-.s-sud{left:55%;top:8%}
-.s-non{left:77%;top:44%}
-.deco{position:absolute;pointer-events:none}
-.d-tea{left:47%;top:58%}
-.d-tile{left:23%;top:16%;transform:rotate(24deg)}
-.d-card{left:88%;top:6%;transform:rotate(-22deg)}
+/* ---- TABLE / MASA ---- */
+.table{background:linear-gradient(180deg,#5B3A28,#3A2419);padding:22px;border-radius:26px;box-shadow:0 30px 70px rgba(0,0,0,.55)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}
 
+/* ---- TRAY / TEPSİ ---- */
+.tray{
+  display:flex;flex-direction:column;border-radius:14px;overflow:hidden;
+  background:var(--felt);
+  box-shadow:0 0 0 3px rgba(210,167,94,.7),0 14px 28px rgba(0,0,0,.5);
+  text-decoration:none;cursor:pointer;border:0;text-align:left;
+  transition:transform .25s,box-shadow .25s;
+}
+.tray:hover,.tray:focus-visible{
+  box-shadow:0 0 0 3px var(--brass),0 18px 34px rgba(0,0,0,.55);
+  transform:translateY(-4px);
+}
+.tray .stage{
+  height:170px;display:grid;place-items:center;
+  background:radial-gradient(ellipse at 50% 45%,var(--felt-hi),var(--felt) 75%);
+  box-shadow:inset 0 6px 14px rgba(0,0,0,.45);
+}
+.tray .obj{transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.tray:hover .obj{transform:translateY(-6px) scale(1.03)}
+.tray .info{
+  background:#3E1419;border-top:2px solid rgba(210,167,94,.55);
+  padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;
+}
+.tray .info h3{font-family:var(--display);font-weight:400;font-size:24px;margin:0;line-height:1.2}
+.tray .info .desc{font-size:14px;color:#E2CFB9;margin:0;line-height:1.5}
+.tray .info .pill{
+  align-self:flex-end;
+  background:var(--brass);color:#2A1B10;font-weight:700;font-size:14px;
+  padding:7px 16px;border-radius:999px;border:0;pointer-events:none;
+}
+
+/* ---- YAKINDA ---- */
+.soon{
+  border:2px dashed rgba(210,167,94,.45);border-radius:14px;min-height:120px;
+  display:flex;flex-direction:row;align-items:center;justify-content:center;gap:16px;
+  color:var(--muted);grid-column:1 / -1;padding:20px;
+}
+.soon-circle{
+  width:54px;height:54px;border-radius:50%;border:2px solid var(--brass);
+  display:grid;place-items:center;font-size:28px;color:var(--brass);line-height:1;
+}
+.soon h3{font-family:var(--display);font-weight:400;font-size:20px;margin:0;color:var(--ink)}
+.soon p{font-size:14px;margin:0}
+
+/* ---- OBJ STYLES ---- */
 .pcard{width:86px;height:120px;background:var(--paper);color:var(--paper-ink);border-radius:8px;box-shadow:0 8px 18px rgba(0,0,0,.45);padding:7px 9px;display:flex;flex-direction:column;justify-content:space-between;font-family:var(--display);font-size:1.15rem}
 .pcard .c{align-self:center;font-size:2.3rem;line-height:1}
 .pcard.r{color:var(--red)}
-.pcard.back{background:repeating-linear-gradient(45deg,var(--felt-hi) 0 4px,var(--felt) 4px 8px);border:4px solid var(--paper)}
 .fan{display:flex}
 .fan .pcard:nth-child(1){transform:rotate(-16deg) translate(26px,6px)}
 .fan .pcard:nth-child(2){transform:rotate(-2deg)}
@@ -69,65 +107,39 @@ header nav a{text-decoration:none}
 .sgrid.n span.on{background:var(--paper-ink)}
 .pencil{width:116px;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--brass) 0 82%,var(--paper) 82% 92%,var(--paper-ink) 92%);margin-top:-8px;transform:rotate(-24deg) translateX(40px)}
 
-/* çay bardağı + tabak (üstten-yandan karışık görünüm) */
-.tea{position:relative;width:110px;height:96px}
-.saucer{position:absolute;left:0;right:0;bottom:0;height:34px;border-radius:50%;background:radial-gradient(ellipse at 50% 45%,#FFFFFF 0 46%,#C9302C 47% 53%,#F4F1EA 54%);box-shadow:0 8px 14px rgba(0,0,0,.45)}
-.glass{position:absolute;left:31px;bottom:16px;width:48px;height:74px;clip-path:polygon(4% 0,96% 0,82% 38%,70% 52%,84% 100%,16% 100%,30% 52%,18% 38%);background:linear-gradient(180deg,rgba(255,255,255,.35) 0 14%,#8E2A12 14% 100%)}
-.glass::after{content:"";position:absolute;left:18%;top:18%;width:12%;height:70%;background:rgba(255,255,255,.28);border-radius:4px}
-.spoon{position:absolute;left:70px;bottom:10px;width:46px;height:5px;border-radius:3px;background:#C9C3B6;transform:rotate(-14deg)}
-
-/* ---- çerçeveli modlar: her oyun sabit bir alan ---- */
-.framed .spot{width:21%;height:50%;justify-content:center;padding:14px 10px 26px;transition:background .25s,box-shadow .25s,border-color .25s}
-.framed .s-sol{left:5%;top:7%}
-.framed .s-mah{left:29%;top:43%}
-.framed .s-sud{left:53%;top:7%}
-.framed .s-non{left:76%;top:43%}
-.framed .d-tea{left:58%;top:68%}
-.framed .d-tile{left:36%;top:15%}
-.framed .d-card{left:84%;top:7%}
-.framed .plaque{position:absolute;bottom:-13px;left:50%;transform:translateX(-50%)}
-
-/* Ahşap tepsi: pirinç kenarlı oyun alanları */
-.f-tray .spot{border-radius:14px;background:radial-gradient(ellipse at 50% 40%,var(--felt-hi),var(--felt) 75%);box-shadow:0 0 0 3px color-mix(in srgb,var(--brass) 70%,transparent),0 12px 24px rgba(0,0,0,.5),inset 0 6px 14px rgba(0,0,0,.45)}
-.f-tray .spot:hover{box-shadow:0 0 0 3px var(--brass),0 16px 30px rgba(0,0,0,.55),inset 0 6px 14px rgba(0,0,0,.45)}
-.f-tray .plaque{bottom:-17px}
-
-.framed .spot .obj{transform:scale(.88)}
-.framed .spot:hover .obj{transform:scale(.9) translateY(-6px)}
-@media (max-width:900px){
-  .framed .spot{width:auto;height:auto;min-height:220px;position:relative;left:auto;top:auto}
-  .framed.felt{grid-template-columns:repeat(2,minmax(0,1fr));gap:34px 16px;padding:24px 14px 36px}
-  .framed .spot{min-width:0}
-}
-@media (max-width:520px){
-  .framed .spot{min-height:180px}
-  .framed .spot .obj,.framed .spot:hover .obj{transform:scale(.6)}
-  .framed .plaque{font-size:.7rem;padding:3px 8px}
-  .framed .plaque small{display:none}
-}
-
-footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padding-top:18px}
-footer nav{display:flex;gap:16px}
-
+/* ---- PLAYER ---- */
 .player[hidden]{display:none}
 .player{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 .pbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
 .pbar strong{font-family:var(--display);font-weight:400;font-size:1.25rem}
 .pbar .b{display:flex;gap:8px}
 .ib{border:1px solid var(--line);background:var(--wood);border-radius:999px;padding:8px 14px;font-size:.88rem}
-.stage{flex:1;display:grid;place-items:center;padding:16px;min-height:0}
-.stage iframe{width:100%;height:100%;border:0;border-radius:12px;background:var(--felt)}
+.p-stage{flex:1;display:grid;place-items:center;padding:16px;min-height:0}
+.p-stage iframe{width:100%;height:100%;border:0;border-radius:12px;background:var(--felt)}
 .missing{max-width:420px;text-align:center;color:var(--muted)}
 .missing h3{font-family:var(--display);font-weight:400;font-size:1.5rem;color:var(--ink);margin:0 0 8px}
 
+footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padding-top:18px}
+footer nav{display:flex;gap:16px}
+
+/* ---- RESPONSIVE ---- */
 @media (max-width:900px){
-  .intro{grid-template-columns:1fr}
-  .felt{aspect-ratio:auto;display:grid;grid-template-columns:repeat(2,1fr);gap:18px 6px;padding:22px 8px}
-  .spot{position:static;justify-content:end}
-  .deco{display:none}
-  .list{grid-template-columns:1fr}
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .intro-tea{transform:scale(1)}
 }
-@media (max-width:420px){.table{padding:10px;border-radius:22px}.spot .obj{transform:scale(.8)}.spot:hover .obj{transform:scale(.8) translateY(-6px)}.spot{gap:4px}}
+@media (max-width:520px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .tray .stage{height:150px}
+  .tray .obj{transform:scale(.7)}
+  .tray:hover .obj{transform:scale(.7) translateY(-6px)}
+  .tray .info h3{font-size:20px}
+  .tray .info .desc{font-size:13px}
+  .tray .info .pill{font-size:13px;padding:5px 12px}
+  .soon{grid-column:1 / -1;min-height:120px;flex-direction:row;gap:16px}
+  .soon-circle{width:42px;height:42px;font-size:22px}
+  .soon h3{font-size:17px}
+  .intro-tea{transform:scale(.9)}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 <style>[hidden]{display:none!important} img{max-width:100%}</style>
@@ -135,23 +147,22 @@ footer nav{display:flex;gap:16px}
 <body>
 <div class="wrap">
   <header>
-    <a class="logo" href="#top">Arcade<span>silo</span></a>
-    <nav><a href="#oyunlar">Oyunlar</a><a href="#top">Hakkında</a></nav>
+    <a class="logo" href="#">Arcade<span>silo</span></a>
+    <nav><a href="#top">Hakkında</a></nav>
   </header>
 
   <section class="intro" id="top">
-    <h1>Çay demlendi, <span>masa kuruldu.</span></h1>
-    <p>Kart, taş ve kağıt bulmacalar. Üyelik yok, indirme yok. Masadan birini seç, oyun başlasın.</p>
-  </section>
-
-  <section>
-  <section class="table" id="oyunlar" aria-label="Oyun masası">
-    <div class="felt framed f-tray" id="felt">
-      <div class="deco d-tile" aria-hidden="true"><div class="tile r">北</div></div>
-      <div class="deco d-card" aria-hidden="true"><div class="pcard back"></div></div>
-      <div class="deco d-tea" aria-hidden="true"><div class="tea"><div class="saucer"></div><div class="glass"></div><div class="spoon"></div></div></div>
+    <div class="intro-tea" aria-hidden="true">
+      <div class="tea"><div class="saucer"></div><div class="glass"></div><div class="spoon"></div></div>
+    </div>
+    <div class="intro-text">
+      <h1>Çay demlendi, <span>masa kuruldu.</span></h1>
+      <p>Kart, taş ve kağıt bulmacalar. Üyelik yok, indirme yok.</p>
     </div>
   </section>
+
+  <section class="table" id="oyunlar" aria-label="Oyun masası">
+    <div class="grid" id="grid"></div>
   </section>
 
   <footer>
@@ -162,33 +173,52 @@ footer nav{display:flex;gap:16px}
 
 <div class="player" id="player" hidden role="dialog" aria-modal="true" aria-labelledby="pTitle">
   <div class="pbar"><strong id="pTitle"></strong><div class="b"><button class="ib" id="closeBtn">Kapat &#10005;</button></div></div>
-  <div class="stage" id="stage"></div>
+  <div class="p-stage" id="stage"></div>
 </div>
 
 <script>
 const GAMES=[
-  {id:"solitaire",pos:"s-sol",title:"Solitaire",desc:"Klondike. Kartları sırala, dört desteyi tamamla.",time:"10 dk",file:"games/solitaire/index.html",
-   obj:'<div class="fan"><div class="pcard"><span>A</span><span class="c">&#9824;</span><span></span></div><div class="pcard r"><span>K</span><span class="c">&#9829;</span><span></span></div><div class="pcard r"><span>Q</span><span class="c">&#9830;</span><span></span></div></div>'},
-  {id:"mahjong",pos:"s-mah",title:"Mahjong",desc:"Eşleşen taşları 4 slotluk rafa topla. Kolaydan zora seviyeler.",time:"5 dk",file:"games/mahjong/index.html",
-   obj:'<div class="tiles"><div class="tile">竹</div><div class="tile r">中</div><div class="tile">發</div><div class="tile r">東</div></div>'},
-  {id:"sudoku",pos:"s-sud",title:"Sudoku",desc:"9×9 tabloyu doldur, her satır ve sütunda rakamlar bir kez.",time:"15 dk",file:"games/sudoku/index.html",
+  {id:"sudoku",title:"Sudoku",desc:"9×9 tabloyu doldur, her satır ve sütunda rakamlar bir kez.",file:"games/sudoku/index.html",
    obj:'<div><div class="sheet" style="transform:rotate(-7deg)"><div class="sgrid">'+[5,3,"","",7,6,"","",1,9,"",9,8,"","",8,"","","",6,4,"","",8,""].map(v=>`<span>${v}</span>`).join("")+'</div></div><div class="pencil"></div></div>'},
-  {id:"nonogram",pos:"s-non",title:"Nonogram",desc:"Kenardaki sayılara göre kareleri boya, gizli resmi bul.",time:"8 dk",file:"games/nonogram/index.html",
+  {id:"mahjong",title:"Mahjong",desc:"Eşleşen taşları 4 slotluk rafa topla. Kolaydan zora seviyeler.",file:"games/mahjong/index.html",
+   obj:'<div class="tiles"><div class="tile">竹</div><div class="tile r">中</div><div class="tile">發</div><div class="tile r">東</div></div>'},
+  {id:"solitaire",title:"Solitaire",desc:"Klondike. Kartları sırala, dört desteyi tamamla.",file:"games/solitaire/index.html",
+   obj:'<div class="fan"><div class="pcard"><span>A</span><span class="c">&#9824;</span><span></span></div><div class="pcard r"><span>K</span><span class="c">&#9829;</span><span></span></div><div class="pcard r"><span>Q</span><span class="c">&#9830;</span><span></span></div></div>'},
+  {id:"nonogram",title:"Nonogram",desc:"Kenardaki sayılara göre kareleri boya, gizli resmi bul.",file:"games/nonogram/index.html",
    obj:'<div class="sheet" style="transform:rotate(9deg)"><div class="sgrid n">'+"0101011111111110111000100".split("").map(v=>`<span class="${v==='1'?'on':''}"></span>`).join("")+'</div></div>'},
 ];
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-document.getElementById("felt").insertAdjacentHTML("beforeend",GAMES.map(g=>`<button class="spot ${g.pos}" data-play="${g.id}" aria-label="${g.title} oyna"><div class="obj">${g.obj}</div><span class="plaque">${g.title}</span></button>`).join(""));
 
+// Build trays
+const gridEl=document.getElementById("grid");
+gridEl.innerHTML=GAMES.map(g=>`<button class="tray" data-play="${g.id}" aria-label="${g.title} oyna"><div class="stage"><div class="obj">${g.obj}</div></div><div class="info"><h3 lang="en">${g.title}</h3><p class="desc">${g.desc}</p><span class="pill">Oyna</span></div></button>`).join("")+`<div class="soon"><div class="soon-circle">+</div><h3>Yakında</h3><p>Masaya yeni bir oyun geliyor</p></div>`;
+
+// Player
 const player=document.getElementById("player"),stage=document.getElementById("stage");
-function play(id){const g=GAMES.find(x=>x.id===id);if(!g)return;
+function play(id){
+  const g=GAMES.find(x=>x.id===id);if(!g)return;
   document.getElementById("pTitle").textContent=g.title;
   stage.innerHTML=g.file?`<iframe src="${g.file}" title="${g.title}" allow="fullscreen"></iframe>`:`<div class="missing"><h3>${g.title} buraya gelecek</h3><p>Oyun dosyası bağlanınca bu ekranda açılacak.</p></div>`;
-  player.hidden=false;document.body.style.overflow="hidden";document.getElementById("closeBtn").focus();
-  const r=store.get("as_recent",[]).filter(x=>x!==id);r.unshift(id);store.set("as_recent",r.slice(0,5));}
-function closeP(){player.hidden=true;stage.innerHTML="";document.body.style.overflow=""}
+  player.hidden=false;document.body.style.overflow="hidden";
+  document.getElementById("closeBtn").focus();
+  history.pushState({game:id},"",'#'+id);
+  const r=store.get("as_recent",[]).filter(x=>x!==id);r.unshift(id);store.set("as_recent",r.slice(0,5));
+}
+function closeP(){
+  if(player.hidden)return;
+  player.hidden=true;stage.innerHTML="";document.body.style.overflow="";
+}
+function closeViaBack(){
+  if(!player.hidden) history.back();
+}
 document.addEventListener("click",e=>{const p=e.target.closest("[data-play]");if(p)play(p.dataset.play)});
-document.getElementById("closeBtn").onclick=closeP;
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!player.hidden)closeP()});
+document.getElementById("closeBtn").onclick=closeViaBack;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!player.hidden)closeViaBack()});
+window.addEventListener("popstate",()=>closeP());
+
+// Direct link: open game if hash matches
+const hashId=location.hash.slice(1);
+if(hashId && GAMES.find(x=>x.id===hashId)) play(hashId);
 </script>
 </body>
 </html>

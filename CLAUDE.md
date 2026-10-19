@@ -11,22 +11,23 @@ tasarim-alternatifleri/     Home page design drafts we tried (reference only, no
 Game ids: `solitaire`, `mahjong`, `sudoku`, `nonogram`. These folders currently hold "yakında" (coming soon) placeholders. Replace each placeholder with the real game file.
 
 ## How the home page works
-- The `GAMES` list in the `<script>` at the bottom of `index.html` defines the games. Each entry has `id`, `pos` (where it sits on the table), `title`, `desc`, `time` and `file` (the path to the game), plus `obj` (the inline HTML for the object drawn on the table).
-- A click on a game opens it in a full-screen player (`#player`, an iframe), with "Tam ekran" (Full screen) and "Kapat ✕" (Close) buttons. Escape closes it too.
+- The `GAMES` array in `index.html` defines each game: `id`, `title`, `desc`, `file` (path to the game), and `obj` (inline HTML for the object drawn on the tray stage).
+- Games render as "tray" cards inside a CSS grid on a walnut-framed table. Clicking a tray opens the game in a full-screen player (`#player`, an iframe) with a "Kapat ✕" button. Escape and browser back close it.
+- Opening a game sets the URL hash to `#<id>` via `pushState`. Loading the page with a hash (e.g. `/#sudoku`) opens that game directly. `popstate` closes the player.
 - The last games played are stored in `localStorage` under the `as_recent` key.
 
 ## Design (decided, keep it)
-- "Kahvehane" table: a burgundy felt table (`--felt`) with a walnut wood rim (`--wood`), on a dark background. The theme is deliberately single and dark.
-- Each game sits on a "tray": a 3px brass rim, `color-mix(in srgb, var(--brass) 70%, transparent)`, which turns full `--brass` on hover. A brass name plate sits on the bottom edge of the tray.
-- Decoration on the table, outside the trays: a tulip tea glass, a face-down card, one mahjong tile.
-- No game list under the table.
-- Fonts: Young Serif (headings), Manrope (body), both from Google Fonts.
-- On desktop the trays are placed with absolute positions in `%` (the `.framed .s-*` classes). At 900px and below they become a 2-column grid.
+- Dark background, walnut wood table frame (`linear-gradient #5B3A28 → #3A2419`), burgundy felt trays.
+- Each tray: brass ring border (3px `rgba(210,167,94,.7)`), full brass on hover with 4px lift. Upper stage shows the game object, lower info section has title, description, and "Oyna" pill.
+- A "Yakında" placeholder follows the last game tray (dashed border, "+" circle).
+- Intro section: tea glass drawing (left) + heading + description (right), single-row flex.
+- Fonts: Young Serif (headings/game titles), Manrope (body), both from Google Fonts.
+- Tray grid: `repeat(auto-fit, minmax(210px, 1fr))`. At ≤900px: 2 columns. At ≤520px: 2 columns, shorter stages, scaled-down objects, "Yakında" spans full width.
 
 ## Adding a new game
 1. Put the game at `games/<new-id>/index.html`.
-2. Add an entry to `GAMES`.
-3. Pick a free spot on the table for its `pos`, or add a second table or row. Currently 4 spots are used on desktop.
+2. Add an entry to the `GAMES` array with `id`, `title`, `desc`, `file`, and `obj`.
+3. The CSS grid auto-fits — no manual positioning needed.
 
 ## Game requirements
 - One self-contained HTML file. External scripts load only from a pinned-version CDN.
