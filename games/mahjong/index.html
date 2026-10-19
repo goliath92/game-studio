@@ -1,75 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mahjong Solitaire</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&text=一二三四五六七八九十萬東南西北中發梅蘭菊竹春夏秋冬麻將龍示洗新&display=swap">
     <link rel="stylesheet" href="mahjong-table-themes.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="mj-table" data-table-theme="cay-evi" data-tiles="retro">
     <div id="game-container">
-        <div id="ui-left">
-            <h1 class="mj-title">MAHJONG<br>SOLITAIRE</h1>
-            <div class="mj-panel">
-                <span class="mj-label">MOVES</span>
-                <span id="move-counter" class="mj-value">0</span>
+        <!-- Top bar -->
+        <div id="top-bar">
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="timer">Süre</span>
+                    <span id="timer" class="stat-value">0:00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="moves">Hamle</span>
+                    <span id="move-counter" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="tiles">Taş</span>
+                    <span id="tiles-remaining" class="stat-value">144</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label" data-i18n="openPairs">Açık Çift</span>
+                    <span id="open-pairs" class="stat-value">0</span>
+                </div>
             </div>
-            <div class="mj-panel">
-                <span class="mj-label">TIMER</span>
-                <span id="timer" class="mj-value">0:00</span>
+            <div class="actions">
+                <button id="btn-new-game" class="action-btn" aria-label="Yeni Oyun">
+                    <span class="action-icon" aria-hidden="true">🆕</span>
+                    <span class="action-text" data-i18n="newGame">Yeni Oyun</span>
+                </button>
+                <button id="btn-hint" class="action-btn" aria-label="İpucu">
+                    <span class="action-icon" aria-hidden="true">💡</span>
+                    <span class="action-text" data-i18n="hint">İpucu</span>
+                </button>
+                <button id="btn-shuffle" class="action-btn" aria-label="Karıştır">
+                    <span class="action-icon" aria-hidden="true">🔀</span>
+                    <span class="action-text" data-i18n="shuffle">Karıştır</span>
+                </button>
+                <button id="btn-settings" class="action-btn action-btn--icon" aria-label="Ayarlar">⚙</button>
             </div>
-            <div class="mj-panel">
-                <span class="mj-label">TILES</span>
-                <span id="tiles-remaining" class="mj-value">144</span>
-            </div>
-            <button id="btn-hint" class="mj-btn mj-btn--hint" title="Find a match"><span class="mj-btn__glyph" aria-hidden="true">示</span>HINT</button>
-            <button id="btn-shuffle" class="mj-btn mj-btn--shuffle" title="Shuffle tiles"><span class="mj-btn__glyph" aria-hidden="true">洗</span>SHUFFLE</button>
         </div>
 
+        <!-- Settings panel (hidden by default) -->
+        <div id="settings-panel" class="hidden">
+            <div class="settings-section">
+                <span class="settings-label" data-i18n="difficulty">Zorluk</span>
+                <div class="settings-row">
+                    <button class="diff-btn" data-diff="easy">Kolay</button>
+                    <button class="diff-btn" data-diff="medium">Orta</button>
+                    <button class="diff-btn is-active" data-diff="hard">Zor</button>
+                </div>
+            </div>
+            <div class="settings-section">
+                <span class="settings-label" data-i18n="theme">Tema</span>
+                <div class="settings-row">
+                    <button class="mj-swatch mj-swatch--fildisi" data-theme=""></button>
+                    <button class="mj-swatch mj-swatch--bambu" data-theme="bambu"></button>
+                    <button class="mj-swatch mj-swatch--retro" data-theme="retro"></button>
+                    <button class="mj-swatch mj-swatch--bambu-retro" data-theme="bambu-retro"></button>
+                </div>
+            </div>
+            <div class="settings-section">
+                <span class="settings-label" data-i18n="table">Masa</span>
+                <div class="settings-row">
+                    <button class="table-theme-btn" data-table="cay-evi">☕</button>
+                    <button class="table-theme-btn" data-table="tas-butonlar">🀄</button>
+                    <button class="table-theme-btn" data-table="gece-kecesi">🌙</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Board area (felt) -->
         <div id="board-wrapper" class="mj-mat">
             <div id="board"></div>
         </div>
 
-        <div id="ui-right">
-            <div id="lang-toggle" style="display:flex;gap:4px;justify-content:flex-end;margin-bottom:6px">
-                <button class="lang-btn" data-lang="tr" style="padding:2px 7px;font:bold 11px/1.4 sans-serif;border:1px solid rgba(255,255,255,.25);border-radius:4px;cursor:pointer;background:rgba(255,255,255,.15);color:inherit;opacity:.6">TR</button>
-                <button class="lang-btn" data-lang="en" style="padding:2px 7px;font:bold 11px/1.4 sans-serif;border:1px solid rgba(255,255,255,.25);border-radius:4px;cursor:pointer;background:rgba(255,255,255,.15);color:inherit;opacity:.6">EN</button>
-            </div>
-            <button id="btn-new-game" class="mj-btn mj-btn--new" title="New game"><span class="mj-btn__glyph" aria-hidden="true">新</span>NEW GAME</button>
-            <div class="mj-panel mj-panel--stack">
-                <span class="mj-label">THEME</span>
-                <div class="mj-swatches">
-                    <button class="mj-swatch mj-swatch--fildisi" data-theme="" title="Fildişi"></button>
-                    <button class="mj-swatch mj-swatch--bambu" data-theme="bambu" title="Bambu"></button>
-                    <button class="mj-swatch mj-swatch--retro" data-theme="retro" title="Retro"></button>
-                    <button class="mj-swatch mj-swatch--bambu-retro" data-theme="bambu-retro" title="Bambu Retro"></button>
-                </div>
-            </div>
-            <div class="mj-panel mj-panel--stack">
-                <span class="mj-label">MASA</span>
-                <div class="mj-swatches">
-                    <button class="table-theme-btn" data-table="cay-evi" title="Çay Evi">☕</button>
-                    <button class="table-theme-btn" data-table="tas-butonlar" title="Taş Butonlar">🀄</button>
-                    <button class="table-theme-btn" data-table="gece-kecesi" title="Gece Keçesi">🌙</button>
-                </div>
-            </div>
+        <!-- Mobile bottom bar -->
+        <div id="bottom-bar">
+            <button id="btn-hint-mobile" class="action-btn" aria-label="İpucu">
+                <span class="action-icon" aria-hidden="true">💡</span>
+                <span class="action-text" data-i18n="hint">İpucu</span>
+            </button>
+            <button id="btn-shuffle-mobile" class="action-btn" aria-label="Karıştır">
+                <span class="action-icon" aria-hidden="true">🔀</span>
+                <span class="action-text" data-i18n="shuffle">Karıştır</span>
+            </button>
+            <button id="btn-settings-mobile" class="action-btn action-btn--icon" aria-label="Ayarlar">⚙</button>
+            <button id="btn-new-mobile" class="action-btn" aria-label="Yeni Oyun">
+                <span class="action-icon" aria-hidden="true">🆕</span>
+                <span class="action-text" data-i18n="newGame">Yeni Oyun</span>
+            </button>
         </div>
 
+        <!-- Rotate hint for portrait mobile -->
+        <div id="rotate-hint" class="hidden">
+            <span class="rotate-icon" aria-hidden="true">↻</span>
+            <span>Daha rahat oynamak için telefonu yan çevir</span>
+            <button id="dismiss-rotate" aria-label="Kapat">✕</button>
+        </div>
+
+        <!-- Overlay (win/lose) -->
         <div id="overlay" class="hidden">
             <div id="overlay-content">
                 <h2 id="overlay-title"></h2>
                 <p id="overlay-message"></p>
                 <div id="overlay-stats"></div>
-                <button id="overlay-btn" class="mj-btn mj-btn--new">NEW GAME</button>
+                <button id="overlay-btn" class="new-game-btn" data-i18n="newGame">Yeni Oyun</button>
             </div>
         </div>
 
-        <div id="hint-toast" class="hidden">NO MORE MOVES!</div>
+        <!-- Toast -->
+        <div id="hint-toast" class="hidden"></div>
     </div>
 
     <script src="game.js"></script>
