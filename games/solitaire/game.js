@@ -172,6 +172,242 @@
     }
 
     // ================================================
+    //  Solvability Checker (Greedy Monte-Carlo)
+    //  Ensures every dealt game is completable by
+    //  running fast greedy simulations before dealing.
+    // ================================================
+
+    // Numeric card helpers for the solver
+    // Card id = suitIndex * 13 + (rank - 1)
+    //   suitIndex: 0=spades, 1=hearts, 2=diamonds, 3=clubs
+    //   rank: 1..13  (A=1 .. K=13)
+    //   color: spades/clubs = 0 (black), hearts/diamonds = 1 (red)
+
+    var _SUIT_TO_IDX = { spades: 0, hearts: 1, diamonds: 2, clubs: 3 };
+
+    function _cSuit(id)  { return (id / 13) | 0; }
+    function _cVal(id)   { return (id % 13) + 1; }
+    function _cColor(id) { var s = (id / 13) | 0; return (s === 1 || s === 2) ? 1 : 0; }
+
+    function _encodeDeck(deck) {
+        return deck.map(function (c) { return _SUIT_TO_IDX[c.suit] * 13 + (c.value - 1); });
+    }
+
+    // Build solver state from a numeric deck (first 28 cards = tableau, rest = stock)
+    function _initSolverState(ids) {
+        var tab = [], idx = 0;
+        for (var c = 0; c < 7; c++) {
+            var d = [], u = [];
+            for (var r = 0; r < c; r++) d.push(ids[idx++]);
+            u.push(ids[idx++]);
+            tab.push({ d: d, u: u });
+        }
+        var stk = [];
+        for (var i = idx; i < 52; i++) stk.push(ids[i]);
+        return { stk: stk, w: [], f: [0, 0, 0, 0], tab: tab };
+    }
+
+    function _fndTotal(s) { return s.f[0] + s.f[1] + s.f[2] + s.f[3]; }
+
+    // Can this card go to its foundation pile?
+    function _canFnd(s, id) { return s.f[_cSuit(id)] === _cVal(id) - 1; }
+
+    // Is it safe to move this card to foundation?
+    // Safe means both opposite-color predecessors are already on foundation.
+    function _safeFnd(s, id) {
+        var v = _cVal(id);
+        if (v <= 2) return true;
+        var myColor = _cColor(id);
+        for (var su = 0; su < 4; su++) {
+            if (_cColor(su * 13) !== myColor && s.f[su] < v - 1) return false;
+        }
+        return true;
+    }
+
+    // Can this card be placed on the given tableau column?
+    function _canTab(s, id, col) {
+        var t = s.tab[col];
+        if (t.u.length === 0 && t.d.length === 0) return _cVal(id) === 13;
+        if (t.u.length === 0) return false;
+        var top = t.u[t.u.length - 1];
+        return _cColor(id) !== _cColor(top) && _cVal(id) === _cVal(top) - 1;
+    }
+
+    // Flip a face-down card when a column's face-up pile becomes empty
+    function _flipTop(s, col) {
+        var t = s.tab[col];
+        if (t.u.length === 0 && t.d.length > 0) t.u.push(t.d.pop());
+    }
+
+    // Greedy solver: plays through the game using a fixed priority strategy
+    // with random tie-breaking for non-deterministic exploration.
+    // Returns true if the solver manages to win (all 52 cards on foundations).
+    function _greedySolve(ids, rng) {
+        var s = _initSolverState(ids);
+        var moves = 0, limit = 1000;
+        var stockPasses = 0, maxPasses = 3;
+        var drawsSinceMeaningful = 0;
+        var maxDraws = 24 * (maxPasses + 1) + 10;
+
+        while (moves < limit) {
+            if (_fndTotal(s) === 52) return true;
+
+            var acted = false;
+
+            // --- Phase 1: Safe foundation moves (always beneficial) ---
+            var sfm = true;
+            while (sfm) {
+                sfm = false;
+                for (var i = 0; i < 7; i++) {
+                    var u = s.tab[i].u;
+                    if (u.length > 0 && _canFnd(s, u[u.length - 1]) && _safeFnd(s, u[u.length - 1])) {
+                        s.f[_cSuit(u[u.length - 1])]++;
+                        u.pop();
+                        _flipTop(s, i);
+                        sfm = true; acted = true; moves++;
+                    }
+                }
+                if (s.w.length > 0 && _canFnd(s, s.w[s.w.length - 1]) && _safeFnd(s, s.w[s.w.length - 1])) {
+                    s.f[_cSuit(s.w[s.w.length - 1])]++;
+                    s.w.pop();
+                    sfm = true; acted = true; moves++;
+                }
+            }
+            if (_fndTotal(s) === 52) return true;
+            if (acted) { drawsSinceMeaningful = 0; continue; }
+
+            // --- Phase 2: Reveal hidden cards by moving entire face-up stacks ---
+            var revOpts = [];
+            for (var fr = 0; fr < 7; fr++) {
+                if (s.tab[fr].d.length === 0 || s.tab[fr].u.length === 0) continue;
+                var bot = s.tab[fr].u[0];
+                for (var to = 0; to < 7; to++) {
+                    if (to !== fr && _canTab(s, bot, to))
+                        revOpts.push({ fr: fr, to: to, n: s.tab[fr].d.length });
+                }
+            }
+            if (revOpts.length > 0) {
+                revOpts.sort(function (a, b) { return b.n - a.n; });
+                var bestN = revOpts[0].n;
+                var top = [];
+                for (var r = 0; r < revOpts.length; r++) {
+                    if (revOpts[r].n === bestN) top.push(revOpts[r]);
+                }
+                var ch = top[rng(top.length)];
+                var cards = s.tab[ch.fr].u.splice(0);
+                for (var k = 0; k < cards.length; k++) s.tab[ch.to].u.push(cards[k]);
+                _flipTop(s, ch.fr);
+                moves++; drawsSinceMeaningful = 0; continue;
+            }
+
+            // --- Phase 3: Move waste card to tableau ---
+            if (s.w.length > 0) {
+                var wid = s.w[s.w.length - 1];
+                var wt = [];
+                for (var to = 0; to < 7; to++) {
+                    if (_canTab(s, wid, to)) wt.push(to);
+                }
+                if (wt.length > 0) {
+                    s.tab[wt[rng(wt.length)]].u.push(s.w.pop());
+                    moves++; drawsSinceMeaningful = 0; continue;
+                }
+            }
+
+            // --- Phase 4: Move king to empty column (to reveal hidden cards) ---
+            var empties = [];
+            for (var i = 0; i < 7; i++) {
+                if (s.tab[i].u.length === 0 && s.tab[i].d.length === 0) empties.push(i);
+            }
+            if (empties.length > 0) {
+                var km = [];
+                for (var fr = 0; fr < 7; fr++) {
+                    if (s.tab[fr].u.length > 0 && _cVal(s.tab[fr].u[0]) === 13 && s.tab[fr].d.length > 0)
+                        km.push(fr);
+                }
+                if (km.length > 0) {
+                    var chosen = km[rng(km.length)];
+                    var target = empties[rng(empties.length)];
+                    var cards = s.tab[chosen].u.splice(0);
+                    for (var k = 0; k < cards.length; k++) s.tab[target].u.push(cards[k]);
+                    _flipTop(s, chosen);
+                    moves++; drawsSinceMeaningful = 0; continue;
+                }
+                if (s.w.length > 0 && _cVal(s.w[s.w.length - 1]) === 13) {
+                    s.tab[empties[rng(empties.length)]].u.push(s.w.pop());
+                    moves++; drawsSinceMeaningful = 0; continue;
+                }
+            }
+
+            // --- Phase 5: Non-safe foundation move (may block future plays) ---
+            var nsfDone = false;
+            for (var i = 0; i < 7 && !nsfDone; i++) {
+                var u = s.tab[i].u;
+                if (u.length > 0 && _canFnd(s, u[u.length - 1])) {
+                    s.f[_cSuit(u[u.length - 1])]++;
+                    u.pop();
+                    _flipTop(s, i);
+                    nsfDone = true; moves++; drawsSinceMeaningful = 0;
+                }
+            }
+            if (!nsfDone && s.w.length > 0 && _canFnd(s, s.w[s.w.length - 1])) {
+                s.f[_cSuit(s.w[s.w.length - 1])]++;
+                s.w.pop();
+                nsfDone = true; moves++; drawsSinceMeaningful = 0;
+            }
+            if (nsfDone) continue;
+
+            // --- Phase 6: Draw from stock ---
+            if (s.stk.length > 0) {
+                s.w.push(s.stk.pop());
+                moves++; drawsSinceMeaningful++;
+                if (drawsSinceMeaningful > maxDraws) return false;
+                continue;
+            }
+
+            // --- Phase 7: Recycle waste back to stock ---
+            if (s.w.length > 0 && stockPasses < maxPasses) {
+                s.stk = s.w.slice().reverse();
+                s.w = [];
+                stockPasses++;
+                continue;
+            }
+
+            // Stuck: no valid moves remain
+            return false;
+        }
+
+        return _fndTotal(s) === 52;
+    }
+
+    // Try multiple shuffles with multiple greedy probes each,
+    // until a provably solvable deal is found.
+    function findSolvableDeal() {
+        var MAX_SHUFFLES = 500;
+        var PROBES = 8;
+        var lastDeck = null;
+
+        for (var a = 0; a < MAX_SHUFFLES; a++) {
+            var deck = shuffle(createDeck());
+            lastDeck = deck;
+            var ids = _encodeDeck(deck);
+
+            for (var p = 0; p < PROBES; p++) {
+                var rng = (function (seed) {
+                    return function (max) {
+                        seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+                        return seed % max;
+                    };
+                })(a * 31 + p * 7 + 1);
+
+                if (_greedySolve(ids, rng)) return deck;
+            }
+        }
+
+        // Fallback (statistically near-impossible to reach)
+        return lastDeck;
+    }
+
+    // ================================================
     //  New Game
     // ================================================
 
@@ -191,7 +427,7 @@
         updateTimer();
         updateUndoBtn();
 
-        const deck = shuffle(createDeck());
+        var deck = findSolvableDeal();
 
         // Deal tableau: column i gets i+1 cards, top card face-up
         tableau = [[], [], [], [], [], [], []];
