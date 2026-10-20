@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1">
 <title>Nonogram</title>
 <link rel="stylesheet" href="../../fonts/fonts.css">
 <style>
@@ -46,74 +46,122 @@
     font-family:'Manrope',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     display:flex;justify-content:center;align-items:center;height:100vh;height:100dvh;overflow:hidden}
 
+  /* ---- LAYOUT ---- */
   .app{
-    display:flex;flex-direction:column;align-items:center;
-    width:fit-content;max-width:100vw;
-    padding:8px 16px;gap:6px;
-    height:100vh;height:100dvh;
+    display:flex;align-items:center;justify-content:center;
+    gap:24px;width:100%;height:100vh;height:100dvh;padding:16px;
   }
 
-  /* ---- TOOLBAR ---- */
-  .bar{
-    display:flex;flex-wrap:wrap;gap:5px;align-items:center;
-    width:100%;justify-content:center;
+  /* ---- SIDEBAR (desktop) ---- */
+  .sidebar{
+    width:232px;flex-shrink:0;
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:20px 18px;display:flex;flex-direction:column;gap:0;
+    box-shadow:0 2px 12px rgba(0,0,0,.06);
   }
-  select,button,.bar-btn{
+  .sb-timer{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    font-variant-numeric:tabular-nums;font-size:15px;font-weight:600;
+    color:var(--muted);padding-bottom:14px;
+  }
+  .sb-timer .icon{font-size:14px}
+  .sb-sep{height:1px;background:var(--line);margin:0 0 14px}
+
+  .sb-section{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+  .sb-hint{font-size:11px;color:var(--muted);text-align:center;line-height:1.3}
+
+  .sb-btn{
     font-family:inherit;font-size:13px;font-weight:500;
-    padding:6px 10px;border-radius:6px;
-    border:1px solid var(--bar-border,var(--line));
-    background:var(--btn-bg,var(--panel));color:var(--bar-ink,var(--ink));
+    padding:8px 12px;border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--panel);color:var(--ink);
     cursor:pointer;line-height:1.3;white-space:nowrap;
     transition:background .15s,border-color .15s;
+    display:flex;align-items:center;justify-content:center;gap:6px;
   }
-  select{
-    appearance:none;-webkit-appearance:none;
-    padding-right:26px;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a554c'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;background-position:right 8px center;background-size:10px 6px;
+  .sb-btn:hover{background:var(--hi);border-color:var(--thick)}
+  .sb-btn kbd{
+    font-family:inherit;font-size:10px;color:var(--muted);
+    border:1px solid var(--line);border-radius:3px;padding:1px 4px;
+    background:var(--hi);margin-left:auto;
   }
-  html[data-theme="kahvehane"] select{
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23D2A75E'/%3E%3C/svg%3E");
-  }
-  html[data-theme="neon"] select{
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a5cff'/%3E%3C/svg%3E");
-  }
-  html[data-theme="paper"] select{
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%232b3a67'/%3E%3C/svg%3E");
-  }
-  button:hover,select:hover,.bar-btn:hover{
-    background:var(--btn-hover-bg,var(--hi));border-color:var(--thick);
-  }
-  .mode{display:inline-flex;border:1px solid var(--bar-border,var(--line));border-radius:6px;overflow:hidden}
-  .mode button{border:0;border-radius:0;padding:6px 10px}
-  .mode button.on{background:var(--btn-active-bg,var(--fill));color:var(--btn-active-ink,var(--panel))}
 
-  .bar-sep{width:1px;height:20px;background:var(--bar-border,var(--line));flex-shrink:0}
-
-  .timer-wrap{
-    display:flex;align-items:center;gap:8px;
-    font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;
-    color:var(--bar-ink,var(--muted));
+  .sb-mode{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .sb-mode button{
+    flex:1;font-family:inherit;font-size:13px;font-weight:500;
+    padding:8px 10px;border:0;border-radius:0;
+    background:var(--panel);color:var(--ink);
+    cursor:pointer;transition:background .15s;
   }
-  .progress{font-weight:500;font-size:12px;color:var(--muted);white-space:nowrap}
+  .sb-mode button:hover{background:var(--hi)}
+  .sb-mode button.on{background:var(--fill);color:var(--panel)}
 
-  /* ---- SETTINGS GEAR ---- */
+  .size-group{display:flex;gap:4px}
+  .size-group button{
+    flex:1;font-family:inherit;font-size:12px;font-weight:600;
+    padding:7px 4px;border-radius:6px;
+    border:1px solid var(--line);
+    background:var(--panel);color:var(--ink);
+    cursor:pointer;transition:background .15s;
+  }
+  .size-group button:hover{background:var(--hi)}
+  .size-group button.on{background:var(--fill);color:var(--panel);border-color:transparent}
+
+  .sb-new{
+    font-family:inherit;font-size:13px;font-weight:600;
+    padding:9px 12px;border-radius:8px;border:1px solid var(--accent);
+    background:var(--accent);color:#fff;cursor:pointer;
+    transition:opacity .15s;width:100%;
+  }
+  .sb-new:hover{opacity:.85}
+
+  .sb-footer{
+    display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:14px;
+    border-top:1px solid var(--line);
+  }
+  .sb-footer .help-link{
+    font-family:inherit;font-size:13px;font-weight:500;
+    padding:7px 10px;border-radius:6px;border:0;
+    background:transparent;color:var(--muted);cursor:pointer;
+    transition:color .15s;flex:1;text-align:left;
+  }
+  .sb-footer .help-link:hover{color:var(--ink)}
+  .sb-footer .gear-trigger{
+    font-size:18px;padding:5px 8px;border-radius:6px;border:0;
+    background:transparent;color:var(--muted);cursor:pointer;
+    transition:color .15s;line-height:1;
+  }
+  .sb-footer .gear-trigger:hover{color:var(--ink)}
+
+  /* ---- GEAR MENU ---- */
   .gear-wrap{position:relative}
-  .gear-btn{font-size:16px;padding:5px 8px;line-height:1}
   .gear-menu{
-    display:none;position:absolute;top:100%;right:0;margin-top:4px;
+    display:none;position:absolute;bottom:100%;right:0;margin-bottom:4px;
     background:var(--panel);border:1px solid var(--line);border-radius:8px;
-    padding:6px 4px;z-index:100;min-width:140px;
+    padding:6px 4px;z-index:100;min-width:150px;
     box-shadow:0 4px 16px rgba(0,0,0,.15);
   }
   .gear-menu.open{display:block}
   .gear-menu button{
     display:block;width:100%;text-align:left;border:0;border-radius:4px;
-    padding:7px 10px;font-size:13px;background:transparent;color:var(--ink);
+    padding:7px 10px;font-size:13px;font-family:inherit;background:transparent;color:var(--ink);cursor:pointer;
   }
   .gear-menu button:hover{background:var(--hi)}
   .gear-menu button.active{font-weight:700;color:var(--accent)}
+  .gear-menu .divider{height:1px;background:var(--line);margin:4px 0}
   .gear-menu .label{font-size:11px;color:var(--muted);padding:4px 10px 2px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+
+  /* ---- MAIN AREA ---- */
+  .main{
+    display:flex;flex-direction:column;align-items:center;
+    flex:1;min-width:0;height:100%;
+  }
+
+  /* ---- MOBILE TOP BAR (hidden on desktop) ---- */
+  .top-bar{display:none}
+
+  /* ---- MOBILE BOTTOM BAR (hidden on desktop) ---- */
+  .bottom-bar{display:none}
 
   /* ---- BOARD ---- */
   .stage{position:relative;display:flex;justify-content:center;flex:1;min-height:0;align-items:center}
@@ -151,6 +199,11 @@
     padding:20px 24px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.18)}
   .win h2{margin:0 0 6px;font-size:20px;color:var(--accent);font-weight:700}
   .win p{margin:0 0 12px;color:var(--muted);font-size:14px}
+  .win button{
+    font-family:inherit;font-size:13px;font-weight:600;
+    padding:9px 18px;border-radius:8px;border:1px solid var(--accent);
+    background:var(--accent);color:#fff;cursor:pointer;
+  }
 
   /* ---- CONFIRM DIALOG ---- */
   .confirm-overlay{
@@ -165,9 +218,12 @@
   }
   .confirm-box p{margin:0 0 12px;font-size:14px;font-weight:500}
   .confirm-btns{display:flex;gap:8px;justify-content:center}
-  .confirm-btns button{flex:1;padding:7px 12px;font-size:13px}
+  .confirm-btns button{
+    flex:1;padding:7px 12px;font-size:13px;font-family:inherit;font-weight:500;
+    border-radius:6px;border:1px solid var(--line);background:var(--panel);
+    color:var(--ink);cursor:pointer;
+  }
   .confirm-btns .yes{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .confirm-btns .no{background:var(--panel)}
 
   /* ---- HELP MODAL ---- */
   .help-overlay{
@@ -190,16 +246,82 @@
   }
 
   /* ---- MOBILE ---- */
-  @media(max-width:520px){
+  @media(max-width:700px){
     body{align-items:flex-start}
-    .app{padding:6px 8px;gap:4px}
-    .bar{gap:3px}
-    select,button,.bar-btn{font-size:12px;padding:5px 8px;border-radius:5px}
-    select{padding-right:22px;background-position:right 6px center}
-    .mode button{padding:5px 8px}
-    .gear-btn{font-size:14px;padding:4px 6px}
-    .timer-wrap{font-size:12px;gap:5px}
-    .progress{font-size:11px}
+    .app{flex-direction:column;gap:0;padding:0;align-items:stretch}
+    .sidebar{display:none}
+    .main{height:100%}
+
+    .top-bar{
+      display:flex;align-items:center;gap:6px;
+      padding:8px 12px;
+      background:var(--bar-bg,var(--panel));
+      border-bottom:1px solid var(--bar-border,var(--line));
+      flex-shrink:0;
+    }
+    .top-bar select{
+      font-family:inherit;font-size:13px;font-weight:500;
+      padding:6px 26px 6px 10px;border-radius:6px;
+      border:1px solid var(--bar-border,var(--line));
+      background-color:var(--btn-bg,var(--panel));color:var(--bar-ink,var(--ink));
+      cursor:pointer;
+      appearance:none;-webkit-appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a554c'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 8px center;background-size:10px 6px;
+    }
+    html[data-theme="kahvehane"] .top-bar select{
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23D2A75E'/%3E%3C/svg%3E");
+    }
+    html[data-theme="neon"] .top-bar select{
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a5cff'/%3E%3C/svg%3E");
+    }
+    html[data-theme="paper"] .top-bar select{
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%232b3a67'/%3E%3C/svg%3E");
+    }
+    .tb-btn{
+      font-family:inherit;font-size:13px;font-weight:500;
+      padding:6px 10px;border-radius:6px;
+      border:1px solid var(--bar-border,var(--line));
+      background:var(--btn-bg,var(--panel));color:var(--bar-ink,var(--ink));
+      cursor:pointer;white-space:nowrap;line-height:1.3;
+    }
+    .tb-btn:hover{background:var(--btn-hover-bg,var(--hi))}
+    .tb-new{border-color:var(--accent);color:var(--accent);font-weight:600}
+    .tb-spacer{flex:1}
+    .tb-timer{
+      font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;
+      color:var(--bar-ink,var(--muted));white-space:nowrap;
+    }
+
+    .top-bar .gear-menu{bottom:auto;top:100%;margin-bottom:0;margin-top:4px}
+
+    .stage{padding:4px 8px;padding-bottom:60px}
+
+    .bottom-bar{
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      position:fixed;bottom:0;left:0;right:0;z-index:40;
+      height:52px;
+      padding:0 16px;
+      padding-bottom:env(safe-area-inset-bottom,0);
+      background:var(--bar-bg,var(--panel));
+      border-top:1px solid var(--bar-border,var(--line));
+    }
+    .bb-mode{display:flex;border:1px solid var(--bar-border,var(--line));border-radius:6px;overflow:hidden}
+    .bb-mode button{
+      font-family:inherit;font-size:13px;font-weight:500;
+      padding:8px 14px;border:0;border-radius:0;
+      background:var(--btn-bg,var(--panel));color:var(--bar-ink,var(--ink));
+      cursor:pointer;transition:background .15s;
+    }
+    .bb-mode button.on{background:var(--btn-active-bg,var(--fill));color:var(--btn-active-ink,var(--panel))}
+    .bb-undo{
+      font-family:inherit;font-size:16px;
+      padding:6px 12px;border-radius:6px;
+      border:1px solid var(--bar-border,var(--line));
+      background:var(--btn-bg,var(--panel));color:var(--bar-ink,var(--ink));
+      cursor:pointer;line-height:1;
+    }
+
     .help-card{max-width:calc(100vw - 32px);padding:14px 16px;font-size:12px}
     .help-card h3{font-size:14px}
     .win .card{padding:16px 18px}
@@ -207,81 +329,139 @@
     .win p{font-size:13px}
     .confirm-box{max-width:calc(100vw - 40px);padding:14px 16px}
   }
+
   @media(max-width:380px){
-    .bar{gap:2px}
-    select,button,.bar-btn{font-size:11px;padding:4px 6px}
-    .mode button{padding:4px 7px}
-    .bar-sep{height:16px}
+    .top-bar{gap:4px;padding:6px 8px}
+    .top-bar select{font-size:12px;padding:5px 22px 5px 8px}
+    .tb-btn{font-size:12px;padding:5px 8px}
+    .tb-timer{font-size:12px}
+    .bb-mode button{font-size:12px;padding:7px 10px}
+    .stage{padding:2px 4px;padding-bottom:56px}
   }
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="bar" id="bar">
-    <select id="size" aria-label="Boyut">
-      <option value="5">5 × 5</option>
-      <option value="10" selected>10 × 10</option>
-      <option value="15">15 × 15</option>
-    </select>
-    <div class="mode" role="group" aria-label="Mod">
-      <button id="mFill" class="on">■ Doldur</button>
-      <button id="mCross">× İşaretle</button>
+  <!-- SIDEBAR (desktop only) -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-timer">
+      <span class="icon">⏱</span>
+      <span id="timer">00:00</span>
     </div>
-    <button id="undoBtn" title="Geri Al (Ctrl+Z)">↩</button>
-    <button id="newBtn">Yeni</button>
-    <button id="resetBtn">Sıfırla</button>
-    <button id="helpBtn" class="bar-btn" title="Yardım">?</button>
-    <div class="gear-wrap">
-      <button id="gearBtn" class="bar-btn gear-btn" title="Tema">🎨</button>
-      <div class="gear-menu" id="gearMenu">
-        <div class="label">Tema</div>
-        <button data-theme="classic">Klasik</button>
-        <button data-theme="neon">Neon</button>
-        <button data-theme="paper">Kağıt</button>
-        <button data-theme="kahvehane">Kahvehane</button>
-      </div>
-    </div>
-  </div>
+    <div class="sb-sep"></div>
 
-  <div class="timer-wrap">
-    <span class="progress" id="progress">0/0</span>
-    <span id="timer">00:00</span>
-  </div>
-
-  <div class="stage" id="stage">
-    <div class="board" id="board">
-      <div></div>
-      <div class="cols" id="cols"></div>
-      <div class="rows" id="rows"></div>
-      <div class="cells" id="cells"></div>
-    </div>
-    <div class="win" id="win">
-      <div class="card">
-        <h2>Tebrikler!</h2>
-        <p id="winText"></p>
-        <button id="winNew">Yeni bulmaca</button>
+    <div class="sb-section">
+      <div class="sb-mode" role="group" aria-label="Mod">
+        <button id="mFill" class="on">■ Doldur</button>
+        <button id="mCross">× İşaretle</button>
       </div>
+      <span class="sb-hint">sol tık doldurur · sağ tık işaretler</span>
     </div>
-    <div class="confirm-overlay" id="confirmOverlay">
-      <div class="confirm-box">
-        <p id="confirmMsg"></p>
-        <div class="confirm-btns">
-          <button class="no" id="confirmNo">Vazgeç</button>
-          <button class="yes" id="confirmYes">Evet</button>
+
+    <div class="sb-section">
+      <button class="sb-btn" id="undoBtn">↩ Geri Al <kbd>Ctrl+Z</kbd></button>
+    </div>
+
+    <div class="sb-sep"></div>
+
+    <div class="sb-section">
+      <div class="size-group" id="sizeGroup">
+        <button data-sz="5">5×5</button>
+        <button data-sz="10" class="on">10×10</button>
+        <button data-sz="15">15×15</button>
+      </div>
+      <button class="sb-new" id="newBtn">Yeni bulmaca</button>
+    </div>
+
+    <div class="sb-footer">
+      <button class="help-link" id="helpBtn">Nasıl oynanır</button>
+      <div class="gear-wrap">
+        <button class="gear-trigger" id="gearBtn" title="Ayarlar">⚙︎</button>
+        <div class="gear-menu" id="gearMenu">
+          <button id="resetBtn">Sıfırla</button>
+          <div class="divider"></div>
+          <div class="label">Tema</div>
+          <button data-theme="classic">Klasik</button>
+          <button data-theme="neon">Neon</button>
+          <button data-theme="paper">Kağıt</button>
+          <button data-theme="kahvehane">Kahvehane</button>
         </div>
       </div>
     </div>
-    <div class="help-overlay" id="helpOverlay">
-      <div class="help-card">
-        <h3>Nasıl Oynanır <button id="helpClose">✕</button></h3>
-        <p>Kenardaki sayılar, o satır veya sütundaki ardışık dolu kare gruplarının uzunluklarını gösterir. Tüm ipuçlarını doğru şekilde doldurursan bulmaca çözülür.</p>
-        <ul>
-          <li><strong>Masaüstü:</strong> Sol tık doldurur, sağ tık × işareti koyar.</li>
-          <li><strong>Mobil:</strong> Üstteki <em>Doldur / İşaretle</em> modunu seç, sonra dokun.</li>
-          <li>Basılı tutup sürükleyerek birden çok kareyi boyayabilirsin.</li>
-          <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> veya ↩ butonu ile geri al.</li>
-        </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- Mobile top bar -->
+    <div class="top-bar" id="topBar">
+      <select id="size" aria-label="Boyut">
+        <option value="5">5×5</option>
+        <option value="10" selected>10×10</option>
+        <option value="15">15×15</option>
+      </select>
+      <button class="tb-btn tb-new" id="newBtnMob">Yeni</button>
+      <span class="tb-spacer"></span>
+      <span class="tb-timer">⏱ <span id="timerMob">00:00</span></span>
+      <button class="tb-btn" id="helpBtnMob" title="Yardım">?</button>
+      <div class="gear-wrap">
+        <button class="tb-btn" id="gearBtnMob" title="Ayarlar">⚙︎</button>
+        <div class="gear-menu" id="gearMenuMob">
+          <button id="resetBtnMob">Sıfırla</button>
+          <div class="divider"></div>
+          <div class="label">Tema</div>
+          <button data-theme="classic">Klasik</button>
+          <button data-theme="neon">Neon</button>
+          <button data-theme="paper">Kağıt</button>
+          <button data-theme="kahvehane">Kahvehane</button>
+        </div>
       </div>
+    </div>
+
+    <!-- Board -->
+    <div class="stage" id="stage">
+      <div class="board" id="board">
+        <div></div>
+        <div class="cols" id="cols"></div>
+        <div class="rows" id="rows"></div>
+        <div class="cells" id="cells"></div>
+      </div>
+      <div class="win" id="win">
+        <div class="card">
+          <h2>Tebrikler!</h2>
+          <p id="winText"></p>
+          <button id="winNew">Yeni bulmaca</button>
+        </div>
+      </div>
+      <div class="confirm-overlay" id="confirmOverlay">
+        <div class="confirm-box">
+          <p id="confirmMsg"></p>
+          <div class="confirm-btns">
+            <button class="no" id="confirmNo">Vazgeç</button>
+            <button class="yes" id="confirmYes">Evet</button>
+          </div>
+        </div>
+      </div>
+      <div class="help-overlay" id="helpOverlay">
+        <div class="help-card">
+          <h3>Nasıl Oynanır <button id="helpClose">✕</button></h3>
+          <p>Kenardaki sayılar, o satır veya sütundaki ardışık dolu kare gruplarının uzunluklarını gösterir. Tüm ipuçlarını doğru şekilde doldurursan bulmaca çözülür.</p>
+          <ul>
+            <li><strong>Masaüstü:</strong> Sol tık doldurur, sağ tık × işareti koyar.</li>
+            <li><strong>Mobil:</strong> Üstteki <em>Doldur / İşaretle</em> modunu seç, sonra dokun.</li>
+            <li>Basılı tutup sürükleyerek birden çok kareyi boyayabilirsin.</li>
+            <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> veya ↩ butonu ile geri al.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile bottom bar -->
+    <div class="bottom-bar" id="bottomBar">
+      <div class="bb-mode" role="group" aria-label="Mod">
+        <button id="mFillMob" class="on">■ Doldur</button>
+        <button id="mCrossMob">× İşaretle</button>
+      </div>
+      <button class="bb-undo" id="undoBtnMob" title="Geri Al">↩</button>
     </div>
   </div>
 </div>
@@ -290,7 +470,7 @@
 (() => {
   const $ = id => document.getElementById(id);
   const boardEl = $('board'), colsEl = $('cols'), rowsEl = $('rows'), cellsEl = $('cells');
-  const timerEl = $('timer'), winEl = $('win'), progressEl = $('progress');
+  const timerEl = $('timer'), timerMobEl = $('timerMob'), winEl = $('win');
 
   let n = 10, sol = [], grid = [], rowClues = [], colClues = [];
   let cellEls = [], rowClueEls = [], colClueEls = [];
@@ -319,27 +499,27 @@
     const maxRow = Math.max(...rowClues.map(r => r.length));
     const maxCol = Math.max(...colClues.map(r => r.length));
     const vw = window.innerWidth, vh = window.innerHeight || document.documentElement.clientHeight;
-    const pad = vw <= 520 ? 16 : 32;
-    const topSpace = vw <= 520 ? 110 : 90;
-    const availW = Math.min(vw - pad, 800) - 24;
+    const isMobile = vw <= 700;
+    let availW, topSpace;
+    if (isMobile) {
+      availW = vw - 16;
+      topSpace = 110;
+    } else {
+      availW = Math.min(vw - 232 - 48, 800);
+      topSpace = 32;
+    }
     const cW = Math.floor(availW / (n + maxRow * 0.6 + 0.4));
     const availH = vh - topSpace;
     const cH = Math.floor(availH / (n + maxCol * 1.2 + 0.4));
     return Math.max(14, Math.min(64, cW, cH));
   }
 
-  function updateProgress() {
-    let done = 0, total = n * 2;
-    for (let r = 0; r < n; r++) if (same(runs(grid[r]), rowClues[r])) done++;
-    for (let c = 0; c < n; c++) if (same(runs(col(grid, c)), colClues[c])) done++;
-    progressEl.textContent = done + '/' + total;
-  }
-
   function build() {
     grid = Array.from({length: n}, () => Array(n).fill(0));
     won = false; winEl.classList.remove('show');
     history = []; dragBatch = [];
-    stopTimer(); t0 = 0; timerEl.textContent = '00:00';
+    stopTimer(); t0 = 0;
+    updateTimerDisplay('00:00');
 
     boardEl.style.setProperty('--c', cellSize() + 'px');
     colsEl.style.gridTemplateColumns = `repeat(${n}, var(--c))`;
@@ -376,7 +556,6 @@
       }
     }
     for (let i = 0; i < n; i++) { updateRow(i); updateCol(i); }
-    updateProgress();
     clearCrosshair();
   }
 
@@ -391,11 +570,9 @@
     el.classList.toggle('f', v === 1);
     el.classList.toggle('x', v === 2);
     updateRow(r); updateCol(c);
-    updateProgress();
     return prev;
   }
 
-  // Undo
   function pushUndo(entries) {
     if (!entries.length) return;
     history.push(entries);
@@ -410,7 +587,6 @@
       el.classList.toggle('x', prev === 2);
       updateRow(r); updateCol(c);
     }
-    updateProgress();
   }
 
   function checkWin() {
@@ -426,14 +602,19 @@
 
   const elapsed = () => t0 ? Math.floor((Date.now() - t0) / 1000) : 0;
   const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+
+  function updateTimerDisplay(text) {
+    timerEl.textContent = text;
+    if (timerMobEl) timerMobEl.textContent = text;
+  }
+
   function startTimer() {
     if (t0) return;
     t0 = Date.now();
-    timerId = setInterval(() => timerEl.textContent = fmt(elapsed()), 500);
+    timerId = setInterval(() => updateTimerDisplay(fmt(elapsed())), 500);
   }
   function stopTimer() { clearInterval(timerId); timerId = null; }
 
-  // Crosshair
   function clearCrosshair() {
     cellsEl.querySelectorAll('.cross-r,.cross-c').forEach(el => {
       el.classList.remove('cross-r', 'cross-c');
@@ -462,7 +643,6 @@
     return el && el.classList.contains('cell') && cellsEl.contains(el) ? el : null;
   };
 
-  // Interaction
   cellsEl.addEventListener('pointerdown', e => {
     if (won) return;
     const el = e.target.closest('.cell'); if (!el) return;
@@ -498,22 +678,25 @@
   window.addEventListener('pointercancel', endDrag);
   cellsEl.addEventListener('contextmenu', e => e.preventDefault());
 
-  // Ctrl+Z
   window.addEventListener('keydown', e => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
   });
 
-  // Controls
   const setMode = m => {
     mode = m;
     $('mFill').classList.toggle('on', m === 1);
     $('mCross').classList.toggle('on', m === 2);
+    $('mFillMob').classList.toggle('on', m === 1);
+    $('mCrossMob').classList.toggle('on', m === 2);
   };
   $('mFill').onclick = () => setMode(1);
   $('mCross').onclick = () => setMode(2);
-  $('undoBtn').onclick = undo;
+  $('mFillMob').onclick = () => setMode(1);
+  $('mCrossMob').onclick = () => setMode(2);
 
-  // Confirm dialog
+  $('undoBtn').onclick = undo;
+  $('undoBtnMob').onclick = undo;
+
   function showConfirm(msg, onYes) {
     $('confirmMsg').textContent = msg;
     const overlay = $('confirmOverlay');
@@ -528,43 +711,75 @@
     return false;
   }
 
-  const doNew = () => { n = +$('size').value; generate(); build(); };
+  function syncSizeUI() {
+    $('size').value = n;
+    $('sizeGroup').querySelectorAll('button').forEach(b => {
+      b.classList.toggle('on', +b.dataset.sz === n);
+    });
+  }
+
+  const doNew = () => { generate(); build(); syncSizeUI(); };
   const doReset = () => build();
 
-  $('newBtn').onclick = () => {
+  const confirmNew = () => {
     if (hasMarks() && !won) showConfirm('İlerleme silinecek. Yeni bulmaca?', doNew);
     else doNew();
   };
+  $('newBtn').onclick = confirmNew;
+  $('newBtnMob').onclick = confirmNew;
   $('winNew').onclick = doNew;
+
   $('size').onchange = () => {
-    if (hasMarks() && !won) showConfirm('İlerleme silinecek. Boyut değiştirilsin mi?', doNew);
-    else doNew();
+    const sz = +$('size').value;
+    const go = () => { n = sz; doNew(); };
+    if (hasMarks() && !won) showConfirm('İlerleme silinecek. Boyut değiştirilsin mi?', go);
+    else go();
   };
-  $('resetBtn').onclick = () => {
+
+  $('sizeGroup').querySelectorAll('button').forEach(b => {
+    b.onclick = () => {
+      const sz = +b.dataset.sz;
+      const go = () => { n = sz; doNew(); };
+      if (hasMarks() && !won) showConfirm('İlerleme silinecek. Boyut değiştirilsin mi?', go);
+      else go();
+    };
+  });
+
+  const handleReset = () => {
     if (hasMarks() && !won) showConfirm('Tüm işaretler silinecek. Sıfırlansın mı?', doReset);
     else doReset();
   };
+  $('resetBtn').onclick = () => { $('gearMenu').classList.remove('open'); handleReset(); };
+  $('resetBtnMob').onclick = () => { $('gearMenuMob').classList.remove('open'); handleReset(); };
 
-  // Help
-  $('helpBtn').onclick = () => $('helpOverlay').classList.add('show');
+  const showHelp = () => $('helpOverlay').classList.add('show');
+  $('helpBtn').onclick = showHelp;
+  $('helpBtnMob').onclick = showHelp;
   $('helpClose').onclick = () => $('helpOverlay').classList.remove('show');
   $('helpOverlay').onclick = e => { if (e.target === $('helpOverlay')) $('helpOverlay').classList.remove('show'); };
 
-  // Gear / theme
-  const gearMenu = $('gearMenu');
-  $('gearBtn').onclick = e => { e.stopPropagation(); gearMenu.classList.toggle('open'); };
-  document.addEventListener('click', e => { if (!gearMenu.contains(e.target)) gearMenu.classList.remove('open'); });
+  const gearMenu = $('gearMenu'), gearMenuMob = $('gearMenuMob');
+  $('gearBtn').onclick = e => { e.stopPropagation(); gearMenu.classList.toggle('open'); gearMenuMob.classList.remove('open'); };
+  $('gearBtnMob').onclick = e => { e.stopPropagation(); gearMenuMob.classList.toggle('open'); gearMenu.classList.remove('open'); };
+  document.addEventListener('click', e => {
+    if (!gearMenu.contains(e.target)) gearMenu.classList.remove('open');
+    if (!gearMenuMob.contains(e.target)) gearMenuMob.classList.remove('open');
+  });
 
   const applyTheme = t => {
     if (t === 'classic') delete document.documentElement.dataset.theme;
     else document.documentElement.dataset.theme = t;
-    gearMenu.querySelectorAll('button[data-theme]').forEach(b => {
+    document.querySelectorAll('.gear-menu button[data-theme]').forEach(b => {
       b.classList.toggle('active', b.dataset.theme === t);
     });
     try { localStorage.setItem('nonogram-theme', t); } catch (e) {}
   };
-  gearMenu.querySelectorAll('button[data-theme]').forEach(b => {
-    b.onclick = () => { applyTheme(b.dataset.theme); gearMenu.classList.remove('open'); };
+  document.querySelectorAll('.gear-menu button[data-theme]').forEach(b => {
+    b.onclick = () => {
+      applyTheme(b.dataset.theme);
+      gearMenu.classList.remove('open');
+      gearMenuMob.classList.remove('open');
+    };
   });
 
   let saved = 'classic';
@@ -579,7 +794,10 @@
     if (!won) boardEl.style.setProperty('--c', cellSize() + 'px');
   });
 
-  doNew();
+  n = 10;
+  generate();
+  build();
+  syncSizeUI();
 })();
 </script>
 </body>
