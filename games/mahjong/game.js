@@ -320,8 +320,6 @@
         toast:         $('hint-toast'),
         wrapper:       $('board-wrapper'),
         bottomBar:     $('bottom-bar'),
-        rotateHint:    $('rotate-hint'),
-        dismissRotate: $('dismiss-rotate'),
         // Mobile buttons
         btnHintMob:    $('btn-hint-mobile'),
         btnShuffleMob: $('btn-shuffle-mobile'),
@@ -738,27 +736,6 @@
         dom.settingsPanel.classList.add('hidden');
     });
 
-    // ── Portrait orientation hint ──────────────────
-
-    function checkOrientation() {
-        if (!dom.rotateHint) return;
-        if (window.innerWidth < 768 && window.innerHeight > window.innerWidth) {
-            var dismissed = false;
-            try { dismissed = sessionStorage.getItem('mj-rotate-dismissed'); } catch (_) {}
-            if (!dismissed) {
-                dom.rotateHint.classList.remove('hidden');
-            }
-        } else {
-            dom.rotateHint.classList.add('hidden');
-        }
-    }
-
-    if (dom.dismissRotate) {
-        dom.dismissRotate.addEventListener('click', function () {
-            dom.rotateHint.classList.add('hidden');
-            try { sessionStorage.setItem('mj-rotate-dismissed', '1'); } catch (_) {}
-        });
-    }
 
     // ── Game end ───────────────────────────────────
 
@@ -795,7 +772,6 @@
     // Resize: just scale the board
     window.addEventListener('resize', function () {
         scaleBoard();
-        checkOrientation();
     });
 
     // Keyboard shortcuts
@@ -900,5 +876,4 @@
     // ── Start ──────────────────────────────────────
     applyLang();
     newGame();
-    checkOrientation();
 })();

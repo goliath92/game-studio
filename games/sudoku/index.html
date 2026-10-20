@@ -388,20 +388,29 @@ body{
 .cell.win{animation:winPulse 1s ease infinite}
 button:active{transform:scale(.96)}
 
-/* ===== RESPONSIVE — small phones ===== */
-@media(max-width:420px){
+/* ===== MOBILE — portrait layout ===== */
+@media(max-width:767px){
   body{padding:8px}
-  .app{gap:6px;height:calc(100vh - 16px);height:calc(100dvh - 16px)}
+  .app{gap:5px;height:calc(100vh - 16px);height:calc(100dvh - 16px)}
+  .board-row{flex-direction:column;align-items:center;gap:6px}
+  .numpad{flex-direction:row;gap:3px;width:100%;max-width:calc(var(--cs) * 9 + 8px)}
+  .num-btn{width:auto;flex:1;min-height:44px;font-size:clamp(16px,4.5vw,22px)}
+  .num-count{font-size:8px;top:0;right:2px}
+  .game-layout{--cs:min(calc((100vw - 24px)/9),calc((100dvh - 260px)/9),48px)}
+  .actions{gap:4px}
+  .act-btn{min-height:40px;padding:6px 3px;font-size:.72rem}
+}
+@media(max-width:420px){
   .tab{padding:5px 10px;font-size:.72rem}
   .icon-btn{width:32px;height:32px;font-size:14px}
-  .numpad{gap:2px}
-  .act-btn{padding:6px 3px;font-size:.7rem}
-  .game-layout{--cs:min(calc((100vw - 80px)/9),calc((100dvh - 150px)/9),56px)}
+  .game-layout{--cs:min(calc((100vw - 20px)/9),calc((100dvh - 250px)/9),44px)}
+  .num-btn{min-height:40px;font-size:clamp(14px,4vw,20px)}
 }
 @media(max-height:700px){
-  .app{gap:5px}
-  .act-btn{padding:5px 3px;font-size:.72rem}
-  .num-btn{font-size:clamp(14px,4vw,20px)}
+  .app{gap:4px}
+  .act-btn{padding:5px 3px;font-size:.7rem}
+  .num-btn{min-height:36px;font-size:clamp(14px,4vw,18px)}
+  .game-layout{--cs:min(calc((100vw - 20px)/9),calc((100dvh - 220px)/9),40px)}
 }
 
 /* ===== MOBILE bottom sheet ===== */

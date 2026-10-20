@@ -188,6 +188,31 @@
     display:inline-block;padding:1px 5px;border:1px solid var(--line);border-radius:3px;
     font-size:11px;font-family:inherit;background:var(--hi);
   }
+
+  /* ---- MOBILE ---- */
+  @media(max-width:520px){
+    body{align-items:flex-start}
+    .app{padding:6px 8px;gap:4px}
+    .bar{gap:3px}
+    select,button,.bar-btn{font-size:12px;padding:5px 8px;border-radius:5px}
+    select{padding-right:22px;background-position:right 6px center}
+    .mode button{padding:5px 8px}
+    .gear-btn{font-size:14px;padding:4px 6px}
+    .timer-wrap{font-size:12px;gap:5px}
+    .progress{font-size:11px}
+    .help-card{max-width:calc(100vw - 32px);padding:14px 16px;font-size:12px}
+    .help-card h3{font-size:14px}
+    .win .card{padding:16px 18px}
+    .win h2{font-size:17px}
+    .win p{font-size:13px}
+    .confirm-box{max-width:calc(100vw - 40px);padding:14px 16px}
+  }
+  @media(max-width:380px){
+    .bar{gap:2px}
+    select,button,.bar-btn{font-size:11px;padding:4px 6px}
+    .mode button{padding:4px 7px}
+    .bar-sep{height:16px}
+  }
 </style>
 </head>
 <body>
@@ -293,11 +318,14 @@
   function cellSize() {
     const maxRow = Math.max(...rowClues.map(r => r.length));
     const maxCol = Math.max(...colClues.map(r => r.length));
-    const availW = Math.min(window.innerWidth - 32, 800) - 24;
+    const vw = window.innerWidth, vh = window.innerHeight || document.documentElement.clientHeight;
+    const pad = vw <= 520 ? 16 : 32;
+    const topSpace = vw <= 520 ? 110 : 90;
+    const availW = Math.min(vw - pad, 800) - 24;
     const cW = Math.floor(availW / (n + maxRow * 0.6 + 0.4));
-    const availH = (window.innerHeight || document.documentElement.clientHeight) - 90;
+    const availH = vh - topSpace;
     const cH = Math.floor(availH / (n + maxCol * 1.2 + 0.4));
-    return Math.max(16, Math.min(64, cW, cH));
+    return Math.max(14, Math.min(64, cW, cH));
   }
 
   function updateProgress() {

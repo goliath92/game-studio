@@ -58,7 +58,7 @@ header nav a{text-decoration:none}
   transform:translateY(-4px);
 }
 .tray .stage{
-  height:170px;display:grid;place-items:center;
+  height:170px;display:grid;place-items:center;overflow:hidden;
   background:radial-gradient(ellipse at 50% 45%,var(--felt-hi),var(--felt) 75%);
   box-shadow:inset 0 6px 14px rgba(0,0,0,.45);
 }
@@ -93,10 +93,11 @@ header nav a{text-decoration:none}
 .pcard{width:86px;height:120px;background:var(--paper);color:var(--paper-ink);border-radius:8px;box-shadow:0 8px 18px rgba(0,0,0,.45);padding:7px 9px;display:flex;flex-direction:column;justify-content:space-between;font-family:var(--display);font-size:1.15rem}
 .pcard .c{align-self:center;font-size:2.3rem;line-height:1}
 .pcard.r{color:var(--red)}
-.fan{display:flex}
-.fan .pcard:nth-child(1){transform:rotate(-16deg) translate(26px,6px)}
+.fan{display:flex;position:relative;width:180px;height:130px}
+.fan .pcard{position:absolute;top:50%;left:50%;margin:-60px 0 0 -43px}
+.fan .pcard:nth-child(1){transform:rotate(-16deg) translate(-36px,4px)}
 .fan .pcard:nth-child(2){transform:rotate(-2deg)}
-.fan .pcard:nth-child(3){transform:rotate(13deg) translate(-26px,8px)}
+.fan .pcard:nth-child(3){transform:rotate(13deg) translate(36px,6px)}
 .tiles{display:flex;gap:4px;transform:rotate(-6deg)}
 .tile{width:46px;height:62px;background:var(--paper);border-radius:6px;box-shadow:0 4px 0 #C4B48E,0 10px 16px rgba(0,0,0,.45);display:grid;place-items:center;font-size:1.55rem;color:var(--green);font-weight:700}
 .tile.r{color:var(--red)}
@@ -129,9 +130,17 @@ footer nav{display:flex;gap:16px}
 }
 @media (max-width:520px){
   .grid{grid-template-columns:repeat(2,1fr)}
-  .tray .stage{height:150px}
-  .tray .obj{transform:scale(.7)}
-  .tray:hover .obj{transform:scale(.7) translateY(-6px)}
+  .tray .stage{height:130px}
+  .tray .obj{transform:scale(.45)}
+  .tray:hover .obj{transform:scale(.45) translateY(-6px)}
+  .pcard{width:70px;height:98px;border-radius:6px;padding:5px 7px;font-size:.95rem}
+  .pcard .c{font-size:1.8rem}
+  .fan{width:150px;height:106px}
+  .fan .pcard{margin:-49px 0 0 -35px}
+  .fan .pcard:nth-child(1){transform:rotate(-16deg) translate(-28px,3px)}
+  .fan .pcard:nth-child(3){transform:rotate(13deg) translate(28px,5px)}
+  .tile{width:36px;height:50px;border-radius:5px;font-size:1.2rem}
+  .tiles{gap:3px}
   .tray .info h3{font-size:20px}
   .tray .info .desc{font-size:13px}
   .tray .info .pill{font-size:13px;padding:5px 12px}

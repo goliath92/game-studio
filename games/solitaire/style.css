@@ -594,11 +594,11 @@ html, body {
 
 @media (max-width: 520px) {
     :root {
-        --card-width: 44px;
-        --card-height: 64px;
+        --card-width: calc((100vw - 46px) / 7);
+        --card-height: calc(var(--card-width) * 1.45);
         --card-radius: 4px;
-        --tableau-offset: 14px;
-        --tableau-offset-hidden: 5px;
+        --tableau-offset: calc(var(--card-height) * .2);
+        --tableau-offset-hidden: calc(var(--card-height) * .07);
     }
 
     #game-header {
@@ -612,6 +612,8 @@ html, body {
 
     #game-board {
         padding: 5px;
+        column-gap: 4px;
+        row-gap: 10px;
     }
 
     .card-rank {
@@ -623,11 +625,11 @@ html, body {
     }
 
     .card-center {
-        font-size: 1rem;
+        font-size: 1.1rem;
     }
 
     .card-center-face {
-        font-size: 0.85rem;
+        font-size: 0.95rem;
     }
 
     #foundation-area {
@@ -654,4 +656,31 @@ html, body {
     #win-dialog h2 {
         font-size: 1.4rem;
     }
+
+    #game-header {
+        min-height: 40px;
+        padding: 4px 8px;
+        gap: 4px;
+    }
+
+    #stats-bar {
+        font-size: 0.7rem;
+        gap: 8px;
+    }
+
+    #controls {
+        gap: 4px;
+    }
+
+    #controls button:not(.sw) {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        border-radius: 6px;
+    }
+
+    .skins .lbl { display: none; }
+    .sw { width: 24px; height: 24px; border-radius: 5px; }
+
+    .card-corner.top-left { top: 1px; left: 2px; }
+    .card-corner.bottom-right { bottom: 1px; right: 2px; }
 }
