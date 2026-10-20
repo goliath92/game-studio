@@ -224,6 +224,7 @@ document.addEventListener("click",e=>{const p=e.target.closest("[data-play]");if
 document.getElementById("closeBtn").onclick=closeViaBack;
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!player.hidden)closeViaBack()});
 window.addEventListener("popstate",()=>closeP());
+window.addEventListener("message",e=>{if(e.data&&e.data.type==="close")closeViaBack()});
 
 // Direct link: open game if hash matches
 const hashId=location.hash.slice(1);

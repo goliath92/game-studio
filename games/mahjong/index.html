@@ -13,44 +13,97 @@
 </head>
 <body class="mj-table" data-table-theme="cay-evi" data-tiles="retro">
     <div id="game-container">
-        <!-- Top bar -->
-        <div id="top-bar">
-            <div class="stats">
-                <div class="stat-item">
-                    <span class="stat-label" data-i18n="timer">Süre</span>
-                    <span id="timer" class="stat-value">0:00</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label" data-i18n="moves">Hamle</span>
-                    <span id="move-counter" class="stat-value">0</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label" data-i18n="tiles">Taş</span>
-                    <span id="tiles-remaining" class="stat-value">144</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label" data-i18n="openPairs">Açık Çift</span>
-                    <span id="open-pairs" class="stat-value">0</span>
-                </div>
-            </div>
-            <div class="actions">
-                <button id="btn-new-game" class="action-btn" aria-label="Yeni Oyun">
-                    <span class="action-icon" aria-hidden="true">🆕</span>
-                    <span class="action-text" data-i18n="newGame">Yeni Oyun</span>
-                </button>
-                <button id="btn-hint" class="action-btn" aria-label="İpucu">
-                    <span class="action-icon" aria-hidden="true">💡</span>
-                    <span class="action-text" data-i18n="hint">İpucu</span>
-                </button>
-                <button id="btn-shuffle" class="action-btn" aria-label="Karıştır">
-                    <span class="action-icon" aria-hidden="true">🔀</span>
-                    <span class="action-text" data-i18n="shuffle">Karıştır</span>
-                </button>
-                <button id="btn-settings" class="action-btn action-btn--icon" aria-label="Ayarlar">⚙</button>
-            </div>
+        <!-- Rotate warning (phone landscape) -->
+        <div id="rotate-warning">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+            <p>Daha iyi oynamak için<br>telefonunu dikey çevir</p>
         </div>
 
-        <!-- Settings panel (hidden by default) -->
+        <!-- PORTRAIT: Header -->
+        <header id="header">
+            <h1 class="hdr-title">Mahjong</h1>
+            <div class="hdr-right">
+                <button id="btn-settings-h" class="icon-btn" aria-label="Ayarlar">
+                    <svg viewBox="0 0 24 24"><path d="M4 21v-7m0-4V3m8 18v-9m0-4V3m8 18v-5m0-4V3M1 14h6M9 8h6M17 16h6"/></svg>
+                </button>
+                <button id="btn-close" class="icon-btn" aria-label="Kapat">
+                    <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- PORTRAIT: Stat strip -->
+        <div id="stat-strip">
+            <div class="sc"><span class="sc-label" data-i18n="timer">Süre</span><span class="sc-val" id="timer">0:00</span></div>
+            <div class="sc"><span class="sc-label" data-i18n="moves">Hamle</span><span class="sc-val" id="move-counter">0</span></div>
+            <div class="sc"><span class="sc-label" data-i18n="tiles">Taş</span><span class="sc-val" id="tiles-remaining">0</span></div>
+            <div class="sc"><span class="sc-label" data-i18n="openPairs">Açık Çift</span><span class="sc-val" id="open-pairs">0</span></div>
+        </div>
+
+        <!-- LANDSCAPE: Side panel -->
+        <aside id="side-panel">
+            <div class="sp-head">
+                <h1 class="sp-title">Mahjong</h1>
+                <button id="btn-close-s" class="icon-btn" aria-label="Kapat">
+                    <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="sp-stats">
+                <div class="sc"><span class="sc-label">Süre</span><span class="sc-val" id="timer-s">0:00</span></div>
+                <div class="sc"><span class="sc-label">Hamle</span><span class="sc-val" id="moves-s">0</span></div>
+                <div class="sc"><span class="sc-label">Taş</span><span class="sc-val" id="tiles-s">0</span></div>
+                <div class="sc"><span class="sc-label">Açık Çift</span><span class="sc-val" id="pairs-s">0</span></div>
+            </div>
+            <div class="sp-actions">
+                <button class="sp-btn" id="btn-undo-s">
+                    <svg viewBox="0 0 24 24"><path d="M3 10h10a5 5 0 010 10h-4"/><path d="M7 6L3 10l4 4"/></svg>
+                    <span>Geri Al</span><kbd>Z</kbd>
+                </button>
+                <button class="sp-btn" id="btn-hint-s">
+                    <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/><path d="M9 21h6"/></svg>
+                    <span data-i18n="hint">İpucu</span><kbd>H</kbd>
+                </button>
+                <button class="sp-btn" id="btn-shuffle-s">
+                    <svg viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M4 20L21 3M21 16v5h-5"/><path d="M15 15l6 6M4 4l5 5"/></svg>
+                    <span data-i18n="shuffle">Karıştır</span><kbd>S</kbd>
+                </button>
+                <button class="sp-btn sp-btn--primary" id="btn-new-s">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                    <span data-i18n="newGame">Yeni Oyun</span><kbd>N</kbd>
+                </button>
+            </div>
+            <button class="sp-settings" id="btn-settings-s">
+                <svg viewBox="0 0 24 24"><path d="M4 21v-7m0-4V3m8 18v-9m0-4V3m8 18v-5m0-4V3M1 14h6M9 8h6M17 16h6"/></svg>
+                <span data-i18n="settings">Ayarlar</span>
+            </button>
+        </aside>
+
+        <!-- Board area (carpet) -->
+        <div id="board-wrapper" class="mj-mat">
+            <div id="board"></div>
+        </div>
+
+        <!-- PORTRAIT: Bottom action bar -->
+        <div id="bottom-bar">
+            <button class="bar-btn" id="btn-undo">
+                <svg viewBox="0 0 24 24"><path d="M3 10h10a5 5 0 010 10h-4"/><path d="M7 6L3 10l4 4"/></svg>
+                <span>Geri Al</span>
+            </button>
+            <button class="bar-btn" id="btn-hint">
+                <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/><path d="M9 21h6"/></svg>
+                <span data-i18n="hint">İpucu</span>
+            </button>
+            <button class="bar-btn" id="btn-shuffle">
+                <svg viewBox="0 0 24 24"><path d="M16 3h5v5"/><path d="M4 20L21 3M21 16v5h-5"/><path d="M15 15l6 6M4 4l5 5"/></svg>
+                <span data-i18n="shuffle">Karıştır</span>
+            </button>
+            <button class="bar-btn bar-btn--primary" id="btn-new">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                <span data-i18n="newGame">Yeni Oyun</span>
+            </button>
+        </div>
+
+        <!-- Settings panel -->
         <div id="settings-panel" class="hidden">
             <div class="settings-section">
                 <span class="settings-label" data-i18n="difficulty">Zorluk</span>
@@ -79,29 +132,18 @@
             </div>
         </div>
 
-        <!-- Board area (felt) -->
-        <div id="board-wrapper" class="mj-mat">
-            <div id="board"></div>
+        <!-- Confirm dialog -->
+        <div id="confirm-overlay" class="hidden">
+            <div class="confirm-box">
+                <p id="confirm-msg"></p>
+                <div class="confirm-btns">
+                    <button id="confirm-no">Vazgeç</button>
+                    <button id="confirm-yes" class="confirm-yes">Evet</button>
+                </div>
+            </div>
         </div>
 
-        <!-- Mobile bottom bar -->
-        <div id="bottom-bar">
-            <button id="btn-hint-mobile" class="action-btn" aria-label="İpucu">
-                <span class="action-icon" aria-hidden="true">💡</span>
-                <span class="action-text" data-i18n="hint">İpucu</span>
-            </button>
-            <button id="btn-shuffle-mobile" class="action-btn" aria-label="Karıştır">
-                <span class="action-icon" aria-hidden="true">🔀</span>
-                <span class="action-text" data-i18n="shuffle">Karıştır</span>
-            </button>
-            <button id="btn-settings-mobile" class="action-btn action-btn--icon" aria-label="Ayarlar">⚙</button>
-            <button id="btn-new-mobile" class="action-btn" aria-label="Yeni Oyun">
-                <span class="action-icon" aria-hidden="true">🆕</span>
-                <span class="action-text" data-i18n="newGame">Yeni Oyun</span>
-            </button>
-        </div>
-
-        <!-- Overlay (win/lose) -->
+        <!-- Win/Lose overlay -->
         <div id="overlay" class="hidden">
             <div id="overlay-content">
                 <h2 id="overlay-title"></h2>
