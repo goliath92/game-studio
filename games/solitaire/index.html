@@ -1,104 +1,164 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-    <title>Klondike Solitaire</title>
+    <title>Solitaire</title>
     <link rel="stylesheet" href="../../fonts/fonts.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap">
     <link rel="stylesheet" href="style.css">
-    <style>
-        .lang-toggle { display: inline-flex; gap: 2px; margin-left: 6px; vertical-align: middle; }
-        .lang-btn {
-            background: transparent; border: 1px solid rgba(255,255,255,.25);
-            color: rgba(255,255,255,.55); font-size: 11px; font-weight: 600;
-            padding: 2px 7px; border-radius: 4px; cursor: pointer;
-            font-family: inherit; line-height: 1.4; transition: all .15s;
-        }
-        .lang-btn:hover { border-color: rgba(255,255,255,.5); color: rgba(255,255,255,.85); }
-        .lang-btn--active {
-            background: rgba(255,255,255,.15); color: #fff;
-            border-color: rgba(255,255,255,.4);
-        }
-    </style>
 </head>
-<body>
+<body data-back="stripe">
     <div id="game-container">
-        <header id="game-header">
-            <h1>Klondike Solitaire</h1>
-            <div id="stats-bar">
-                <span id="move-counter">Moves: 0</span>
-                <span id="timer">Time: 0:00</span>
-            </div>
-            <div id="controls">
-                <button id="undo-btn" title="Undo last move">&#8630; Undo</button>
-                <button id="new-game-btn">New Game</button>
-                <div class="lang-toggle" role="group" aria-label="Language">
-                    <button class="lang-btn" data-lang="tr" type="button">TR</button>
-                    <button class="lang-btn" data-lang="en" type="button">EN</button>
-                </div>
-                <div class="skins" role="group" aria-label="Tema">
-                    <span class="lbl">Tema</span>
-                    <button class="sw" data-skin="cuha" title="Klasik çuha" aria-label="Klasik çuha" aria-pressed="true"></button>
-                    <button class="sw" data-skin="gece" title="Gece mavisi" aria-label="Gece mavisi" aria-pressed="false"></button>
-                    <button class="sw" data-skin="iznik" title="İznik çini" aria-label="İznik çini" aria-pressed="false"></button>
-                    <button class="sw" data-skin="ahsap" title="Ahşap kahvehane" aria-label="Ahşap kahvehane" aria-pressed="false"></button>
+        <!-- Rotate warning (touch landscape) -->
+        <div id="rotate-warning">
+            <div class="rw-body">
+                <svg class="rw-icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                    <rect x="7" y="2" width="10" height="20" rx="2"/>
+                    <path d="M12 18h.01"/>
+                </svg>
+                <div>
+                    <h2 class="rw-title">Daha iyi oynamak için cihazını dikey çevir</h2>
+                    <p class="rw-desc">Oyun duraklatıldı (<span id="rw-time">0:00</span>). Dikeye döndüğünde kaldığın yerden devam edersin.</p>
                 </div>
             </div>
-        </header>
-
-        <main id="game-board">
-            <!-- Stock and Waste -->
-            <div id="stock-waste-area">
-                <div id="stock" class="card-slot stock-slot" title="Click to draw">
-                    <div class="slot-label">Stock</div>
-                </div>
-                <div id="waste" class="card-slot waste-slot">
-                    <div class="slot-label">Waste</div>
-                </div>
-            </div>
-
-            <!-- Spacer -->
-            <div id="board-spacer"></div>
-
-            <!-- Foundation Piles -->
-            <div id="foundation-area">
-                <div class="card-slot foundation-slot" data-foundation="0">
-                    <div class="suit-hint">&spades;</div>
-                </div>
-                <div class="card-slot foundation-slot" data-foundation="1">
-                    <div class="suit-hint">&hearts;</div>
-                </div>
-                <div class="card-slot foundation-slot" data-foundation="2">
-                    <div class="suit-hint">&diams;</div>
-                </div>
-                <div class="card-slot foundation-slot" data-foundation="3">
-                    <div class="suit-hint">&clubs;</div>
-                </div>
-            </div>
-
-            <!-- Tableau -->
-            <div id="tableau-area">
-                <div class="tableau-column" data-column="0"></div>
-                <div class="tableau-column" data-column="1"></div>
-                <div class="tableau-column" data-column="2"></div>
-                <div class="tableau-column" data-column="3"></div>
-                <div class="tableau-column" data-column="4"></div>
-                <div class="tableau-column" data-column="5"></div>
-                <div class="tableau-column" data-column="6"></div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Win overlay -->
-    <div id="win-overlay" class="hidden">
-        <div id="win-dialog">
-            <h2>You Win!</h2>
-            <p id="win-stats"></p>
-            <button id="win-new-game-btn">Play Again</button>
         </div>
+
+        <!-- PORTRAIT: Stat strip -->
+        <div id="stat-strip">
+            <span class="ss-left"><span data-i18n="moves">Hamle</span> <strong id="move-count">0</strong></span>
+            <span class="ss-right" id="timer">0:00</span>
+        </div>
+
+        <!-- Main area (side panel + board) -->
+        <div id="main-area">
+            <!-- LANDSCAPE: Side panel -->
+            <aside id="side-panel">
+                <div class="sp-stats">
+                    <div class="sp-stat">
+                        <span class="sp-label">HAMLE</span>
+                        <span class="sp-val" id="moves-s">0</span>
+                    </div>
+                    <div class="sp-stat">
+                        <span class="sp-label">SÜRE</span>
+                        <span class="sp-val" id="timer-s">0:00</span>
+                    </div>
+                </div>
+                <div class="sp-actions">
+                    <button class="sp-btn" id="btn-undo-s" disabled>
+                        <svg viewBox="0 0 24 24"><path d="M3 10h10a5 5 0 010 10h-4"/><path d="M7 6L3 10l4 4"/></svg>
+                        <span>Geri Al</span><kbd>Z</kbd>
+                    </button>
+                    <button class="sp-btn" id="btn-hint-s">
+                        <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/><path d="M9 21h6"/></svg>
+                        <span>İpucu</span><kbd>H</kbd>
+                    </button>
+                    <button class="sp-btn" id="btn-new-s">
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span>Yeni Oyun</span><kbd>N</kbd>
+                    </button>
+                </div>
+                <button class="sp-settings" id="btn-settings-s">
+                    <svg viewBox="0 0 24 24"><path d="M4 21v-7m0-4V3m8 18v-9m0-4V3m8 18v-5m0-4V3M1 14h6M9 8h6M17 16h6"/></svg>
+                    <span>Ayarlar</span>
+                </button>
+            </aside>
+
+            <!-- Board wrapper -->
+            <div id="board-wrapper">
+                <div id="game-board">
+                    <div id="top-row">
+                        <div id="stock" class="card-slot"></div>
+                        <div id="waste" class="card-slot"></div>
+                        <div class="top-spacer"></div>
+                        <div class="card-slot foundation-slot" data-foundation="0"><span class="suit-hint">&spades;</span></div>
+                        <div class="card-slot foundation-slot" data-foundation="1"><span class="suit-hint">&hearts;</span></div>
+                        <div class="card-slot foundation-slot" data-foundation="2"><span class="suit-hint">&diams;</span></div>
+                        <div class="card-slot foundation-slot" data-foundation="3"><span class="suit-hint">&clubs;</span></div>
+                    </div>
+                    <div id="tableau-area">
+                        <div class="tableau-column" data-column="0"></div>
+                        <div class="tableau-column" data-column="1"></div>
+                        <div class="tableau-column" data-column="2"></div>
+                        <div class="tableau-column" data-column="3"></div>
+                        <div class="tableau-column" data-column="4"></div>
+                        <div class="tableau-column" data-column="5"></div>
+                        <div class="tableau-column" data-column="6"></div>
+                    </div>
+                </div>
+                <button id="auto-finish" class="hidden">Otomatik Bitir</button>
+            </div>
+        </div>
+
+        <!-- PORTRAIT: Bottom bar -->
+        <div id="bottom-bar">
+            <button class="bar-btn" id="btn-undo" disabled>
+                <svg viewBox="0 0 24 24"><path d="M3 10h10a5 5 0 010 10h-4"/><path d="M7 6L3 10l4 4"/></svg>
+                <span>Geri Al</span><kbd>Z</kbd>
+            </button>
+            <button class="bar-btn" id="btn-hint">
+                <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/><path d="M9 21h6"/></svg>
+                <span>İpucu</span><kbd>H</kbd>
+            </button>
+            <button class="bar-btn" id="btn-settings">
+                <svg viewBox="0 0 24 24"><path d="M4 21v-7m0-4V3m8 18v-9m0-4V3m8 18v-5m0-4V3M1 14h6M9 8h6M17 16h6"/></svg>
+                <span>Ayarlar</span>
+            </button>
+            <button class="bar-btn" id="btn-new">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>Yeni Oyun</span><kbd>N</kbd>
+            </button>
+        </div>
+
+        <!-- Settings panel -->
+        <div id="settings-backdrop" class="hidden"></div>
+        <div id="settings-panel" class="hidden">
+            <div class="sheet-handle"></div>
+            <div class="settings-head">
+                <h2>Ayarlar</h2>
+                <button id="btn-settings-close" class="icon-btn-round" aria-label="Kapat">
+                    <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="settings-section">
+                <span class="settings-label">DİL</span>
+                <div class="lang-seg">
+                    <button class="seg-btn is-active" data-lang="tr">Türkçe</button>
+                    <button class="seg-btn" data-lang="en">English</button>
+                </div>
+            </div>
+            <div class="settings-section">
+                <span class="settings-label">KART ARKASI</span>
+                <div class="back-row">
+                    <button class="back-sw is-active" data-back="stripe"></button>
+                    <button class="back-sw" data-back="red"></button>
+                    <button class="back-sw" data-back="dots"></button>
+                    <button class="back-sw" data-back="lattice"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm dialog -->
+        <div id="confirm-overlay" class="hidden">
+            <div class="confirm-box">
+                <p id="confirm-msg"></p>
+                <div class="confirm-btns">
+                    <button id="confirm-no">Vazgeç</button>
+                    <button id="confirm-yes">Evet</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Win overlay -->
+        <div id="win-overlay" class="hidden">
+            <div id="win-dialog">
+                <h2 id="win-title">Kazandınız!</h2>
+                <p id="win-stats"></p>
+                <button id="win-new-btn">Tekrar Oyna</button>
+            </div>
+        </div>
+
+        <!-- Toast -->
+        <div id="toast" class="hidden"></div>
     </div>
 
     <script src="game.js"></script>

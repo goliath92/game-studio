@@ -289,15 +289,13 @@
         btnHint:     $('btn-hint'),
         btnShuffle:  $('btn-shuffle'),
         btnNew:      $('btn-new'),
-        btnSettingsH:$('btn-settings-h'),
-        btnClose:    $('btn-close'),
+        btnSettings: $('btn-settings'),
         // Landscape buttons
         btnUndoS:    $('btn-undo-s'),
         btnHintS:    $('btn-hint-s'),
         btnShuffleS: $('btn-shuffle-s'),
         btnNewS:     $('btn-new-s'),
         btnSettingsS:$('btn-settings-s'),
-        btnCloseS:   $('btn-close-s'),
         // Shared
         settingsPanel: $('settings-panel'),
         overlay:     $('overlay'),
@@ -812,14 +810,9 @@
     document.addEventListener('click', function (e) {
         if (dom.settingsPanel.classList.contains('hidden')) return;
         if (dom.settingsPanel.contains(e.target)) return;
-        if (e.target.closest('#btn-settings-h') || e.target.closest('#btn-settings-s')) return;
+        if (e.target.closest('#btn-settings') || e.target.closest('#btn-settings-s')) return;
         dom.settingsPanel.classList.add('hidden');
     });
-
-    // ── Close Button ──────────────────────────────
-    function closeGame() {
-        window.parent.postMessage({ type: 'close' }, '*');
-    }
 
     // ── Game End ──────────────────────────────────
     function endGame(won) {
@@ -844,8 +837,7 @@
     dom.btnHint.addEventListener('click', showHint);
     dom.btnShuffle.addEventListener('click', shuffleTiles);
     dom.btnNew.addEventListener('click', requestNewGame);
-    dom.btnSettingsH.addEventListener('click', toggleSettings);
-    dom.btnClose.addEventListener('click', closeGame);
+    dom.btnSettings.addEventListener('click', toggleSettings);
 
     // Landscape buttons
     dom.btnUndoS.addEventListener('click', undo);
@@ -853,7 +845,6 @@
     dom.btnShuffleS.addEventListener('click', shuffleTiles);
     dom.btnNewS.addEventListener('click', requestNewGame);
     dom.btnSettingsS.addEventListener('click', toggleSettings);
-    dom.btnCloseS.addEventListener('click', closeGame);
 
     // Overlay new game
     dom.oBtn.addEventListener('click', newGame);

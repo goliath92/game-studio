@@ -146,26 +146,6 @@ body {
    PORTRAIT layout (default — width < height)
    ============================================ */
 
-/* Header row */
-#header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 12px;
-    height: 48px;
-    flex-shrink: 0;
-    z-index: 20;
-    background: rgba(0,0,0,.35);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-}
-.hdr-title {
-    font-family: var(--f-heading);
-    font-size: 18px;
-    font-weight: 700;
-    color: rgba(255,255,255,.92);
-}
-.hdr-right { display: flex; gap: 4px; }
 .icon-btn {
     width: 44px;
     height: 44px;
@@ -293,7 +273,6 @@ body {
    ============================================ */
 @media (min-aspect-ratio: 1/1) {
     #game-container { flex-direction: row; }
-    #header { display: none; }
     #stat-strip { display: none; }
     #bottom-bar { display: none; }
 
@@ -308,17 +287,6 @@ body {
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
         z-index: 20;
-    }
-    .sp-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-    .sp-title {
-        font-family: var(--f-heading);
-        font-size: 18px;
-        font-weight: 700;
-        color: rgba(255,255,255,.92);
     }
     .sp-stats {
         display: grid;
@@ -416,7 +384,7 @@ body {
 /* Phone landscape: show rotate warning, hide game */
 @media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
     #rotate-warning { display: flex; }
-    #header, #stat-strip, #side-panel, #board-wrapper, #bottom-bar { display: none !important; }
+    #stat-strip, #side-panel, #board-wrapper, #bottom-bar { display: none !important; }
 }
 
 /* ---- Tiles ---- */
